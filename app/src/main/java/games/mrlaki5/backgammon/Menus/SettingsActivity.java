@@ -1,7 +1,7 @@
 package games.mrlaki5.backgammon.Menus;
 
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -97,7 +97,7 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             //Set new value to text view
-            ShakeSensibilityTextView.setText("Shake threshold: " + progress);
+            ShakeSensibilityTextView.setText(getString(R.string.shake_threshold_value, progress));
             //Set new value to current field
             ShakeSensibilityValue=progress;
         }
@@ -126,7 +126,7 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             //Set new value to text view
-            TimeSampleTextView.setText("Shake time precision: " + progress +"ms");
+            TimeSampleTextView.setText(getString(R.string.shake_precision_value, progress));
             //Set new value to current field
             TimeSampleValue=progress;
         }
@@ -155,7 +155,7 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             //Set new value to text view
-            SoundTextView.setText("Sound: " + progress + "%");
+            SoundTextView.setText(getString(R.string.sound_value, progress));
             //Set new value to current field
             SoundValue=progress;
         }
@@ -184,7 +184,7 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             //Set new value to text view
-            DelayTextView.setText("Shake delay: " + progress);
+            DelayTextView.setText(getString(R.string.shake_delay_value, progress));
             //Set new value to current field
             DiceDelayValue=progress;
         }
@@ -213,7 +213,7 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             //Set new value to text view
-            TurnsTextView.setText("Time between turns: " + progress +"s");
+            TurnsTextView.setText(getString(R.string.turn_delay_value, progress));
             //Set new value to current field
             TimeBTurnsValue=progress;
         }
@@ -257,19 +257,19 @@ public class SettingsActivity extends AppCompatActivity {
         editor=preferences.edit();
         //Find shake treshold TextView on view and set text
         ShakeSensibilityTextView=findViewById(R.id.textView);
-        ShakeSensibilityTextView.setText("Shake threshold: " + ShakeSensibilityValue);
+        ShakeSensibilityTextView.setText(getString(R.string.shake_threshold_value, ShakeSensibilityValue));
         //Find time value between two shake TextView on view and set text
         TimeSampleTextView=findViewById(R.id.textView2);
-        TimeSampleTextView.setText("Shake time precision: " + TimeSampleValue +"ms");
+        TimeSampleTextView.setText(getString(R.string.shake_precision_value, TimeSampleValue));
         //Find sound TextView on view and set text
         SoundTextView=findViewById(R.id.textView3);
-        SoundTextView.setText("Sound: " + SoundValue + "%");
+        SoundTextView.setText(getString(R.string.sound_value, SoundValue));
         //Find dice delay TextView on view and set text
         DelayTextView=findViewById(R.id.textView4);
-        DelayTextView.setText("Shake delay: " + DiceDelayValue);
+        DelayTextView.setText(getString(R.string.shake_delay_value, DiceDelayValue));
         //Find time between turns in game TextView on view and set text
         TurnsTextView=findViewById(R.id.textView5);
-        TurnsTextView.setText("Time between turns: " + TimeBTurnsValue+"s");
+        TurnsTextView.setText(getString(R.string.turn_delay_value, TimeBTurnsValue));
         //Find shake treshold slider on view and set listener and progress on slider
         shakeTresholdSlider = findViewById(R.id.seekBar);
         shakeTresholdSlider.setOnSeekBarChangeListener(shakeSensibilityListener);
@@ -319,11 +319,11 @@ public class SettingsActivity extends AppCompatActivity {
         DiceDelayValue=defDelay;
         TimeBTurnsValue=defTurns;
         //Update text views to default values
-        ShakeSensibilityTextView.setText("Shake threshold: " + ShakeSensibilityValue);
-        TimeSampleTextView.setText("Shake time precision: " + TimeSampleValue +"ms");
-        SoundTextView.setText("Sound: " + SoundValue + "%");
-        DelayTextView.setText("Shake delay: " + DiceDelayValue);
-        TurnsTextView.setText("Time between turns: " + TimeBTurnsValue+"s");
+        ShakeSensibilityTextView.setText(getString(R.string.shake_threshold_value, ShakeSensibilityValue));
+        TimeSampleTextView.setText(getString(R.string.shake_precision_value, TimeSampleValue));
+        SoundTextView.setText(getString(R.string.sound_value, SoundValue));
+        DelayTextView.setText(getString(R.string.shake_delay_value, DiceDelayValue));
+        TurnsTextView.setText(getString(R.string.turn_delay_value, TimeBTurnsValue));
         //Update sliders to default values
         shakeTresholdSlider.setProgress(ShakeSensibilityValue);
         timeSampleSlider.setProgress(TimeSampleValue);

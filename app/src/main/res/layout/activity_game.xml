@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/gameRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/game_background"
     tools:context=".GameControllers.GameActivity">
 
-    <games.mrlaki5.backgammon.GameView.OnBoardImage
+    <games.mrlaki5.backgammon.GameView.RoyalOnBoardImage
         android:id="@+id/boardImage"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -16,4 +18,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-</android.support.constraint.ConstraintLayout>
+    <Button
+        android:id="@+id/rollDiceButton"
+        android:layout_width="168dp"
+        android:layout_height="52dp"
+        android:layout_marginBottom="14dp"
+        android:background="@drawable/royal_primary_button"
+        android:elevation="12dp"
+        android:minHeight="0dp"
+        android:onClick="rollDiceFromButton"
+        android:text="@string/roll_dice_button"
+        android:textAllCaps="false"
+        android:textColor="@color/royal_walnut_dark"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

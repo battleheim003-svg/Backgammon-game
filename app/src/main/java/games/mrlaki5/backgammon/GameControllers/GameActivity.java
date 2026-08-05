@@ -8,21 +8,24 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaPlayer;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.Button;
 
 import java.io.File;
 
-import games.mrlaki5.backgammon.Beans.DiceThrow;
-import games.mrlaki5.backgammon.Beans.NextJump;
 import games.mrlaki5.backgammon.Menus.MenuActivity;
 import games.mrlaki5.backgammon.GameModel.Model;
 import games.mrlaki5.backgammon.GameModel.ModelLoader;
 import games.mrlaki5.backgammon.GameView.OnBoardImage;
+import games.mrlaki5.backgammon.Players.Human;
+import games.mrlaki5.backgammon.Players.Player;
 import games.mrlaki5.backgammon.R;
+import games.mrlaki5.backgammon.GamePreferences;
 import games.mrlaki5.backgammon.Menus.SettingsActivity;
 
 //Game activity
@@ -36,8 +39,12 @@ public class GameActivity extends AppCompatActivity {
     private int soundVolume=0;
     //Object for some game related rules
     private GameLogic gameLogic;
+    //Object for applying legal checker moves to the model
+    private GameMoveExecutor moveExecutor;
     //View
     private OnBoardImage BoardImage;
+    //On-screen alternative to phone shaking.
+    private Button rollDiceButton;
     //Object for loading model
     private ModelLoader modelLoader;
     //Model (used for storing game state)
@@ -89,6 +96,9 @@ public class GameActivity extends AppCompatActivity {
             switch(event.getActionMasked()) {
                 //First finger is put on screen
                 case MotionEvent.ACTION_DOWN:
+                    //Keep the board in control of the gesture and give immediate feedback.
+                    v.getParent().requestDisallowInterceptTouchEvent(true);
+                    v.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK);
                     //Find a number of currently touched triangle
                     int touchedNum=BoardImage.triangleTouched(x_touch,y_touch);
                     //Find if chips on that triangle are touched
@@ -116,10 +126,16 @@ public class GameActivity extends AppCompatActivity {
                                 //Update view, set moving chip
                                 BoardImage.setMoveChip(x_touch, y_touch, model.getCurrentPlayer());
                                 //Invalidate view to draw again
-                                BoardImage.invalidate();
+                                BoardImage.postInvalidateOnAnimation();
                                 //Save current finger id
                                 CurrentFingerPointer=event.getPointerId(0);
                             }
+                            else {
+                                v.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK);
+                            }
+                        }
+                        else {
+                            v.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK);
                         }
                     }
                     break;
@@ -135,12 +151,12 @@ public class GameActivity extends AppCompatActivity {
                     }
                     //Move chip to finger position, update view
                     if(BoardImage.moveMoveChip(x_touch, y_touch)) {
-                        BoardImage.invalidate();
+                        BoardImage.postInvalidateOnAnimation();
                     }
                     break;
                 //Some finger left screen
                 case MotionEvent.ACTION_POINTER_UP:
-                //Last finger left screen
+                    //Last finger left screen
                 case MotionEvent.ACTION_UP:
                     //Check if chip finger didnt left already (==-1)
                     if(CurrentFingerPointer==-1){
@@ -169,81 +185,24 @@ public class GameActivity extends AppCompatActivity {
                     if(BoardImage.unsetMoveChip()) {
                         //Calculate destination triangle
                         int dstField = BoardImage.triangleTouched(x_touch,y_touch);
+                        boolean moveApplied = false;
                         if(dstField!=-1) {
-                            //Find in nextMoves if exists combination with source and destination
-                            //fields
-                            int throwNum = 0;
-                            for (NextJump tempJump: model.getNextMoves()) {
-                                if(tempJump.getSrcField()==MoveFieldSrc &&
-                                        tempJump.getDstField()==dstField){
-                                    throwNum=tempJump.getJumpNumber();
-                                    break;
-                                }
-                            }
-                            //If it doesnt find combination of source and destination, return chip
-                            if(throwNum==0){
-                                //Return one chip to source field
-                                model.getBoardFields()[MoveFieldSrc].setNumberOfChips(
-                                        model.getBoardFields()[MoveFieldSrc].getNumberOfChips()+1);
-                                //If there was no chips on source field set player of field
-                                if(model.getBoardFields()[MoveFieldSrc].getNumberOfChips()==1){
-                                    model.getBoardFields()[MoveFieldSrc].setPlayer(
-                                            model.getCurrentPlayer());
-                                }
-                            }
-                            //If it did find combination of source and destination
-                            else {
-                                //Find DiceThrow that is used and set it used
-                                for (DiceThrow tempThrow : model.getDiceThrows()) {
-                                    if (tempThrow.getThrowNumber() == throwNum &&
-                                            tempThrow.getAlreadyUsed() == 0) {
-                                        tempThrow.setAlreadyUsed(1);
-                                        BoardImage.setDices(model.getDiceThrows());
-                                        break;
-                                    }
-                                }
-                                //Get player of destination filed
-                                int tmpPlayer=model.getBoardFields()[dstField].getPlayer();
-                                //If there is one chip on destination field and player is different
-                                //from current playing (eat chip)
-                                if(model.getBoardFields()[dstField].getNumberOfChips()==1 &&
-                                        tmpPlayer!= model.getCurrentPlayer()){
-                                    //Add one chip to side board
-                                    model.getBoardFields()[23+tmpPlayer].setNumberOfChips(
-                                        model.getBoardFields()[23+tmpPlayer].getNumberOfChips()+1);
-                                    //If its first chip on side board add player too
-                                    if(model.getBoardFields()[23+tmpPlayer].getNumberOfChips()==1){
-                                        model.getBoardFields()[23+tmpPlayer].setPlayer(tmpPlayer);
-                                    }
-                                    //But dont remove chip from destination just change its player
-                                }
-                                else {
-                                    //If there is no other player chip, add one chip to
-                                    // destination field
-                                    model.getBoardFields()[dstField].setNumberOfChips(
-                                        model.getBoardFields()[dstField].getNumberOfChips() + 1);
-                                }
-                                //If number of chips on destination field is 1 set field player
-                                // to current
-                                if(model.getBoardFields()[dstField].getNumberOfChips()==1){
-                                    model.getBoardFields()[dstField].setPlayer(
-                                    model.getCurrentPlayer());
-                                }
-                                //Calculate next moves after chip move
-                                model.setNextMoves(gameLogic.calculateMoves(model.getBoardFields(),
-                                        model.getCurrentPlayer(), model.getDiceThrows()));
-                            }
-
+                            moveApplied = moveExecutor.applyPickedUpMove(MoveFieldSrc, dstField,
+                                    model.getNextMoves());
                         }
-                        else{
-                            //If it doesnt find destination field, return chip
-                            model.getBoardFields()[MoveFieldSrc].setNumberOfChips(
-                                    model.getBoardFields()[MoveFieldSrc].getNumberOfChips()+1);
-                            //If there was no chips on source field set player of field
-                            if(model.getBoardFields()[MoveFieldSrc].getNumberOfChips()==1){
-                                model.getBoardFields()[MoveFieldSrc].setPlayer(
-                                model.getCurrentPlayer());
-                            }
+                        else {
+                            moveExecutor.applyPickedUpMove(MoveFieldSrc, -1,
+                                    model.getNextMoves());
+                        }
+                        if(moveApplied) {
+                            v.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
+                            BoardImage.setDices(model.getDiceThrows());
+                            //Calculate next moves after chip move
+                            model.setNextMoves(gameLogic.calculateMoves(model.getBoardFields(),
+                                    model.getCurrentPlayer(), model.getDiceThrows()));
+                        }
+                        else {
+                            v.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
                         }
                         //Update view, remove hints
                         BoardImage.setNextMoveArray(null);
@@ -255,7 +214,7 @@ public class GameActivity extends AppCompatActivity {
                             }
                         }
                         //Draw view again
-                        BoardImage.invalidate();
+                        BoardImage.postInvalidateOnAnimation();
                     }
                     break;
                 default:
@@ -314,21 +273,7 @@ public class GameActivity extends AppCompatActivity {
                             beforeShakeStability=0;
                             //If end delay is over and shake started, end shake
                             if(shakeStability>=dice_delay && shakeStarted==1) {
-                                //Set shake flag so it cant detect again
-                                shakeStarted=2;
-                                //Play throw dice sound
-                                setMPlayer(2);
-                                //Update model with new dice rolls
-                                model.setDiceThrows(gameLogic.rollDices());
-                                //Update view with new dice rolls
-                                BoardImage.setDices(model.getDiceThrows());
-                                //Invalidate view so it can be drawn again
-                                BoardImage.invalidate();
-                                //Roll is over, call GameTask so it can continue turns
-                                synchronized (model.getCurrentObjectPlayer()){
-                                    model.getCurrentObjectPlayer().setWaitCond(0);
-                                    model.getCurrentObjectPlayer().notifyAll();
-                                }
+                                completeHumanDiceRoll();
                             }
                         }
                         //Update last x, y, z values
@@ -367,11 +312,80 @@ public class GameActivity extends AppCompatActivity {
         last_z=0;
         //Register listener
         sensorManager.registerListener(DiceListener, sensor, SensorManager.SENSOR_DELAY_GAME);
+        setRollDiceButtonVisible(true);
     }
 
     //Method called when deactivating shake listener
     public void deactivateShakeListener(){
         sensorManager.unregisterListener(DiceListener);
+        setRollDiceButtonVisible(false);
+    }
+
+    private void setRollDiceButtonVisible(final boolean visible){
+        if(rollDiceButton==null){
+            return;
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                rollDiceButton.animate().cancel();
+                rollDiceButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+                rollDiceButton.setEnabled(visible);
+                if(visible){
+                    rollDiceButton.setScaleX(0.88F);
+                    rollDiceButton.setScaleY(0.88F);
+                    rollDiceButton.setAlpha(0F);
+                    rollDiceButton.animate()
+                            .alpha(1F)
+                            .scaleX(1F)
+                            .scaleY(1F)
+                            .setDuration(170L)
+                            .setInterpolator(new AccelerateDecelerateInterpolator())
+                            .start();
+                }
+            }
+        });
+    }
+
+    //Completes a human dice roll from either a phone shake or the on-screen button.
+    private void completeHumanDiceRoll(){
+        if(model==null || gameLogic==null || BoardImage==null){
+            return;
+        }
+
+        Player currentPlayer=model.getCurrentObjectPlayer();
+        if(currentPlayer==null || !(currentPlayer instanceof Human)){
+            return;
+        }
+
+        synchronized (currentPlayer){
+            //Human.actionRoll() sets waitCond to 1 while it is waiting for a valid roll.
+            //This also prevents double taps and keeps the button inactive during bot turns.
+            if(currentPlayer.getWaitCond()!=1){
+                return;
+            }
+
+            shakeStarted=2;
+            deactivateShakeListener();
+            setMPlayer(2);
+            model.setDiceThrows(gameLogic.rollDices());
+            BoardImage.setDices(model.getDiceThrows());
+            BoardImage.invalidate();
+            currentPlayer.setWaitCond(0);
+            currentPlayer.notifyAll();
+        }
+    }
+
+    //Called by the "roll dice" button in activity_game.xml.
+    public void rollDiceFromButton(View view){
+        if(model==null){
+            return;
+        }
+
+        int state=model.getState();
+        if(state==0 || state==1 || state==3){
+            completeHumanDiceRoll();
+        }
     }
 
     //Method called on creation of GameActivity
@@ -382,6 +396,9 @@ public class GameActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_game);
+        applySelectedBoardTheme();
+        rollDiceButton=findViewById(R.id.rollDiceButton);
+        setRollDiceButtonVisible(false);
         //Get sent extras from menu activity (they dont exist if game is continued,
         // only if its new game)
         Bundle extras=getIntent().getExtras();
@@ -410,9 +427,11 @@ public class GameActivity extends AppCompatActivity {
         model=modelLoader.loadModel(extras, this);
         //Create game logics
         gameLogic = new GameLogic(model);
+        //Create model move executor
+        moveExecutor = new GameMoveExecutor(model);
         //Create game task
         gameTask=new GameTask(model, gameLogic, BoardImage,
-                timeBetweenTurns*1000, this);
+                getTurnTransitionDelayMs(), this);
         //Update view with chip matrix from model
         BoardImage.setChipMatrix(model.getBoardFields());
         //Update view with dice throws from model
@@ -461,10 +480,32 @@ public class GameActivity extends AppCompatActivity {
             pauseDone=0;
             //New game thread created
             gameTask=new GameTask(model, gameLogic, BoardImage,
-                    timeBetweenTurns*1000, this);
+                    getTurnTransitionDelayMs(), this);
             //New game thread started
             gameTask.execute();
         }
+    }
+
+    private int getTurnTransitionDelayMs() {
+        return Math.max(80, Math.min(550, 80 + (timeBetweenTurns * 90)));
+    }
+
+    private void applySelectedBoardTheme() {
+        int drawable;
+        switch (GamePreferences.getBoardTheme(this)) {
+            case GamePreferences.THEME_POP_ART:
+                drawable = R.drawable.board_pop_art;
+                break;
+            case GamePreferences.THEME_CYBERPUNK:
+                drawable = R.drawable.board_cyberpunk;
+                break;
+            case GamePreferences.THEME_LUXURY:
+                drawable = R.drawable.board_luxury;
+                break;
+            default:
+                drawable = R.drawable.board_royal;
+        }
+        findViewById(R.id.gameRoot).setBackgroundResource(drawable);
     }
 
     //Method called on pausing activity

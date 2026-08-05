@@ -1,3 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Backgammon</string>
+
+    <string name="app_name">تخته‌نرد سلطنتی</string>
+    <string name="royal_subtitle">اصیل ولی مدرن</string>
+    <string name="studio_splash_content_description">لوگوی Battleheim Studio</string>
+
+    <string name="continue_game">ادامه بازی</string>
+    <string name="new_game">بازی جدید</string>
+    <string name="scores">امتیازها</string>
+    <string name="settings">تنظیمات</string>
+
+    <string name="player_one">بازیکن اول</string>
+    <string name="player_two">بازیکن دوم</string>
+    <string name="player_name">نام بازیکن</string>
+    <string name="human_player">انسان</string>
+    <string name="bot_player">ربات</string>
+    <string name="play">شروع بازی</string>
+    <string name="cancel">انصراف</string>
+
+    <string name="bot_difficulty">سطح ربات</string>
+    <string name="difficulty_easy">آسان</string>
+    <string name="difficulty_medium">متوسط</string>
+    <string name="difficulty_hard">سخت</string>
+    <string name="difficulty_royal">سلطنتی</string>
+
+    <string name="board_theme">طرح تخته</string>
+    <string name="theme_royal">سلطنتی</string>
+    <string name="theme_pop_art">پاپ‌آرت</string>
+    <string name="theme_cyberpunk">سایبرپانک</string>
+    <string name="theme_luxury">لوکس ایرانی</string>
+
+    <string-array name="bot_difficulty_entries">
+        <item>@string/difficulty_easy</item>
+        <item>@string/difficulty_medium</item>
+        <item>@string/difficulty_hard</item>
+        <item>@string/difficulty_royal</item>
+    </string-array>
+
+    <string-array name="board_theme_entries">
+        <item>@string/theme_royal</item>
+        <item>@string/theme_pop_art</item>
+        <item>@string/theme_cyberpunk</item>
+        <item>@string/theme_luxury</item>
+    </string-array>
+
+    <string name="roll_dice">تاس بریزید</string>
+    <string name="roll_dice_button">ریختن تاس</string>
+    <string name="move_checkers">مهره‌ها را حرکت دهید</string>
+
+    <string name="scores_title">جدول امتیازها</string>
+    <string name="results_title">نتیجه بازی‌ها</string>
+    <string name="score_empty">هنوز نتیجه‌ای ثبت نشده است</string>
+    <string name="reset_scores">پاک کردن امتیازها</string>
+    <string name="reset_results">پاک کردن نتایج</string>
+    <string name="reset_confirmation">آیا از پاک کردن نتایج مطمئن هستید؟</string>
+    <string name="yes">بله</string>
+    <string name="no">خیر</string>
+    <string name="win">برنده</string>
+    <string name="lose">بازنده</string>
+    <string name="game_time">زمان بازی</string>
+
+    <string name="settings_title">تنظیمات بازی</string>
+    <string name="sound">میزان صدا</string>
+    <string name="shake_sensitivity">حساسیت تکان دادن گوشی</string>
+    <string name="shake_duration">دقت تشخیص تکان</string>
+    <string name="dice_delay">تاخیر تشخیص تاس</string>
+    <string name="turn_delay">فاصله میان نوبت‌ها</string>
+    <string name="restore_defaults">بازگردانی تنظیمات اولیه</string>
+    <string name="use_persian_digits">نمایش اعداد فارسی</string>
+
+    <string name="shake_threshold_value">حساسیت تکان: %1$d</string>
+    <string name="shake_precision_value">دقت تشخیص تکان: %1$d میلی‌ثانیه</string>
+    <string name="sound_value">میزان صدا: %1$d%%</string>
+    <string name="shake_delay_value">تاخیر تشخیص تاس: %1$d</string>
+    <string name="turn_delay_value">سرعت تعویض نوبت: %1$d</string>
+
+    <string name="percent_value">%1$d%%</string>
+    <string name="millisecond_value">%1$d میلی‌ثانیه</string>
+    <string name="second_value">%1$d ثانیه</string>
+    <string name="numeric_value">%1$d</string>
+
+    <string name="reset">بازنشانی</string>
+
 </resources>

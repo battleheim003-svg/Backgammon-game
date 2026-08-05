@@ -3,7 +3,7 @@ package games.mrlaki5.backgammon.Menus;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -49,17 +49,17 @@ public class ResultsActivity extends AppCompatActivity {
                     TextView tempTW=(TextView) view;
                     //Set text and color of text depending on win or lose
                     if(cursor.getInt(columnIndex)==1){
-                        tempTW.setText("WIN");
+                        tempTW.setText(R.string.win);
                         tempTW.setTextColor(Color.rgb(52, 158, 70));
                     }
                     else{
-                        tempTW.setText("LOSE");
+                        tempTW.setText(R.string.lose);
                         tempTW.setTextColor(Color.rgb(212, 31, 38));
                     }
                     break;
                 //Date of end game time
                 case ScoresTableEntry.COLUMN_END_GAME_TIME:
-                    ((TextView) view).setText("Time: "+cursor.getString(columnIndex));
+                    ((TextView) view).setText(getString(R.string.game_time)+": "+cursor.getString(columnIndex));
                     break;
             }
             return true;

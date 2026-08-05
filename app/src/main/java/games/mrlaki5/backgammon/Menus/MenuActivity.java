@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,7 @@ import java.util.Date;
 import games.mrlaki5.backgammon.Database.DbHelper;
 import games.mrlaki5.backgammon.Database.ScoresTableEntry;
 import games.mrlaki5.backgammon.GameControllers.GameActivity;
+import games.mrlaki5.backgammon.GamePreferences;
 import games.mrlaki5.backgammon.R;
 
 //Activity class for main menu
@@ -83,10 +85,15 @@ public class MenuActivity extends AppCompatActivity {
                     //If player kinds are chosen
                     if(idRGp1!=-1 && idRGp2!=-1){
                         //Load player kinds from dialog view
-                        String playerKind1=((RadioButton) myView.findViewById(idRGp1))
-                                .getText().toString();
-                        String playerKind2=((RadioButton) myView.findViewById(idRGp2))
-                                .getText().toString();
+                        String playerKind1 =
+                                (idRGp1 == R.id.radioButton) ? "Player" : "Bot";
+                        String playerKind2 =
+                                (idRGp2 == R.id.radioButton3) ? "Player" : "Bot";
+                        Spinner difficulty = myView.findViewById(R.id.dialogBotDifficulty);
+                        Spinner theme = myView.findViewById(R.id.dialogBoardTheme);
+                        GamePreferences.saveSelections(MenuActivity.this,
+                                difficulty.getSelectedItemPosition(),
+                                theme.getSelectedItemPosition());
                         //Delete dialog
                         myDialog.dismiss();
                         myDialog = null;
@@ -167,6 +174,10 @@ public class MenuActivity extends AppCompatActivity {
         //Add to buttons on dialog view click listeners
         ((Button) myView.findViewById(R.id.dialogCancel)).setOnClickListener(CancelListener);
         ((Button) myView.findViewById(R.id.dialogPlay)).setOnClickListener(PlayListener);
+        ((Spinner) myView.findViewById(R.id.dialogBotDifficulty)).setSelection(
+                GamePreferences.getBotDifficulty(this));
+        ((Spinner) myView.findViewById(R.id.dialogBoardTheme)).setSelection(
+                GamePreferences.getBoardTheme(this));
         //Set view of dialog
         mBulder.setView(myView);
         //Create and show dialog

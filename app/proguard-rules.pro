@@ -19,3 +19,11 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# RoyalOnBoardImage customizes these legacy renderer paints via reflection.
+-keepclassmembers class games.mrlaki5.backgammon.GameView.OnBoardImage {
+    private android.graphics.Paint RedChipPaint;
+    private android.graphics.Paint WhiteChipPaint;
+    private android.graphics.Paint BorderChipPaint;
+    private android.graphics.Paint TextPaint;
+}

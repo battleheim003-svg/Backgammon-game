@@ -8,7 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 
 import games.mrlaki5.backgammon.Beans.BoardFieldState;
@@ -16,14 +16,15 @@ import games.mrlaki5.backgammon.Beans.DiceThrow;
 import games.mrlaki5.backgammon.R;
 
 //View of game
-public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
+public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
+    private final Object messageLock = new Object();
 
     //Chips matrix (with number of chips on triangle [0] and player [1] (1-white, 2-red)), length:24
     private BoardFieldState[] ChipMatrix;
     //Array with hints for next move (1-there is hint, 0- no hint), length:24
     private int[] NextMoveArray;
     //String for current game state message
-    private String Message="Player1 roll dices";
+    private String Message="بازیکن اول، تاس بریزید";
     //Paint for red chips
     private Paint RedChipPaint;
     //Paint for white chips
@@ -75,8 +76,10 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
     private float MoveChipY=-1;
     //Player of moving chip (1-white, 2-red)
     private int MoveChipPlayer=-1;
+    private final float[] FieldCenterX = new float[28];
     //Dice images
     private Bitmap DiceImages[]= new Bitmap[4];
+    private Bitmap DiceBitmapCache[][]= new Bitmap[7][2];
     //Padding between dices
     private float DicePadding;
     //Size of dice
@@ -105,6 +108,7 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
     private Paint TextPaint;
     //size of text
     private float TextSize;
+    private Paint MoveChipShadowPaint;
 
     public OnBoardImage(Context context) {
         super(context);
@@ -149,10 +153,17 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
         //Create paint for drawing dices
         DicePaint=new Paint();
         //Create paint for text drawing
-        TextPaint=new Paint();
+        TextFigureRect=new RectF();
+        TextFigurePaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        TextFigurePaint.setColor(Color.argb(218, 26, 15, 11));
+        TextPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
         TextPaint.setColor(Color.rgb(212, 31, 38));
-        TextPaint.setShadowLayer(2.0F, 2.0F, 2.0F, Color.BLACK); //shadow on border
-        TextPaint.setTypeface(Typeface.create("casual",Typeface.BOLD));
+        TextPaint.setShadowLayer(7.0F, 2.0F, 2.0F, Color.rgb(0, 0, 0)); //shadow on border
+        TextPaint.setTypeface(Typeface.create("sans-serif-condensed",Typeface.BOLD));
+        TextPaint.setFakeBoldText(true);
+        TextPaint.setTextSkewX(-0.08F);
+        MoveChipShadowPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        MoveChipShadowPaint.setColor(Color.argb(125, 0, 0, 0));
     }
 
     //Method called when size of board changes (is called on creation of view)
@@ -179,6 +190,7 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
         TriangleHeight=(Height-YBaseTop)*0.39f;
         //Calculate end boards middle line on x coordinate
         EndBoardMidX=Width+(PaddingXRight*3/4);
+        calculateFieldCenters();
         //Calculate height of end chips
         EndChipHeight=TriangleHeight/15;
         //Calculate dice size and padding between dices
@@ -192,11 +204,24 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
         DiceYStartTwo=YBaseTop+((Height-YBaseTop)/2F)-(DicePadding/2F)-DiceSize;
         DiceYStartFour=YBaseTop+((Height-YBaseTop)/2F)-((DicePadding*3/2F)/2F)-DiceSize*2F;
         //Calculate coordinates for text drawing
-        TextXCoordinate=XBaseLeft;
-        TextYCoordinate=YBaseTop*0.55F;
+        TextXCoordinate=w/2F;
+        TextYCoordinate=YBaseTop*0.68F;
         //Calculate size of text
-        TextSize=YBaseTop*0.45F;
+        TextSize=Math.max(22F, YBaseTop*0.44F);
         TextPaint.setTextSize(TextSize);
+    }
+
+    private void calculateFieldCenters() {
+        for (int i = 0; i < 6; i++) {
+            FieldCenterX[i] = XBaseLeft + PaddingXLeft * (i + 0.5F);
+            FieldCenterX[i + 6] = XBaseLeft + RightX + PaddingXRight * (i + 0.5F);
+            FieldCenterX[i + 12] = FieldCenterX[i];
+            FieldCenterX[i + 18] = FieldCenterX[i + 6];
+        }
+        FieldCenterX[24] = XBaseLeft + (Width - XBaseLeft) / 2F;
+        FieldCenterX[25] = FieldCenterX[24];
+        FieldCenterX[26] = EndBoardMidX;
+        FieldCenterX[27] = EndBoardMidX;
     }
 
     //Method for setting chip matrix
@@ -280,29 +305,38 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
                     DiceImages[i]=null;
                     continue;
                 }
-                //set up dice image name and find it in resources
-                String diceImageName="dice"+DiceThrows[i].getThrowNumber();
-                if(DiceThrows[i].getAlreadyUsed()==1){
-                    diceImageName+="d";
+                int diceNumber=DiceThrows[i].getThrowNumber();
+                int usedIndex=DiceThrows[i].getAlreadyUsed()==1 ? 1 : 0;
+                if(DiceBitmapCache[diceNumber][usedIndex]==null){
+                    DiceBitmapCache[diceNumber][usedIndex]=BitmapFactory.decodeResource(
+                            getResources(), diceResourceId(diceNumber, usedIndex==1));
                 }
-                Context context=getContext();
-                int resId= context.getResources().getIdentifier(diceImageName,
-                        "drawable", context.getPackageName());
-                DiceImages[i]=BitmapFactory.decodeResource(getResources(), resId);
-
+                DiceImages[i]=DiceBitmapCache[diceNumber][usedIndex];
             }
+        }
+    }
+
+    private int diceResourceId(int diceNumber, boolean used){
+        switch(diceNumber){
+            case 1: return used ? R.drawable.dice1d : R.drawable.dice1;
+            case 2: return used ? R.drawable.dice2d : R.drawable.dice2;
+            case 3: return used ? R.drawable.dice3d : R.drawable.dice3;
+            case 4: return used ? R.drawable.dice4d : R.drawable.dice4;
+            case 5: return used ? R.drawable.dice5d : R.drawable.dice5;
+            case 6: return used ? R.drawable.dice6d : R.drawable.dice6;
+            default: return R.drawable.dice1;
         }
     }
 
     //Method for setting up message and color of message (depending on player)
     public void setMessage(String text, int PlayerNum){
-        synchronized (Message){
+        synchronized (messageLock){
             Message=text;
             if(PlayerNum==1){
-                TextPaint.setColor(Color.WHITE);
+                TextPaint.setColor(Color.rgb(247, 239, 213));
             }
             else{
-                TextPaint.setColor(Color.rgb(212, 31, 38));
+                TextPaint.setColor(Color.rgb(242, 214, 117));
             }
         }
     }
@@ -312,8 +346,21 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         //Text part
-        synchronized (Message) {
-            canvas.drawText(Message, TextXCoordinate, TextYCoordinate, TextPaint);
+        synchronized (messageLock) {
+            float textWidth=TextPaint.measureText(Message);
+            float horizontalPadding=TextSize*0.65F;
+            float verticalPadding=TextSize*0.42F;
+            float boxLeft=Math.max(XBaseLeft, TextXCoordinate-(textWidth/2F)-horizontalPadding);
+            float boxRight=Math.min(RealWidth-XBaseRight,
+                    TextXCoordinate+(textWidth/2F)+horizontalPadding);
+            float textX=boxLeft + ((boxRight-boxLeft-textWidth)/2F);
+            TextFigureRect.set(boxLeft,
+                    TextYCoordinate-TextSize-verticalPadding,
+                    boxRight,
+                    TextYCoordinate+verticalPadding);
+            canvas.drawRoundRect(TextFigureRect, TextSize*0.45F, TextSize*0.45F,
+                    TextFigurePaint);
+            canvas.drawText(Message, textX, TextYCoordinate, TextPaint);
         }
         //Dices part
         synchronized (DiceImages) {
@@ -347,17 +394,16 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
             boolean drawEndBoard=false;
             synchronized (this) {
                 for (int i = 0; i < ChipMatrix.length; i++) {
+                    x = FieldCenterX[i];
                     //after first six triangles jump to right top side of board
                     if (i == 6) {
                         //set right top side board coordinates
-                        x = XBaseLeft + RightX + PaddingXRight / 2F;
                         //set padding for right side of board
                         currPading = PaddingXRight;
                     }
                     //after first 12 triangles jump to left bottom side of board
                     if (i == 12) {
                         //set coordinates for right bottom side of board
-                        x = XBaseLeft + PaddingXLeft / 2F;
                         y = Height;
                         //set padding for left side of board
                         currPading = PaddingXLeft;
@@ -367,25 +413,21 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
                     //after first 18 triangles jump to right bottom side of board
                     if (i == 18) {
                         //set coordinates for left bottom side of board
-                        x = XBaseLeft + RightX + PaddingXRight / 2F;
                         //set padding for right side of board
                         currPading = PaddingXRight;
                     }
                     //sideboard white chips (on up middle border)
                     if(i==24){
-                        x= XBaseLeft + (Width-XBaseLeft)/2F;
                         y=YBaseTop;
                         currPading = PaddingXLeft;
                     }
                     //sideboard red chips (on down middle border)
                     if(i==25){
-                        x= XBaseLeft + (Width-XBaseLeft)/2F;
                         y=Height;
                         currPading = PaddingXLeft;
                     }
                     if(i==26){
                         drawEndBoard=true;
-                        x=EndBoardMidX;
                         y=YBaseTop;
                         currentNextImage=EndBoardImage;
                     }
@@ -501,8 +543,6 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
                         canvas.drawBitmap(currentNextImage, null, NextTriangleRect,
                                 NextTriangleTransparentPaint);
                     }
-                    //move to next triangle
-                    x += currPading;
                 }
             }
             //check if there is moving chip
@@ -515,6 +555,8 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
                 else{
                     localPaint=RedChipPaint;
                 }
+                canvas.drawCircle(MoveChipX + MoveChipSize*0.08F,
+                        MoveChipY + MoveChipSize*0.12F, MoveChipSize/2, MoveChipShadowPaint);
                 //draw moving chip
                 canvas.drawCircle(MoveChipX, MoveChipY, MoveChipSize/2, localPaint);
                 //draw border for moving chip
@@ -543,7 +585,7 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
                     int currTriangle = 6;
                     while (TriangleBorder < touch_x) {
                         currTriangle++;
-                        TriangleBorder += PaddingXLeft;
+                        TriangleBorder += PaddingXRight;
                     }
                     return currTriangle;
                 }
@@ -588,7 +630,7 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
                         int currTriangle = 18;
                         while (TriangleBorder < touch_x) {
                             currTriangle++;
-                            TriangleBorder += PaddingXLeft;
+                            TriangleBorder += PaddingXRight;
                         }
                         return currTriangle;
                     }
@@ -619,41 +661,56 @@ public class OnBoardImage extends android.support.v7.widget.AppCompatImageView {
         return -1;
     }
 
-    //Method for checking if chip is touched inside touched triangle
-    public synchronized boolean chipPTouched(int trianglePosition, float touch_x, float touch_y){
-        //incorrect input
-        if(trianglePosition<0 || trianglePosition>25){
+    // Checks whether a checker was touched. The checker is drawn at its original
+    // size, but the invisible touch target is larger for more responsive play.
+    public synchronized boolean chipPTouched(int trianglePosition, float touchX,
+                                             float touchY) {
+        if (trianglePosition < 0 || trianglePosition > 25) {
             return false;
         }
-        //calculate chip side depending on board side
-        float chipSize=0f;
-        //check if coordinates are in right board
-        if(touch_x>(RightX+XBaseLeft)){
-            chipSize=PaddingXRight*0.7f;
+
+        int numberOfChips = ChipMatrix[trianglePosition].getNumberOfChips();
+        if (numberOfChips <= 0) {
+            return false;
         }
-        else{
-            chipSize=PaddingXLeft*0.7f;
+
+        float chipSize;
+        if (touchX > (RightX + XBaseLeft)) {
+            chipSize = PaddingXRight * 0.7f;
         }
-        //find how much does group of chips take in specific triangle
-        float chipsY=ChipMatrix[trianglePosition].getNumberOfChips()*chipSize;
-        //check if coordinates are in top row of triangles
-        if((touch_y<(TriangleHeight+YBaseTop)) && (touch_y>=YBaseTop)){
-            //check if it is in chip range in specific triangle
-            if(touch_y<=(chipsY+YBaseTop)){
-                MoveChipSize=chipSize;
+        else {
+            chipSize = PaddingXLeft * 0.7f;
+        }
+
+        float touchTolerance = chipSize * 0.45f;
+        float chipsHeight = numberOfChips * chipSize;
+
+        boolean isTopTriangle =
+                touchY >= (YBaseTop - touchTolerance)
+                        && touchY <= (YBaseTop + TriangleHeight + touchTolerance);
+
+        if (isTopTriangle) {
+            float touchEnd = YBaseTop + chipsHeight + touchTolerance;
+            if (touchY <= touchEnd) {
+                MoveChipSize = chipSize;
                 return true;
             }
         }
-        else{
-            //check if coordinates are in bottom row of triangles
-            if ((Height-TriangleHeight)<touch_y){
-                //check if it is in chip range in specific triangle
-                if((Height-chipsY)<=touch_y){
-                    MoveChipSize=chipSize;
-                    return true;
-                }
+
+        boolean isBottomTriangle =
+                touchY >= (Height - TriangleHeight - touchTolerance)
+                        && touchY <= (Height + touchTolerance);
+
+        if (isBottomTriangle) {
+            float touchStart = Height - chipsHeight - touchTolerance;
+            if (touchY >= touchStart) {
+                MoveChipSize = chipSize;
+                return true;
             }
         }
+
         return false;
     }
 }
+
+

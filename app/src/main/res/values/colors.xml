@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="royal_walnut_dark">#1A0F0B</color>
+    <color name="royal_walnut">#3B2115</color>
+    <color name="royal_gold">#D4AF37</color>
+    <color name="royal_gold_light">#F2D675</color>
+    <color name="royal_turquoise">#147D70</color>
+    <color name="royal_ivory">#F7EFD5</color>
+    <color name="royal_muted">#918A7D</color>
+    <color name="battleheim_orange">#FF8700</color>
+
+    <color name="colorPrimary">#3B2115</color>
+    <color name="colorPrimaryDark">#1A0F0B</color>
+    <color name="colorAccent">#D4AF37</color>
 </resources>

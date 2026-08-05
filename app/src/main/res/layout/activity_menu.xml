@@ -1,79 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/meny_background"
+    android:layoutDirection="rtl"
     tools:context=".Menus.MenuActivity">
 
+    <ImageView
+        android:id="@+id/royalLogo"
+        android:layout_width="190dp"
+        android:layout_height="120dp"
+        android:layout_gravity="start|bottom"
+        android:layout_marginStart="26dp"
+        android:layout_marginBottom="55dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/app_name"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:src="@drawable/royal_backgammon_logo" />
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true">
+        android:layout_gravity="center"
+        android:background="@drawable/royal_panel"
+        android:elevation="10dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="@color/royal_gold_light"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="12dp"
+            android:fontFamily="sans-serif-condensed"
+            android:gravity="center"
+            android:text="@string/royal_subtitle"
+            android:textColor="@color/royal_ivory"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/continueGame"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:fontFamily="casual"
-            android:text="Continue game"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/royal_secondary_button"
+            android:fontFamily="sans-serif-condensed"
+            android:onClick="continueGame"
+            android:text="@string/continue_game"
             android:textAllCaps="false"
-            android:textColor="#828783"
-            android:textSize="25dp"
-            android:textStyle="bold"
-            android:onClick="continueGame"/>
+            android:textColor="@color/royal_muted"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/newGame"
-            android:layout_below="@id/continueGame"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:fontFamily="casual"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="9dp"
+            android:background="@drawable/royal_primary_button"
+            android:fontFamily="sans-serif-condensed"
             android:onClick="startNewGame"
-            android:text="New Game"
+            android:text="@string/new_game"
             android:textAllCaps="false"
-            android:textColor="#d9fddf"
-            android:textSize="25dp"
-            android:textStyle="bold"/>
+            android:textColor="@color/royal_walnut_dark"
+            android:textSize="19sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/scores"
-            android:layout_below="@id/newGame"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:fontFamily="casual"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="9dp"
+            android:background="@drawable/royal_secondary_button"
+            android:fontFamily="sans-serif-condensed"
             android:onClick="scores"
-            android:text="Scores"
+            android:text="@string/scores"
             android:textAllCaps="false"
-            android:textColor="#d9fddf"
-            android:textSize="25dp"
-            android:textStyle="bold"/>
+            android:textColor="@color/royal_ivory"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/settings"
-            android:layout_below="@id/scores"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:fontFamily="casual"
-            android:text="Settings"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="9dp"
+            android:background="@drawable/royal_secondary_button"
+            android:fontFamily="sans-serif-condensed"
+            android:onClick="OpenSettings"
+            android:text="@string/settings"
             android:textAllCaps="false"
-            android:textColor="#d9fddf"
-            android:textSize="25dp"
-            android:textStyle="bold"
-            android:onClick="OpenSettings"/>
+            android:textColor="@color/royal_ivory"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
-</RelativeLayout>
+</FrameLayout>
