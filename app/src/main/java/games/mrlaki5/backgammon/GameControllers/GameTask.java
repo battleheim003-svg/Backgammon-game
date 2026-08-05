@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import games.mrlaki5.backgammon.Menus.MenuActivity;
 import games.mrlaki5.backgammon.GameModel.Model;
 import games.mrlaki5.backgammon.GameView.OnBoardImage;
+import games.mrlaki5.backgammon.R;
 
 //Class for game thread
 public class GameTask extends AsyncTask<Void, Void, Void> {
@@ -59,7 +60,7 @@ public class GameTask extends AsyncTask<Void, Void, Void> {
                 //State 0: player1 throw one dice
                 case 0:
                     //Set message
-                    writeMessage("roll dice");
+                    writeMessage(gameActivity.getString(R.string.roll_dice));
                     //Call method on object player to roll dice
                     model.getCurrentObjectPlayer().actionRoll();
                     //Check if thread should finish
@@ -81,7 +82,7 @@ public class GameTask extends AsyncTask<Void, Void, Void> {
                 //State 1: player2 throw one dice
                 case 1:
                     //Set message
-                    writeMessage("roll dice");
+                    writeMessage(gameActivity.getString(R.string.roll_dice));
                     //Call method in object player to roll dice
                     model.getCurrentObjectPlayer().actionRoll();
                     //Check if thread should finish
@@ -113,7 +114,7 @@ public class GameTask extends AsyncTask<Void, Void, Void> {
                     //If there are next moves
                     if(!model.getNextMoves().isEmpty()) {
                         //Write message
-                        writeMessage("move chips");
+                        writeMessage(gameActivity.getString(R.string.move_checkers));
                         //Call method in object player to move chips
                         model.getCurrentObjectPlayer().actionMove();
                         //Check if thread should finish
@@ -162,7 +163,7 @@ public class GameTask extends AsyncTask<Void, Void, Void> {
                 //State 3: currentPlayer roll dices
                 case 3:
                     //Set message
-                    writeMessage("roll dices");
+                    writeMessage(gameActivity.getString(R.string.roll_dice));
                     //Call method in object player to roll dice
                     model.getCurrentObjectPlayer().actionRoll();
                     //Check if thread should finish

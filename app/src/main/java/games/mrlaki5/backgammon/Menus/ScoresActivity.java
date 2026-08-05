@@ -3,7 +3,7 @@ package games.mrlaki5.backgammon.Menus;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -111,5 +111,9 @@ public class ScoresActivity extends AppCompatActivity {
         ScoresAdapter adapter=new ScoresAdapter(ScoresActivity.this, scoreList);
         //Add score adapter to view list
         myList.setAdapter(adapter);
+        TextView empty = findViewById(R.id.emptyScoreText);
+        boolean hasScores = !scoreList.isEmpty();
+        empty.setVisibility(hasScores ? View.GONE : View.VISIBLE);
+        myList.setVisibility(hasScores ? View.VISIBLE : View.GONE);
     }
 }
