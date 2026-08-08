@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- بازی با دکمه روی صفحه هم کار می‌کند؛ بنابراین حسگر شتاب‌سنج اجباری نیست. -->
+    <!-- The game also works with the on-screen button, so the accelerometer is optional. -->
     <uses-feature
         android:name="android.hardware.sensor.accelerometer"
         android:required="false" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@drawable/royal_app_icon"
         android:roundIcon="@drawable/royal_app_icon"
         android:label="@string/app_name"

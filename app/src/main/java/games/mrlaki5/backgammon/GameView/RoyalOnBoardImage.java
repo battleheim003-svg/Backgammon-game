@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.util.Random;
 
 import games.mrlaki5.backgammon.Beans.DiceThrow;
+import games.mrlaki5.backgammon.R;
 
 /**
  * Royal visual layer for the legacy board renderer.
@@ -164,8 +165,8 @@ public class RoyalOnBoardImage extends OnBoardImage {
     public void setMessage(String text, int playerNum) {
         int separator=text.indexOf(", ");
         if(separator>0){
-            text="نوبت " + text.substring(0, separator) + " - "
-                    + text.substring(separator + 2);
+            text=getContext().getString(R.string.current_turn_message,
+                    text.substring(0, separator), text.substring(separator + 2));
         }
         super.setMessage(text, playerNum);
         if(messagePaint!=null){

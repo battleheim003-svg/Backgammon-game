@@ -142,6 +142,7 @@ public class GameTask extends AsyncTask<Void, Void, Void> {
                                 //Add wining player to intent
                                 data.putExtra(MenuActivity.EXTRA_WINING_PLAYER,
                                         gameLogic.getCurrPlayerFinished());
+                                gameActivity.playGameFinishedEffect();
                                 gameActivity.setResult(MenuActivity.GAME_ENDED_OK, data);
                                 //Finish game activity (this will start onPause and onStop)
                                 gameActivity.finish();

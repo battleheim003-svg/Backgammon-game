@@ -1,5 +1,6 @@
 package games.mrlaki5.backgammon.Menus;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,12 +12,18 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import games.mrlaki5.backgammon.LocaleHelper;
 import games.mrlaki5.backgammon.R;
 
 public class SplashActivity extends AppCompatActivity {
     private static final long SPLASH_DURATION_MS = 3400L;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean openedMenu = false;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.applySelectedLocale(newBase));
+    }
 
     private final Runnable openMenuRunnable = new Runnable() {
         @Override

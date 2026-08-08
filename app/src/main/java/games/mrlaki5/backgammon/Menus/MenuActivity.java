@@ -1,15 +1,20 @@
 package games.mrlaki5.backgammon.Menus;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.MotionEvent;
+import android.view.animation.OvershootInterpolator;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -19,15 +24,23 @@ import android.widget.Spinner;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import games.mrlaki5.backgammon.Database.DbHelper;
 import games.mrlaki5.backgammon.Database.ScoresTableEntry;
 import games.mrlaki5.backgammon.GameControllers.GameActivity;
+import games.mrlaki5.backgammon.GameAudio;
 import games.mrlaki5.backgammon.GamePreferences;
+import games.mrlaki5.backgammon.LocaleHelper;
 import games.mrlaki5.backgammon.R;
 
 //Activity class for main menu
 public class MenuActivity extends AppCompatActivity {
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.applySelectedLocale(newBase));
+    }
 
     //Player1 name key intent value
     public static String EXTRA_PLAYER1_NAME="p1name";
@@ -39,6 +52,7 @@ public class MenuActivity extends AppCompatActivity {
     public static String EXTRA_PLAYER2_KIND="p2kind";
     //Wining player key intent value
     public static String EXTRA_WINING_PLAYER="pWin";
+    public static String EXTRA_TUTORIAL_MODE="tutorialMode";
     //Name of save file
     public static String GAME_CONTINUE_SAVE_FILE_NAME="gameSave";
     //Value of return int after game finishes for back pressed
@@ -51,11 +65,13 @@ public class MenuActivity extends AppCompatActivity {
     private AlertDialog myDialog;
     //View of dialog opened before new game starts
     private View myView;
+    private GameAudio gameAudio;
 
     //Listener used to catch cancel button click on new game dialog
     private View.OnClickListener CancelListener= new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            playMenuTap();
             //Delete dialog
             if (myDialog != null){
                 myDialog.dismiss();
@@ -69,6 +85,7 @@ public class MenuActivity extends AppCompatActivity {
     private View.OnClickListener PlayListener= new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            playMenuTap();
             if (myDialog != null && myView!=null){
                 //Load player1 name and player2 name from dialog
                 String playerName1=((EditText)myView.findViewById(R.id.dialogPName1))
@@ -124,6 +141,7 @@ public class MenuActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_menu);
+        gameAudio = new GameAudio(this);
         //Load preferences
         SharedPreferences preferences = getSharedPreferences("Settings", 0);
         //If values in preferences dont exist (on first start), create them
@@ -138,6 +156,10 @@ public class MenuActivity extends AppCompatActivity {
             //Set value of sound volume
             editor.putInt(SettingsActivity.KEY_SOUND_VOLUME,
                     SettingsActivity.DEF_SOUND_VOLUME);
+            editor.putBoolean(SettingsActivity.KEY_SOUND_ENABLED,
+                    SettingsActivity.DEF_SOUND_ENABLED);
+            editor.putBoolean(SettingsActivity.KEY_EFFECTS_ENABLED,
+                    SettingsActivity.DEF_EFFECTS_ENABLED);
             //Set value of shake delays
             editor.putInt(SettingsActivity.KEY_DICE_SHAKE_DELAY,
                     SettingsActivity.DEF_DICE_SHAKE_DELAY);
@@ -159,14 +181,108 @@ public class MenuActivity extends AppCompatActivity {
             //Set default value of time between turns in game
             editor.putInt(SettingsActivity.KEY_DEF_TIME_BETWEEN_TURNS,
                     SettingsActivity.DEF_TIME_BETWEEN_TURNS);
-            editor.commit();
+            editor.apply();
         }
         //Change color of continue game button from gray to yellow if save file exists
         checkAndChangeButtonColor();
+        polishMenuButtons();
+    }
+
+    private void polishMenuButtons() {
+        int[] buttonIds = {
+                R.id.playGame,
+                R.id.tutorial,
+                R.id.scores,
+                R.id.settings,
+                R.id.languageToggle
+        };
+        for (int i = 0; i < buttonIds.length; i++) {
+            View button = findViewById(buttonIds[i]);
+            if (button == null) {
+                continue;
+            }
+            button.setOnTouchListener(menuButtonTouchListener);
+            button.setAlpha(0F);
+            button.setTranslationY(18F);
+            button.animate()
+                    .alpha(1F)
+                    .translationY(0F)
+                    .setStartDelay(60L + (i * 45L))
+                    .setDuration(260L)
+                    .setInterpolator(new OvershootInterpolator(0.72F))
+                    .start();
+        }
+        View panel = findViewById(R.id.menuPanel);
+        if (panel != null) {
+            panel.setScaleX(0.985F);
+            panel.setScaleY(0.985F);
+            panel.animate()
+                    .scaleX(1F)
+                    .scaleY(1F)
+                    .setDuration(360L)
+                    .setInterpolator(new OvershootInterpolator(0.42F))
+                    .start();
+        }
+    }
+
+    private final View.OnTouchListener menuButtonTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    v.animate().scaleX(0.975F).scaleY(0.975F).setDuration(70L).start();
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    v.animate().scaleX(1F).scaleY(1F).setDuration(120L).start();
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
+    };
+
+    public void openPlayOptions(View view) {
+        playMenuTap();
+        if (checkContinueGame()) {
+            showPlayChoiceDialog();
+        } else {
+            showNewGameDialog();
+        }
+    }
+
+    private void showPlayChoiceDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View choiceView = getLayoutInflater().inflate(R.layout.play_choice_dialog, null);
+        builder.setView(choiceView);
+        AlertDialog choiceDialog = builder.create();
+
+        choiceView.findViewById(R.id.choiceContinue).setOnClickListener(v -> {
+            playMenuTap();
+            choiceDialog.dismiss();
+            continueSavedGame();
+        });
+        choiceView.findViewById(R.id.choiceNewGame).setOnClickListener(v -> {
+            playMenuTap();
+            choiceDialog.dismiss();
+            showNewGameDialog();
+        });
+
+        choiceDialog.show();
+        Window dialogWindow = choiceDialog.getWindow();
+        if (dialogWindow != null) {
+            dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
     }
 
     //Method called when new game is chosen
     public void startNewGame(View view) {
+        playMenuTap();
+        showNewGameDialog();
+    }
+
+    private void showNewGameDialog() {
         //Create dialog
         AlertDialog.Builder mBulder= new AlertDialog.Builder(this);
         //Load dialog view
@@ -183,17 +299,47 @@ public class MenuActivity extends AppCompatActivity {
         //Create and show dialog
         myDialog=mBulder.create();
         myDialog.show();
+        Window dialogWindow=myDialog.getWindow();
+        if(dialogWindow!=null){
+            dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
     }
 
     //Method called when settings is chosen
     public void OpenSettings(View view) {
+        playMenuTap();
         //Create and start settings activity
         Intent intent= new Intent(MenuActivity.this, SettingsActivity.class);
         startActivity(intent);
     }
 
+    public void startTutorial(View view) {
+        playMenuTap();
+        File file=new File(MenuActivity.this.getFilesDir().getAbsolutePath(),
+                MenuActivity.GAME_CONTINUE_SAVE_FILE_NAME);
+        file.delete();
+        Intent intent=new Intent(MenuActivity.this, GameActivity.class);
+        intent.putExtra(EXTRA_PLAYER1_NAME, getString(R.string.tutorial_player));
+        intent.putExtra(EXTRA_PLAYER2_NAME, getString(R.string.tutorial_bot));
+        intent.putExtra(EXTRA_PLAYER1_KIND, "Player");
+        intent.putExtra(EXTRA_PLAYER2_KIND, "Bot");
+        intent.putExtra(EXTRA_TUTORIAL_MODE, true);
+        startActivityForResult(intent, REQUEST_CODE_GAME);
+    }
+
+    public void toggleLanguage(View view) {
+        playMenuTap();
+        GamePreferences.toggleLanguage(this);
+        recreate();
+    }
+
     //Method called when continue game is chosen
     public void continueGame(View view) {
+        playMenuTap();
+        continueSavedGame();
+    }
+
+    private void continueSavedGame() {
         //If save file exists start game activity with saved model
         if(checkContinueGame()){
             Intent intent= new Intent(MenuActivity.this, GameActivity.class);
@@ -203,6 +349,7 @@ public class MenuActivity extends AppCompatActivity {
 
     //Method called when scores is chosen
     public void scores(View view) {
+        playMenuTap();
         //Create and start scores activity
         Intent intent= new Intent(MenuActivity.this, ScoresActivity.class);
         startActivity(intent);
@@ -220,14 +367,22 @@ public class MenuActivity extends AppCompatActivity {
 
     //Method called to set continue button color depending on save file
     public void checkAndChangeButtonColor(){
-        Button button=((Button) findViewById(R.id.continueGame));
-        //If file exists set red color, if not, set grey color
-        if(checkContinueGame()){
-            button.setTextColor(Color.rgb(217, 253, 223));
+        //The main Play button now routes to continue/new-game choices when a save exists.
+    }
+
+    private void playMenuTap() {
+        if(gameAudio!=null){
+            gameAudio.play(GameAudio.EFFECT_MENU_TAP);
         }
-        else{
-            button.setTextColor(Color.rgb(130, 135, 131));
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(gameAudio!=null){
+            gameAudio.release();
+            gameAudio=null;
         }
+        super.onDestroy();
     }
 
     //Method called on return from finished child activity
@@ -235,6 +390,7 @@ public class MenuActivity extends AppCompatActivity {
     //  will not be called when activity started with startActivity(...
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         //Check request code
         switch(requestCode){
             //If request code equals with start game code
@@ -270,7 +426,7 @@ public class MenuActivity extends AppCompatActivity {
                             }
                             Date currDate = new Date();
                             SimpleDateFormat format =
-                                    new SimpleDateFormat("HH:mm dd/MM/yyyy");
+                                    new SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.US);
                             values.put(ScoresTableEntry.COLUMN_END_GAME_TIME,
                                     format.format(currDate));
                             db.insert(ScoresTableEntry.TABLE_NAME, null, values);
