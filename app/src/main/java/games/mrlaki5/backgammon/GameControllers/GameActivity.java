@@ -15,10 +15,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.io.File;
 
 import games.mrlaki5.backgammon.Menus.MenuActivity;
+import games.mrlaki5.backgammon.GameAudio;
+import games.mrlaki5.backgammon.LocaleHelper;
 import games.mrlaki5.backgammon.GameModel.Model;
 import games.mrlaki5.backgammon.GameModel.ModelLoader;
 import games.mrlaki5.backgammon.GameView.OnBoardImage;
@@ -31,12 +35,20 @@ import games.mrlaki5.backgammon.Menus.SettingsActivity;
 //Game activity
 public class GameActivity extends AppCompatActivity {
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.applySelectedLocale(newBase));
+    }
+
     //Player used for all game sounds
     private MediaPlayer mPlayer;
     //String used for synchronization on media player
     private final String mPlayerSem="mPlayer";
     //Current sound volume in which player should play
     private int soundVolume=0;
+    private boolean soundEnabled=true;
+    private boolean effectsEnabled=true;
+    private GameAudio gameAudio;
     //Object for some game related rules
     private GameLogic gameLogic;
     //Object for applying legal checker moves to the model
@@ -45,6 +57,12 @@ public class GameActivity extends AppCompatActivity {
     private OnBoardImage BoardImage;
     //On-screen alternative to phone shaking.
     private Button rollDiceButton;
+    private LinearLayout tutorialPanel;
+    private TextView tutorialBody;
+    private Button tutorialNextButton;
+    private boolean tutorialMode=false;
+    private int tutorialStep=0;
+    private int[] tutorialMessages;
     //Object for loading model
     private ModelLoader modelLoader;
     //Model (used for storing game state)
@@ -187,8 +205,27 @@ public class GameActivity extends AppCompatActivity {
                         int dstField = BoardImage.triangleTouched(x_touch,y_touch);
                         boolean moveApplied = false;
                         if(dstField!=-1) {
-                            moveApplied = moveExecutor.applyPickedUpMove(MoveFieldSrc, dstField,
-                                    model.getNextMoves());
+                            GameMoveExecutor.MoveResult moveResult =
+                                    moveExecutor.applyPickedUpMoveWithResult(MoveFieldSrc,
+                                            dstField, model.getNextMoves());
+                            moveApplied = moveResult.isApplied();
+                            if(moveApplied){
+                                BoardImage.playMoveFeedback(moveResult.getDestinationField(),
+                                        moveResult.isHit());
+                                playEffect(moveResult.isHit()
+                                        ? GameAudio.EFFECT_CHECKER_HIT
+                                        : GameAudio.EFFECT_CHECKER_MOVE);
+                                if(moveResult.isHit()){
+                                    showTutorialMessage(4);
+                                }
+                                else if(moveResult.getDestinationField()==26
+                                        || moveResult.getDestinationField()==27){
+                                    showTutorialMessage(6);
+                                }
+                                else{
+                                    showTutorialMessage(Math.max(tutorialStep, 4));
+                                }
+                            }
                         }
                         else {
                             moveExecutor.applyPickedUpMove(MoveFieldSrc, -1,
@@ -294,6 +331,7 @@ public class GameActivity extends AppCompatActivity {
     //Method called when activating touch listener
     public void activateTouchListener(){
         BoardImage.setOnTouchListener(BoardListener);
+        showTutorialMessage(3);
     }
 
     //Method called when deactivating touch listener
@@ -313,6 +351,7 @@ public class GameActivity extends AppCompatActivity {
         //Register listener
         sensorManager.registerListener(DiceListener, sensor, SensorManager.SENSOR_DELAY_GAME);
         setRollDiceButtonVisible(true);
+        showTutorialMessage(2);
     }
 
     //Method called when deactivating shake listener
@@ -378,6 +417,7 @@ public class GameActivity extends AppCompatActivity {
 
     //Called by the "roll dice" button in activity_game.xml.
     public void rollDiceFromButton(View view){
+        playEffect(GameAudio.EFFECT_MENU_TAP);
         if(model==null){
             return;
         }
@@ -399,9 +439,11 @@ public class GameActivity extends AppCompatActivity {
         applySelectedBoardTheme();
         rollDiceButton=findViewById(R.id.rollDiceButton);
         setRollDiceButtonVisible(false);
+        gameAudio = new GameAudio(this);
         //Get sent extras from menu activity (they dont exist if game is continued,
         // only if its new game)
         Bundle extras=getIntent().getExtras();
+        tutorialMode=extras!=null && extras.getBoolean(MenuActivity.EXTRA_TUTORIAL_MODE, false);
         //Get values of shared preferences (game settings parameters)
         SharedPreferences preferences = getSharedPreferences("Settings", 0);
         //Get shake treshold value
@@ -419,6 +461,10 @@ public class GameActivity extends AppCompatActivity {
         //Get value of sound volume
         soundVolume=preferences.getInt(SettingsActivity.KEY_SOUND_VOLUME,
                 SettingsActivity.DEF_SOUND_VOLUME);
+        soundEnabled=preferences.getBoolean(SettingsActivity.KEY_SOUND_ENABLED,
+                SettingsActivity.DEF_SOUND_ENABLED);
+        effectsEnabled=preferences.getBoolean(SettingsActivity.KEY_EFFECTS_ENABLED,
+                SettingsActivity.DEF_EFFECTS_ENABLED);
         //Get View
         BoardImage=((OnBoardImage)findViewById(R.id.boardImage) );
         //Create model loader
@@ -438,12 +484,69 @@ public class GameActivity extends AppCompatActivity {
         BoardImage.setDices(model.getDiceThrows());
         //Invalidate view, it is drawn
         BoardImage.invalidate();
+        setupTutorialPanel();
         //Get sensor manager
         sensorManager=(SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
         //Get sensor
         sensor=sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         //Start game thread
         gameTask.execute();
+    }
+
+    private void setupTutorialPanel() {
+        tutorialPanel=findViewById(R.id.tutorialPanel);
+        tutorialBody=findViewById(R.id.tutorialBody);
+        tutorialNextButton=findViewById(R.id.tutorialNextButton);
+        tutorialMessages=new int[]{
+                R.string.tutorial_intro,
+                R.string.tutorial_setup,
+                R.string.tutorial_roll,
+                R.string.tutorial_move,
+                R.string.tutorial_hit,
+                R.string.tutorial_bar,
+                R.string.tutorial_bear_off,
+                R.string.tutorial_finished
+        };
+        if(tutorialMode){
+            tutorialPanel.setVisibility(View.VISIBLE);
+            showTutorialMessage(0);
+        }
+        else{
+            tutorialPanel.setVisibility(View.GONE);
+        }
+    }
+
+    public void advanceTutorial(View view) {
+        playEffect(GameAudio.EFFECT_MENU_TAP);
+        if(!tutorialMode || tutorialMessages==null){
+            return;
+        }
+        if(tutorialStep>=tutorialMessages.length-1){
+            tutorialPanel.setVisibility(View.GONE);
+            return;
+        }
+        showTutorialMessage(tutorialStep + 1);
+    }
+
+    public void showTutorialMessage(final int step) {
+        if(!tutorialMode || tutorialPanel==null || tutorialMessages==null){
+            return;
+        }
+        if(step<tutorialStep && tutorialStep<4){
+            return;
+        }
+        final int safeStep=Math.max(0, Math.min(step, tutorialMessages.length-1));
+        tutorialStep=safeStep;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tutorialPanel.setVisibility(View.VISIBLE);
+                tutorialBody.setText(tutorialMessages[safeStep]);
+                tutorialNextButton.setText(safeStep>=tutorialMessages.length-1
+                        ? R.string.tutorial_done
+                        : R.string.tutorial_next);
+            }
+        });
     }
 
     //Method called when back button is pressed
@@ -538,6 +641,15 @@ public class GameActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    @Override
+    protected void onDestroy() {
+        if(gameAudio!=null){
+            gameAudio.release();
+            gameAudio=null;
+        }
+        super.onDestroy();
+    }
+
     //Method called on stop activity, after onPause activity
     @Override
     protected void onStop() {
@@ -611,9 +723,56 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    public void onCheckerMoved(final GameMoveExecutor.MoveResult moveResult) {
+        if(moveResult==null || !moveResult.isApplied() || BoardImage==null){
+            return;
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                BoardImage.playMoveFeedback(moveResult.getDestinationField(), moveResult.isHit());
+                playEffect(moveResult.isHit()
+                        ? GameAudio.EFFECT_CHECKER_HIT
+                        : GameAudio.EFFECT_CHECKER_MOVE);
+                if(moveResult.isHit()){
+                    showTutorialMessage(4);
+                }
+            }
+        });
+    }
+
+    public void playGameFinishedEffect() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                playEffect(GameAudio.EFFECT_CHECKER_HIT);
+            }
+        });
+    }
+
+    private float normalizedVolume() {
+        if(!soundEnabled || soundVolume<=0){
+            return 0F;
+        }
+        return Math.max(0F, Math.min(1F, soundVolume / 100F));
+    }
+
+    private void playEffect(int effectNum) {
+        if(!soundEnabled || !effectsEnabled || soundVolume<=0){
+            return;
+        }
+        if(gameAudio!=null){
+            gameAudio.play(effectNum);
+        }
+    }
+
     //Method for playing sounds on media player
     //SongNum= 1:diceShake, 2:diceRoll
     public void setMPlayer(int SongNum){
+        if(!soundEnabled || soundVolume<=0){
+            clearMPlayer();
+            return;
+        }
         //Synchronize on sound player string
         synchronized (mPlayerSem){
             //if sound player exists stop it and delete it
@@ -627,9 +786,7 @@ public class GameActivity extends AppCompatActivity {
                 //Play dice_shake sound
                 mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.dice_shake);
                 //Calculate volume
-                final float volume = (float) (1 -
-                        (Math.log(SettingsActivity.MAX_SOUND_VOLUME - soundVolume)
-                                / Math.log(SettingsActivity.MAX_SOUND_VOLUME)));
+                final float volume = normalizedVolume();
                 //Set volume
                 mPlayer.setVolume(volume, volume);
                 //Set sound looping so it doesnt end until its turned off
@@ -641,9 +798,7 @@ public class GameActivity extends AppCompatActivity {
                 //Play dice_roll sound
                 mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.dice_roll);
                 //Calculate volume
-                final float volume = (float) (1 -
-                        (Math.log(SettingsActivity.MAX_SOUND_VOLUME - soundVolume)
-                                / Math.log(SettingsActivity.MAX_SOUND_VOLUME)));
+                final float volume = normalizedVolume();
                 //Set volume
                 mPlayer.setVolume(volume, volume);
                 //Play sound

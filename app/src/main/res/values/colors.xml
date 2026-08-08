@@ -8,6 +8,14 @@
     <color name="royal_ivory">#F7EFD5</color>
     <color name="royal_muted">#918A7D</color>
     <color name="battleheim_orange">#FF8700</color>
+    <color name="vibe_black">#090A0D</color>
+    <color name="vibe_surface">#12141A</color>
+    <color name="vibe_surface_high">#1E222C</color>
+    <color name="vibe_orange">#FF7A18</color>
+    <color name="vibe_orange_hot">#FF3D00</color>
+    <color name="vibe_coral">#FFB057</color>
+    <color name="vibe_text">#FFF6EA</color>
+    <color name="vibe_muted">#8D93A1</color>
 
     <color name="colorPrimary">#3B2115</color>
     <color name="colorPrimaryDark">#1A0F0B</color>

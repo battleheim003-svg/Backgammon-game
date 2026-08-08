@@ -1,5 +1,6 @@
 package games.mrlaki5.backgammon.Menus;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,10 +17,16 @@ import java.util.ArrayList;
 import games.mrlaki5.backgammon.Beans.ScoreElem;
 import games.mrlaki5.backgammon.Database.DbHelper;
 import games.mrlaki5.backgammon.Database.ScoresTableEntry;
+import games.mrlaki5.backgammon.LocaleHelper;
 import games.mrlaki5.backgammon.R;
 
 //Activity for showing scores of all duels
 public class ScoresActivity extends AppCompatActivity {
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.applySelectedLocale(newBase));
+    }
 
     //Database helper
     DbHelper Helper=null;
@@ -82,16 +89,16 @@ public class ScoresActivity extends AppCompatActivity {
         ArrayList<ScoreElem> scoreList= new ArrayList<ScoreElem>();
         //Go through cursor (database scores) and add every different player
         // combination and their scores to score data list
+        int player1WinColumn=cursor.getColumnIndexOrThrow(ScoresTableEntry.COLUMN_PLAYER1_WIN);
+        int player2WinColumn=cursor.getColumnIndexOrThrow(ScoresTableEntry.COLUMN_PLAYER2_WIN);
+        int player1NameColumn=cursor.getColumnIndexOrThrow(ScoresTableEntry.COLUMN_PLAYER1_NAME);
+        int player2NameColumn=cursor.getColumnIndexOrThrow(ScoresTableEntry.COLUMN_PLAYER2_NAME);
         while(cursor.moveToNext()){
             //Get player names and scores
-            String tmpName1=cursor.getString(cursor.getColumnIndex(
-                    ScoresTableEntry.COLUMN_PLAYER1_NAME));
-            String tmpName2=cursor.getString(cursor.getColumnIndex(
-                    ScoresTableEntry.COLUMN_PLAYER2_NAME));
-            int tmpScore1=cursor.getInt(cursor.getColumnIndex(
-                    ScoresTableEntry.COLUMN_PLAYER1_WIN));
-            int tmpScore2=cursor.getInt(cursor.getColumnIndex(
-                    ScoresTableEntry.COLUMN_PLAYER2_WIN));
+            String tmpName1=cursor.getString(player1NameColumn);
+            String tmpName2=cursor.getString(player2NameColumn);
+            int tmpScore1=cursor.getInt(player1WinColumn);
+            int tmpScore2=cursor.getInt(player2WinColumn);
             boolean elemFound=false;
             //Go through score data list and check where to add score
             for (ScoreElem elem: scoreList) {

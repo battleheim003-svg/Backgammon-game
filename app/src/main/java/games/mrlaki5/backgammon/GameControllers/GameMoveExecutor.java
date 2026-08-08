@@ -11,23 +11,58 @@ import games.mrlaki5.backgammon.GameModel.Model;
 public class GameMoveExecutor {
     private final Model model;
 
+    public static class MoveResult {
+        private final boolean applied;
+        private final int sourceField;
+        private final int destinationField;
+        private final boolean hit;
+
+        private MoveResult(boolean applied, int sourceField, int destinationField, boolean hit) {
+            this.applied = applied;
+            this.sourceField = sourceField;
+            this.destinationField = destinationField;
+            this.hit = hit;
+        }
+
+        public boolean isApplied() {
+            return applied;
+        }
+
+        public int getSourceField() {
+            return sourceField;
+        }
+
+        public int getDestinationField() {
+            return destinationField;
+        }
+
+        public boolean isHit() {
+            return hit;
+        }
+    }
+
     public GameMoveExecutor(Model model) {
         this.model = model;
     }
 
     public boolean applyPickedUpMove(int srcField, int dstField, List<NextJump> legalMoves) {
+        return applyPickedUpMoveWithResult(srcField, dstField, legalMoves).isApplied();
+    }
+
+    public MoveResult applyPickedUpMoveWithResult(int srcField, int dstField,
+                                                  List<NextJump> legalMoves) {
         NextJump jump = findMove(srcField, dstField, legalMoves);
         if (jump == null) {
             restorePickedUpChecker(srcField);
-            return false;
+            return new MoveResult(false, srcField, dstField, false);
         }
 
         consumeDice(jump.getJumpNumber());
-        placeChecker(dstField);
-        return true;
+        boolean hit = placeChecker(dstField);
+        return new MoveResult(true, srcField, dstField, hit);
     }
 
-    public void applyMove(NextJump jump) {
+    public MoveResult applyMove(NextJump jump) {
         BoardFieldState[] board = model.getBoardFields();
         int src = jump.getSrcField();
 
@@ -37,7 +72,8 @@ public class GameMoveExecutor {
         }
 
         consumeDice(jump.getJumpNumber());
-        placeChecker(jump.getDstField());
+        boolean hit = placeChecker(jump.getDstField());
+        return new MoveResult(true, src, jump.getDstField(), hit);
     }
 
     private NextJump findMove(int srcField, int dstField, List<NextJump> legalMoves) {
@@ -66,12 +102,13 @@ public class GameMoveExecutor {
         }
     }
 
-    private void placeChecker(int dstField) {
+    private boolean placeChecker(int dstField) {
         BoardFieldState[] board = model.getBoardFields();
         int player = model.getCurrentPlayer();
         int destinationPlayer = board[dstField].getPlayer();
+        boolean hit = board[dstField].getNumberOfChips() == 1 && destinationPlayer != player;
 
-        if (board[dstField].getNumberOfChips() == 1 && destinationPlayer != player) {
+        if (hit) {
             int bar = 23 + destinationPlayer;
             board[bar].setNumberOfChips(board[bar].getNumberOfChips() + 1);
             board[bar].setPlayer(destinationPlayer);
@@ -82,5 +119,6 @@ public class GameMoveExecutor {
         if (board[dstField].getNumberOfChips() == 1) {
             board[dstField].setPlayer(player);
         }
+        return hit;
     }
 }

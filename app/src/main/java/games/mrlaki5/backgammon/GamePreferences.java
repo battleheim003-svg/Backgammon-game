@@ -8,6 +8,9 @@ public final class GamePreferences {
     public static final String FILE_NAME = "Settings";
     public static final String KEY_BOT_DIFFICULTY = "botDifficulty";
     public static final String KEY_BOARD_THEME = "boardTheme";
+    public static final String KEY_LANGUAGE = "language";
+    public static final String LANGUAGE_EN = "en";
+    public static final String LANGUAGE_FA = "fa";
 
     public static final int BOT_EASY = 0;
     public static final int BOT_MEDIUM = 1;
@@ -31,6 +34,17 @@ public final class GamePreferences {
 
     public static int getBoardTheme(Context context) {
         return preferences(context).getInt(KEY_BOARD_THEME, THEME_ROYAL);
+    }
+
+    public static String getLanguage(Context context) {
+        return preferences(context).getString(KEY_LANGUAGE, LANGUAGE_EN);
+    }
+
+    public static void toggleLanguage(Context context) {
+        String nextLanguage=LANGUAGE_EN.equals(getLanguage(context)) ? LANGUAGE_FA : LANGUAGE_EN;
+        preferences(context).edit()
+                .putString(KEY_LANGUAGE, nextLanguage)
+                .apply();
     }
 
     public static void saveSelections(Context context, int difficulty, int theme) {

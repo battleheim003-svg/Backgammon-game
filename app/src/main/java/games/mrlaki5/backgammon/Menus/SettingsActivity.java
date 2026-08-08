@@ -1,20 +1,30 @@
 package games.mrlaki5.backgammon.Menus;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import games.mrlaki5.backgammon.LocaleHelper;
 import games.mrlaki5.backgammon.R;
 
 //Activity for showing settings
 public class SettingsActivity extends AppCompatActivity {
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.applySelectedLocale(newBase));
+    }
+
     //Volume key preference value
     public static String KEY_SOUND_VOLUME="volume";
+    public static String KEY_SOUND_ENABLED="soundEnabled";
+    public static String KEY_EFFECTS_ENABLED="effectsEnabled";
     //Shake treshold key preference value
     public static String KEY_DICE_TRESHOLD="sensor_sensibility";
     //Time between two shake sensor events key preference value
@@ -53,6 +63,8 @@ public class SettingsActivity extends AppCompatActivity {
     public static int DEF_DICE_SHAKE_DELAY=4;
     //Time between turns in game default preference value
     public static int DEF_TIME_BETWEEN_TURNS=1;
+    public static boolean DEF_SOUND_ENABLED=true;
+    public static boolean DEF_EFFECTS_ENABLED=true;
     //Shake treshold current preference value
     private int ShakeSensibilityValue=0;
     //Time between two shake sensor events current preference value
@@ -63,6 +75,8 @@ public class SettingsActivity extends AppCompatActivity {
     private int DiceDelayValue=0;
     //Time between turns in game current preference value
     private int TimeBTurnsValue=0;
+    private boolean SoundEnabledValue=true;
+    private boolean EffectsEnabledValue=true;
     //Shared preferences where settings are stored
     private SharedPreferences preferences;
     //Shared preferences editor used for editing preferences
@@ -87,6 +101,26 @@ public class SettingsActivity extends AppCompatActivity {
     private TextView DelayTextView;
     //Time between turns Text View
     private TextView TurnsTextView;
+    private CheckBox SoundEnabledCheckBox;
+    private CheckBox EffectsEnabledCheckBox;
+
+    private View.OnClickListener soundEnabledListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            SoundEnabledValue=SoundEnabledCheckBox.isChecked();
+            editor.putBoolean(KEY_SOUND_ENABLED, SoundEnabledValue);
+            editor.apply();
+        }
+    };
+
+    private View.OnClickListener effectsEnabledListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            EffectsEnabledValue=EffectsEnabledCheckBox.isChecked();
+            editor.putBoolean(KEY_EFFECTS_ENABLED, EffectsEnabledValue);
+            editor.apply();
+        }
+    };
 
     //Slider listener for shake treshol
     private SeekBar.OnSeekBarChangeListener shakeSensibilityListener =
@@ -249,12 +283,20 @@ public class SettingsActivity extends AppCompatActivity {
         TimeSampleValue=preferences.getInt(KEY_TIME_SAMPLE, DEF_TIME_SAMPLE);
         //Get value of sound volume
         SoundValue=preferences.getInt(KEY_SOUND_VOLUME, DEF_SOUND_VOLUME);
+        SoundEnabledValue=preferences.getBoolean(KEY_SOUND_ENABLED, DEF_SOUND_ENABLED);
+        EffectsEnabledValue=preferences.getBoolean(KEY_EFFECTS_ENABLED, DEF_EFFECTS_ENABLED);
         //Get value of shake delays
         DiceDelayValue=preferences.getInt(KEY_DICE_SHAKE_DELAY, DEF_DICE_SHAKE_DELAY);
         //Get value of time between turns in game
         TimeBTurnsValue=preferences.getInt(KEY_TIME_BETWEEN_TURNS, DEF_TIME_BETWEEN_TURNS);
         //Create shared preferences editor
         editor=preferences.edit();
+        SoundEnabledCheckBox=findViewById(R.id.soundEnabledCheckBox);
+        SoundEnabledCheckBox.setChecked(SoundEnabledValue);
+        SoundEnabledCheckBox.setOnClickListener(soundEnabledListener);
+        EffectsEnabledCheckBox=findViewById(R.id.effectsEnabledCheckBox);
+        EffectsEnabledCheckBox.setChecked(EffectsEnabledValue);
+        EffectsEnabledCheckBox.setOnClickListener(effectsEnabledListener);
         //Find shake treshold TextView on view and set text
         ShakeSensibilityTextView=findViewById(R.id.textView);
         ShakeSensibilityTextView.setText(getString(R.string.shake_threshold_value, ShakeSensibilityValue));
@@ -309,6 +351,8 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putInt(KEY_DICE_TRESHOLD, defTreshold);
         editor.putInt(KEY_TIME_SAMPLE, defTime);
         editor.putInt(KEY_SOUND_VOLUME, defSound);
+        editor.putBoolean(KEY_SOUND_ENABLED, DEF_SOUND_ENABLED);
+        editor.putBoolean(KEY_EFFECTS_ENABLED, DEF_EFFECTS_ENABLED);
         editor.putInt(KEY_DICE_SHAKE_DELAY, defDelay);
         editor.putInt(KEY_TIME_BETWEEN_TURNS, defTurns);
         editor.commit();
@@ -316,6 +360,8 @@ public class SettingsActivity extends AppCompatActivity {
         ShakeSensibilityValue=defTreshold;
         TimeSampleValue=defTime;
         SoundValue=defSound;
+        SoundEnabledValue=DEF_SOUND_ENABLED;
+        EffectsEnabledValue=DEF_EFFECTS_ENABLED;
         DiceDelayValue=defDelay;
         TimeBTurnsValue=defTurns;
         //Update text views to default values
@@ -324,6 +370,8 @@ public class SettingsActivity extends AppCompatActivity {
         SoundTextView.setText(getString(R.string.sound_value, SoundValue));
         DelayTextView.setText(getString(R.string.shake_delay_value, DiceDelayValue));
         TurnsTextView.setText(getString(R.string.turn_delay_value, TimeBTurnsValue));
+        SoundEnabledCheckBox.setChecked(SoundEnabledValue);
+        EffectsEnabledCheckBox.setChecked(EffectsEnabledValue);
         //Update sliders to default values
         shakeTresholdSlider.setProgress(ShakeSensibilityValue);
         timeSampleSlider.setProgress(TimeSampleValue);

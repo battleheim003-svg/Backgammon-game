@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.os.Handler;
+import android.os.Looper;
 import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 
@@ -24,7 +26,7 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
     //Array with hints for next move (1-there is hint, 0- no hint), length:24
     private int[] NextMoveArray;
     //String for current game state message
-    private String Message="بازیکن اول، تاس بریزید";
+    private String Message="";
     //Paint for red chips
     private Paint RedChipPaint;
     //Paint for white chips
@@ -109,6 +111,12 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
     //size of text
     private float TextSize;
     private Paint MoveChipShadowPaint;
+    private Paint MovePulsePaint;
+    private final Handler animationHandler = new Handler(Looper.getMainLooper());
+    private Runnable movePulseRunnable;
+    private int movePulseField=-1;
+    private boolean movePulseHit=false;
+    private float movePulseProgress=1F;
 
     public OnBoardImage(Context context) {
         super(context);
@@ -127,6 +135,7 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
 
     //Method used for initialization
     private void initOnBoardImage(){
+        Message=getContext().getString(R.string.initial_game_message);
         //create color for red chips
         RedChipPaint=new Paint();
         RedChipPaint.setColor(Color.rgb(212, 31, 38));
@@ -164,6 +173,9 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
         TextPaint.setTextSkewX(-0.08F);
         MoveChipShadowPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
         MoveChipShadowPaint.setColor(Color.argb(125, 0, 0, 0));
+        MovePulsePaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        MovePulsePaint.setStyle(Paint.Style.STROKE);
+        MovePulsePaint.setStrokeWidth(4F);
     }
 
     //Method called when size of board changes (is called on creation of view)
@@ -294,6 +306,33 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
             return true;
         }
         return false;
+    }
+
+    public void playMoveFeedback(final int destinationField, final boolean hit) {
+        if(destinationField<0 || destinationField>=FieldCenterX.length){
+            return;
+        }
+        if(movePulseRunnable!=null){
+            animationHandler.removeCallbacks(movePulseRunnable);
+        }
+        movePulseField=destinationField;
+        movePulseHit=hit;
+        movePulseProgress=0F;
+        movePulseRunnable=new Runnable() {
+            @Override
+            public void run() {
+                movePulseProgress+=0.12F;
+                if(movePulseProgress>=1F){
+                    movePulseField=-1;
+                    movePulseRunnable=null;
+                    postInvalidateOnAnimation();
+                    return;
+                }
+                postInvalidateOnAnimation();
+                animationHandler.postDelayed(this, 16L);
+            }
+        };
+        animationHandler.post(movePulseRunnable);
     }
 
     //Method for setting dices
@@ -561,6 +600,19 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
                 canvas.drawCircle(MoveChipX, MoveChipY, MoveChipSize/2, localPaint);
                 //draw border for moving chip
                 canvas.drawCircle(MoveChipX, MoveChipY, MoveChipSize/2, BorderChipPaint);
+            }
+            if(movePulseField!=-1){
+                float pulseX=FieldCenterX[movePulseField];
+                float pulseY=(movePulseField<12 || movePulseField==24 || movePulseField==26)
+                        ? YBaseTop + Math.max(MoveChipSize, EndChipHeight)
+                        : Height - Math.max(MoveChipSize, EndChipHeight);
+                float radius=(MoveChipSize*0.45F) + (MoveChipSize*0.45F*movePulseProgress);
+                int alpha=(int)(180F * (1F - movePulseProgress));
+                MovePulsePaint.setColor(movePulseHit
+                        ? Color.argb(alpha, 242, 214, 117)
+                        : Color.argb(alpha, 20, 125, 112));
+                MovePulsePaint.setStrokeWidth(Math.max(3F, MoveChipSize*0.08F));
+                canvas.drawCircle(pulseX, pulseY, radius, MovePulsePaint);
             }
         }
     }
