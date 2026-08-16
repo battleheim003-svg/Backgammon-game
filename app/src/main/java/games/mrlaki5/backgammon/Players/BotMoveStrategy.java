@@ -12,37 +12,24 @@ import games.mrlaki5.backgammon.GameModel.Model;
 import games.mrlaki5.backgammon.GamePreferences;
 
 public class BotMoveStrategy {
-    private static final int MAX_TURN_DEPTH = 4;
+    private static final RollOutcome[] ROLL_OUTCOMES = createRollOutcomes();
 
     public NextJump chooseMove(Model model, List<NextJump> moves, int difficulty, Random random) {
         if (moves == null || moves.isEmpty()) {
             return null;
         }
-        if (difficulty == GamePreferences.BOT_EASY) {
-            return moves.get(random.nextInt(moves.size()));
-        }
-        if (difficulty >= GamePreferences.BOT_HARD) {
-            NextJump tactical = chooseImmediateTactic(model, moves);
-            if (tactical != null) {
-                return tactical;
-            }
-        }
 
         NextJump best = moves.get(0);
         double bestScore = -Double.MAX_VALUE;
+        SearchProfile profile = profileFor(difficulty);
         for (NextJump move : moves) {
-            double score;
-            if (difficulty == GamePreferences.BOT_MEDIUM) {
-                score = scoreSingleMove(model, move, difficulty);
-                score += random.nextDouble() * 14.0;
-            }
-            else {
-                score = scoreTurnAfterMove(model, move, difficulty, 1);
-                if (difficulty == GamePreferences.BOT_ROYAL) {
-                    score -= opponentReplyRiskAfterMove(model, move) * 0.42;
-                }
-                score += random.nextDouble() * (difficulty == GamePreferences.BOT_HARD ? 3.0 : 1.0);
-            }
+            Model afterMove = copyModel(model);
+            new GameMoveExecutor(afterMove).applyMove(move);
+            SearchBudget budget = new SearchBudget(profile.nodeBudget);
+            double score = continueTurnOrRoll(afterMove, model.getCurrentPlayer(),
+                    profile.lookaheadRolls, profile, random, budget);
+            score += tacticalMoveBonus(model, move, difficulty);
+            score += random.nextDouble() * profile.noise;
             if (score > bestScore) {
                 bestScore = score;
                 best = move;
@@ -51,75 +38,59 @@ public class BotMoveStrategy {
         return best;
     }
 
-    private NextJump chooseImmediateTactic(Model model, List<NextJump> moves) {
-        BoardFieldState[] board = model.getBoardFields();
-        int opponent = model.getCurrentPlayer() == 1 ? 2 : 1;
-        NextJump bestHit = null;
-        for (NextJump move : moves) {
-            if (move.getDstField() == 26 || move.getDstField() == 27) {
-                return move;
-            }
-            if (board[move.getDstField()].getPlayer() == opponent
-                    && board[move.getDstField()].getNumberOfChips() == 1) {
-                bestHit = move;
-            }
+    private double continueTurnOrRoll(Model model, int rootPlayer, int rollsRemaining,
+                                      SearchProfile profile, Random random,
+                                      SearchBudget budget) {
+        if (!budget.tryVisit()) {
+            return evaluateBoard(model, rootPlayer, profile);
         }
-        return bestHit;
-    }
-
-    private double scoreTurnAfterMove(Model original, NextJump move, int difficulty, int depth) {
-        Model model = copyModel(original);
-        new GameMoveExecutor(model).applyMove(move);
-        double immediate = evaluateBoard(model, original.getCurrentPlayer(), difficulty);
-        if (depth >= MAX_TURN_DEPTH) {
-            return immediate;
-        }
-
         GameLogic logic = new GameLogic(model);
-        List<NextJump> nextMoves = logic.calculateMoves(model.getBoardFields(),
+        List<NextJump> moves = logic.calculateMoves(model.getBoardFields(),
                 model.getCurrentPlayer(), model.getDiceThrows());
-        if (nextMoves.isEmpty()) {
-            return immediate;
+        if (!moves.isEmpty()) {
+            boolean maximizing = model.getCurrentPlayer() == rootPlayer;
+            double best = maximizing ? -Double.MAX_VALUE : Double.MAX_VALUE;
+            for (NextJump move : moves) {
+                Model next = copyModel(model);
+                new GameMoveExecutor(next).applyMove(move);
+                double score = continueTurnOrRoll(next, rootPlayer, rollsRemaining,
+                        profile, random, budget);
+                best = maximizing ? Math.max(best, score) : Math.min(best, score);
+            }
+            return best;
         }
 
-        double bestFuture = -Double.MAX_VALUE;
-        for (NextJump next : nextMoves) {
-            bestFuture = Math.max(bestFuture, scoreTurnAfterMove(model, next, difficulty,
-                    depth + 1));
+        if (rollsRemaining <= 0 || logic.whatPartOfGame(model.getBoardFields(), rootPlayer) == 2
+                || logic.whatPartOfGame(model.getBoardFields(), opponentOf(rootPlayer)) == 2) {
+            return evaluateBoard(model, rootPlayer, profile);
         }
-        return immediate * 0.48 + bestFuture * 0.52;
+
+        Model nextTurn = copyModel(model);
+        nextTurn.changeCurrentPlayer();
+        return expectedRollValue(nextTurn, rootPlayer, rollsRemaining - 1, profile, random,
+                budget);
     }
 
-    private double opponentReplyRiskAfterMove(Model original, NextJump move) {
-        Model model = copyModel(original);
-        new GameMoveExecutor(model).applyMove(move);
-        int player = original.getCurrentPlayer();
-        int opponent = player == 1 ? 2 : 1;
-        model.setCurrentPlayer(opponent);
-
-        double risk = 0.0;
-        for (int first = 1; first <= 6; first++) {
-            for (int second = 1; second <= 6; second++) {
-                model.setDiceThrows(dice(first, second));
-                List<NextJump> replies = new GameLogic(model).calculateMoves(model.getBoardFields(),
-                        opponent, model.getDiceThrows());
-                double bestReply = 0.0;
-                for (NextJump reply : replies) {
-                    bestReply = Math.max(bestReply, scoreSingleMove(model, reply,
-                            GamePreferences.BOT_HARD));
-                }
-                risk += bestReply;
-            }
+    private double expectedRollValue(Model model, int rootPlayer, int rollsRemaining,
+                                     SearchProfile profile, Random random,
+                                     SearchBudget budget) {
+        double expected = 0.0;
+        for (RollOutcome outcome : ROLL_OUTCOMES) {
+            Model rolled = copyModel(model);
+            rolled.setDiceThrows(dice(outcome.first, outcome.second));
+            expected += outcome.probability * continueTurnOrRoll(rolled, rootPlayer,
+                    rollsRemaining, profile, random, budget);
         }
-        return risk / 36.0;
+        return expected;
     }
 
     private double scoreSingleMove(Model model, NextJump move, int difficulty) {
         Model copy = copyModel(model);
         double tacticalBonus = tacticalMoveBonus(model, move, difficulty);
         new GameMoveExecutor(copy).applyMove(move);
-        return evaluateBoard(copy, model.getCurrentPlayer(), difficulty)
-                - evaluateBoard(model, model.getCurrentPlayer(), difficulty) * 0.72
+        SearchProfile profile = profileFor(difficulty);
+        return evaluateBoard(copy, model.getCurrentPlayer(), profile)
+                - evaluateBoard(model, model.getCurrentPlayer(), profile) * 0.72
                 + move.getJumpNumber() * 1.4
                 + tacticalBonus;
     }
@@ -142,7 +113,7 @@ public class BotMoveStrategy {
         return bonus;
     }
 
-    private double evaluateBoard(Model model, int player, int difficulty) {
+    private double evaluateBoard(Model model, int player, SearchProfile profile) {
         BoardFieldState[] board = model.getBoardFields();
         int opponent = player == 1 ? 2 : 1;
         GameLogic logic = new GameLogic(model);
@@ -160,28 +131,30 @@ public class BotMoveStrategy {
             boolean bar = (owner == 1 && i == 24) || (owner == 2 && i == 25);
             boolean borneOff = (owner == 1 && i == 27) || (owner == 2 && i == 26);
 
-            if (borneOff) score += sign * chips * 110.0;
-            else if (bar) score -= sign * chips * 95.0;
-            else score += sign * chips * real * 3.2;
+            if (borneOff) score += sign * chips * profile.borneOffWeight;
+            else if (bar) score -= sign * chips * profile.barPenalty;
+            else score += sign * chips * real * profile.progressWeight;
 
             if (!borneOff && !bar) {
-                if (chips == 1) score -= sign * blotPenalty(board, i, owner, difficulty);
-                if (chips == 2) score += sign * 34.0;
-                if (chips >= 3) score += sign * Math.min(42.0, 16.0 + chips * 4.0);
-                if (home) score += sign * chips * 7.5;
+                if (chips == 1) score -= sign * blotPenalty(board, i, owner, profile);
+                if (chips == 2) score += sign * profile.pointWeight;
+                if (chips >= 3) score += sign * Math.min(profile.stackLimit,
+                        profile.pointWeight * 0.45 + chips * 4.0);
+                if (home) score += sign * chips * profile.homeWeight;
             }
         }
 
-        score += madePointRun(board, player, logic) * (difficulty == GamePreferences.BOT_ROYAL ? 18.0 : 10.0);
-        score -= madePointRun(board, opponent, logic) * 12.0;
+        score += madePointRun(board, player, logic) * profile.primeWeight;
+        score -= madePointRun(board, opponent, logic) * profile.opponentPrimeWeight;
         return score;
     }
 
-    private double blotPenalty(BoardFieldState[] board, int field, int owner, int difficulty) {
+    private double blotPenalty(BoardFieldState[] board, int field, int owner,
+                               SearchProfile profile) {
         int opponent = owner == 1 ? 2 : 1;
         GameLogic logic = new GameLogic(new Model());
         int real = logic.calculateRealPosition(field, owner);
-        double penalty = difficulty >= GamePreferences.BOT_HARD ? 34.0 : 22.0;
+        double penalty = profile.blotPenalty;
         for (int i = 0; i < 26; i++) {
             if (board[i].getPlayer() != opponent || board[i].getNumberOfChips() <= 0) {
                 continue;
@@ -189,7 +162,7 @@ public class BotMoveStrategy {
             int oppRealAgainstOwner = 25 - logic.calculateRealPosition(i, opponent);
             int distance = real - oppRealAgainstOwner;
             if (distance >= 1 && distance <= 6) {
-                penalty += (7 - distance) * (difficulty == GamePreferences.BOT_ROYAL ? 8.0 : 5.0);
+                penalty += (7 - distance) * profile.directShotPenalty;
             }
         }
         return penalty;
@@ -254,5 +227,103 @@ public class BotMoveStrategy {
             dice[3] = new DiceThrow(0, 1);
         }
         return dice;
+    }
+
+    private int opponentOf(int player) {
+        return player == 1 ? 2 : 1;
+    }
+
+    private SearchProfile profileFor(int difficulty) {
+        switch (difficulty) {
+            case GamePreferences.BOT_EASY:
+                return new SearchProfile(0, 70.0, 82.0, 62.0, 1.8,
+                        10.0, 12.0, 22.0, 3.0, 3.0, 5.0, 1.5, 80);
+            case GamePreferences.BOT_HARD:
+                return new SearchProfile(1, 2.0, 116.0, 105.0, 3.4,
+                        36.0, 40.0, 50.0, 8.5, 15.0, 13.0, 6.0, 1800);
+            case GamePreferences.BOT_ROYAL:
+                return new SearchProfile(1, 0.35, 126.0, 118.0, 3.8,
+                        44.0, 48.0, 58.0, 10.0, 20.0, 15.0, 8.0, 3600);
+            case GamePreferences.BOT_MEDIUM:
+            default:
+                return new SearchProfile(1, 7.0, 106.0, 92.0, 3.0,
+                        26.0, 32.0, 42.0, 6.5, 10.0, 10.0, 4.5, 520);
+        }
+    }
+
+    private static RollOutcome[] createRollOutcomes() {
+        RollOutcome[] outcomes = new RollOutcome[21];
+        int index = 0;
+        for (int first = 1; first <= 6; first++) {
+            for (int second = first; second <= 6; second++) {
+                outcomes[index++] = new RollOutcome(first, second,
+                        first == second ? 1.0 / 36.0 : 2.0 / 36.0);
+            }
+        }
+        return outcomes;
+    }
+
+    private static final class SearchProfile {
+        final int lookaheadRolls;
+        final double noise;
+        final double borneOffWeight;
+        final double barPenalty;
+        final double progressWeight;
+        final double blotPenalty;
+        final double pointWeight;
+        final double stackLimit;
+        final double homeWeight;
+        final double primeWeight;
+        final double opponentPrimeWeight;
+        final double directShotPenalty;
+        final int nodeBudget;
+
+        SearchProfile(int lookaheadRolls, double noise, double borneOffWeight,
+                      double barPenalty, double progressWeight, double blotPenalty,
+                      double pointWeight, double stackLimit, double homeWeight,
+                      double primeWeight, double opponentPrimeWeight,
+                      double directShotPenalty, int nodeBudget) {
+            this.lookaheadRolls = lookaheadRolls;
+            this.noise = noise;
+            this.borneOffWeight = borneOffWeight;
+            this.barPenalty = barPenalty;
+            this.progressWeight = progressWeight;
+            this.blotPenalty = blotPenalty;
+            this.pointWeight = pointWeight;
+            this.stackLimit = stackLimit;
+            this.homeWeight = homeWeight;
+            this.primeWeight = primeWeight;
+            this.opponentPrimeWeight = opponentPrimeWeight;
+            this.directShotPenalty = directShotPenalty;
+            this.nodeBudget = nodeBudget;
+        }
+    }
+
+    private static final class SearchBudget {
+        private int remainingNodes;
+
+        SearchBudget(int remainingNodes) {
+            this.remainingNodes = remainingNodes;
+        }
+
+        boolean tryVisit() {
+            if (remainingNodes <= 0) {
+                return false;
+            }
+            remainingNodes--;
+            return true;
+        }
+    }
+
+    private static final class RollOutcome {
+        final int first;
+        final int second;
+        final double probability;
+
+        RollOutcome(int first, int second, double probability) {
+            this.first = first;
+            this.second = second;
+            this.probability = probability;
+        }
     }
 }

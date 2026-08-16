@@ -4,7 +4,7 @@
     android:id="@+id/splashRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/battleheim_orange"
+    android:background="@color/splash_background"
     tools:context=".Menus.SplashActivity">
 
     <ImageView

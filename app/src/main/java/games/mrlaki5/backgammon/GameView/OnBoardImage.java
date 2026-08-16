@@ -6,7 +6,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RadialGradient;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,6 +21,13 @@ import games.mrlaki5.backgammon.R;
 
 //View of game
 public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
+    private static final int COLOR_SURFACE_BASE = Color.rgb(17, 37, 50);
+    private static final int COLOR_SURFACE_INSET = Color.rgb(11, 26, 36);
+    private static final int COLOR_ACCENT_GOLD = Color.rgb(244, 176, 68);
+    private static final int COLOR_ACCENT_ORANGE = Color.rgb(224, 104, 14);
+    private static final int COLOR_ACCENT_SLATE = Color.rgb(136, 165, 183);
+    private static final int COLOR_TEXT_PRIMARY = Color.rgb(247, 239, 213);
+    private static final long MESSAGE_ANIMATION_MS = 260L;
     private final Object messageLock = new Object();
 
     //Chips matrix (with number of chips on triangle [0] and player [1] (1-white, 2-red)), length:24
@@ -112,11 +121,21 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
     private float TextSize;
     private Paint MoveChipShadowPaint;
     private Paint MovePulsePaint;
+    private Paint ChipHighlightPaint;
+    private Paint ChipRimPaint;
+    private Paint MessageOuterBorderPaint;
+    private Paint MessageInnerBorderPaint;
+    private Paint MessageDiceFillPaint;
+    private Paint MessageDiceDotPaint;
     private final Handler animationHandler = new Handler(Looper.getMainLooper());
     private Runnable movePulseRunnable;
+    private Runnable messageAnimationRunnable;
     private int movePulseField=-1;
     private boolean movePulseHit=false;
     private float movePulseProgress=1F;
+    private long messageAnimationStart=0L;
+    private float messageAnimationProgress=1F;
+    private boolean messageRollPrompt=false;
 
     public OnBoardImage(Context context) {
         super(context);
@@ -137,13 +156,14 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
     private void initOnBoardImage(){
         Message=getContext().getString(R.string.initial_game_message);
         //create color for red chips
-        RedChipPaint=new Paint();
-        RedChipPaint.setColor(Color.rgb(212, 31, 38));
+        RedChipPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        RedChipPaint.setColor(COLOR_ACCENT_SLATE);
         //create color for white chips
-        WhiteChipPaint=new Paint();
-        WhiteChipPaint.setColor(Color.WHITE);
+        WhiteChipPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        WhiteChipPaint.setColor(COLOR_ACCENT_ORANGE);
         //create color for border of chips
         BorderChipPaint= new Paint();
+        BorderChipPaint.setAntiAlias(true);
         BorderChipPaint.setStyle(Paint.Style.STROKE);
         //create rect that will be used for drawing chips
         ChipRect=new RectF();
@@ -164,18 +184,36 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
         //Create paint for text drawing
         TextFigureRect=new RectF();
         TextFigurePaint=new Paint(Paint.ANTI_ALIAS_FLAG);
-        TextFigurePaint.setColor(Color.argb(218, 26, 15, 11));
+        TextFigurePaint.setColor(Color.argb(222, 17, 37, 50));
         TextPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
-        TextPaint.setColor(Color.rgb(212, 31, 38));
-        TextPaint.setShadowLayer(7.0F, 2.0F, 2.0F, Color.rgb(0, 0, 0)); //shadow on border
-        TextPaint.setTypeface(Typeface.create("sans-serif-condensed",Typeface.BOLD));
+        TextPaint.setColor(COLOR_ACCENT_GOLD);
+        TextPaint.setShadowLayer(5.0F, 1.5F, 2.5F, COLOR_SURFACE_INSET);
+        TextPaint.setTypeface(Typeface.create("sans-serif-black",Typeface.BOLD));
         TextPaint.setFakeBoldText(true);
-        TextPaint.setTextSkewX(-0.08F);
+        TextPaint.setLetterSpacing(0.04F);
+        TextPaint.setTextSkewX(0F);
         MoveChipShadowPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
-        MoveChipShadowPaint.setColor(Color.argb(125, 0, 0, 0));
+        MoveChipShadowPaint.setColor(Color.argb(132, 0, 0, 0));
         MovePulsePaint=new Paint(Paint.ANTI_ALIAS_FLAG);
         MovePulsePaint.setStyle(Paint.Style.STROKE);
         MovePulsePaint.setStrokeWidth(4F);
+        ChipHighlightPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        ChipHighlightPaint.setStyle(Paint.Style.STROKE);
+        ChipHighlightPaint.setColor(Color.argb(120, 255, 255, 255));
+        ChipRimPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        ChipRimPaint.setStyle(Paint.Style.STROKE);
+        MessageOuterBorderPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        MessageOuterBorderPaint.setStyle(Paint.Style.STROKE);
+        MessageOuterBorderPaint.setColor(COLOR_ACCENT_GOLD);
+        MessageInnerBorderPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        MessageInnerBorderPaint.setStyle(Paint.Style.STROKE);
+        MessageInnerBorderPaint.setColor(COLOR_SURFACE_INSET);
+        MessageDiceFillPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        MessageDiceFillPaint.setStyle(Paint.Style.FILL);
+        MessageDiceFillPaint.setColor(COLOR_TEXT_PRIMARY);
+        MessageDiceDotPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        MessageDiceDotPaint.setStyle(Paint.Style.FILL);
+        MessageDiceDotPaint.setColor(COLOR_SURFACE_BASE);
     }
 
     //Method called when size of board changes (is called on creation of view)
@@ -221,6 +259,29 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
         //Calculate size of text
         TextSize=Math.max(22F, YBaseTop*0.44F);
         TextPaint.setTextSize(TextSize);
+    }
+
+    private void startMessageAnimation() {
+        if(messageAnimationRunnable!=null){
+            animationHandler.removeCallbacks(messageAnimationRunnable);
+        }
+        messageAnimationStart=System.currentTimeMillis();
+        messageAnimationProgress=0F;
+        messageAnimationRunnable=new Runnable() {
+            @Override
+            public void run() {
+                long elapsed=System.currentTimeMillis()-messageAnimationStart;
+                messageAnimationProgress=Math.min(1F, elapsed/(float)MESSAGE_ANIMATION_MS);
+                postInvalidateOnAnimation();
+                if(messageAnimationProgress<1F){
+                    animationHandler.postDelayed(this, 16L);
+                }
+                else{
+                    messageAnimationRunnable=null;
+                }
+            }
+        };
+        animationHandler.post(messageAnimationRunnable);
     }
 
     private void calculateFieldCenters() {
@@ -369,15 +430,84 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
 
     //Method for setting up message and color of message (depending on player)
     public void setMessage(String text, int PlayerNum){
+        setMessage(text, PlayerNum, false);
+    }
+
+    public void setMessage(String text, int PlayerNum, boolean rollPrompt){
         synchronized (messageLock){
-            Message=text;
-            if(PlayerNum==1){
-                TextPaint.setColor(Color.rgb(247, 239, 213));
+            if(!Message.equals(text) || messageRollPrompt!=rollPrompt){
+                Message=text;
+                messageRollPrompt=rollPrompt;
+                startMessageAnimation();
             }
-            else{
-                TextPaint.setColor(Color.rgb(242, 214, 117));
-            }
+            TextPaint.setColor(PlayerNum==1 ? COLOR_ACCENT_GOLD : COLOR_TEXT_PRIMARY);
         }
+    }
+
+    private void drawMessageDiceGlyph(Canvas canvas, float centerX, float centerY,
+                                      float size) {
+        RectF diceRect=new RectF(centerX-size/2F, centerY-size/2F,
+                centerX+size/2F, centerY+size/2F);
+        canvas.drawRoundRect(diceRect, size*0.20F, size*0.20F, MessageDiceFillPaint);
+        MessageInnerBorderPaint.setStrokeWidth(Math.max(1F, size*0.07F));
+        canvas.drawRoundRect(diceRect, size*0.20F, size*0.20F, MessageInnerBorderPaint);
+
+        float dotRadius=size*0.075F;
+        float offset=size*0.22F;
+        canvas.drawCircle(centerX-offset, centerY-offset, dotRadius, MessageDiceDotPaint);
+        canvas.drawCircle(centerX, centerY, dotRadius, MessageDiceDotPaint);
+        canvas.drawCircle(centerX+offset, centerY+offset, dotRadius, MessageDiceDotPaint);
+    }
+
+    private int chipBaseColor(int player) {
+        return player==1 ? COLOR_ACCENT_ORANGE : COLOR_ACCENT_SLATE;
+    }
+
+    private int chipLightColor(int player) {
+        return player==1 ? COLOR_ACCENT_GOLD : COLOR_TEXT_PRIMARY;
+    }
+
+    private int chipDarkColor(int player) {
+        return player==1 ? Color.rgb(115, 42, 5) : COLOR_SURFACE_BASE;
+    }
+
+    private void drawLuxuryChip(Canvas canvas, RectF rect, int player) {
+        float radius=Math.max(rect.width(), rect.height())*0.58F;
+        Paint fillPaint=player==1 ? WhiteChipPaint : RedChipPaint;
+        fillPaint.setShader(new RadialGradient(rect.centerX()-rect.width()*0.22F,
+                rect.centerY()-rect.height()*0.28F,
+                radius,
+                new int[]{chipLightColor(player), chipBaseColor(player), chipDarkColor(player)},
+                new float[]{0F, 0.58F, 1F},
+                Shader.TileMode.CLAMP));
+        RectF shadowRect=new RectF(rect);
+        shadowRect.offset(rect.width()*0.07F, rect.height()*0.10F);
+        canvas.drawOval(shadowRect, MoveChipShadowPaint);
+        canvas.drawOval(rect, fillPaint);
+        fillPaint.setShader(null);
+
+        ChipRimPaint.setStrokeWidth(Math.max(2F, rect.width()*0.07F));
+        ChipRimPaint.setColor(player==1 ? COLOR_SURFACE_BASE : COLOR_ACCENT_GOLD);
+        canvas.drawOval(rect, ChipRimPaint);
+
+        RectF highlightRect=new RectF(rect);
+        float inset=rect.width()*0.18F;
+        highlightRect.inset(inset, inset);
+        ChipHighlightPaint.setStrokeWidth(Math.max(1F, rect.width()*0.025F));
+        canvas.drawOval(highlightRect, ChipHighlightPaint);
+    }
+
+    private void drawLuxuryEndChip(Canvas canvas, RectF rect, int player) {
+        Paint fillPaint=player==1 ? WhiteChipPaint : RedChipPaint;
+        fillPaint.setColor(chipBaseColor(player));
+        RectF shadowRect=new RectF(rect);
+        shadowRect.offset(rect.width()*0.06F, rect.height()*0.20F);
+        canvas.drawRoundRect(shadowRect, rect.width()*0.12F, rect.width()*0.12F,
+                MoveChipShadowPaint);
+        canvas.drawRoundRect(rect, rect.width()*0.12F, rect.width()*0.12F, fillPaint);
+        ChipRimPaint.setStrokeWidth(Math.max(1F, rect.width()*0.04F));
+        ChipRimPaint.setColor(player==1 ? COLOR_SURFACE_BASE : COLOR_ACCENT_GOLD);
+        canvas.drawRoundRect(rect, rect.width()*0.12F, rect.width()*0.12F, ChipRimPaint);
     }
 
     //Method for drawing on canvas
@@ -386,20 +516,44 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
         super.onDraw(canvas);
         //Text part
         synchronized (messageLock) {
+            float easedProgress=1F-((1F-messageAnimationProgress)
+                    *(1F-messageAnimationProgress));
+            int savedAlpha=canvas.saveLayerAlpha(0F, 0F, getWidth(), getHeight(),
+                    (int)(185F + (70F * easedProgress)));
+            canvas.scale(0.96F + (0.04F * easedProgress),
+                    0.96F + (0.04F * easedProgress), TextXCoordinate, TextYCoordinate);
             float textWidth=TextPaint.measureText(Message);
+            float glyphSize=messageRollPrompt ? TextSize*0.82F : 0F;
+            float glyphGap=messageRollPrompt ? TextSize*0.34F : 0F;
+            float contentWidth=textWidth + glyphSize + glyphGap;
             float horizontalPadding=TextSize*0.65F;
             float verticalPadding=TextSize*0.42F;
-            float boxLeft=Math.max(XBaseLeft, TextXCoordinate-(textWidth/2F)-horizontalPadding);
+            float boxLeft=Math.max(XBaseLeft, TextXCoordinate-(contentWidth/2F)-horizontalPadding);
             float boxRight=Math.min(RealWidth-XBaseRight,
-                    TextXCoordinate+(textWidth/2F)+horizontalPadding);
-            float textX=boxLeft + ((boxRight-boxLeft-textWidth)/2F);
+                    TextXCoordinate+(contentWidth/2F)+horizontalPadding);
+            float contentX=boxLeft + ((boxRight-boxLeft-contentWidth)/2F);
+            float textX=contentX + glyphSize + glyphGap;
             TextFigureRect.set(boxLeft,
                     TextYCoordinate-TextSize-verticalPadding,
                     boxRight,
                     TextYCoordinate+verticalPadding);
-            canvas.drawRoundRect(TextFigureRect, TextSize*0.45F, TextSize*0.45F,
+            canvas.drawRoundRect(TextFigureRect, TextSize*0.58F, TextSize*0.58F,
                     TextFigurePaint);
+            MessageOuterBorderPaint.setStrokeWidth(Math.max(2F, TextSize*0.08F));
+            canvas.drawRoundRect(TextFigureRect, TextSize*0.58F, TextSize*0.58F,
+                    MessageOuterBorderPaint);
+            RectF innerFrame=new RectF(TextFigureRect);
+            float innerInset=Math.max(3F, TextSize*0.16F);
+            innerFrame.inset(innerInset, innerInset);
+            MessageInnerBorderPaint.setStrokeWidth(Math.max(1F, TextSize*0.035F));
+            canvas.drawRoundRect(innerFrame, TextSize*0.42F, TextSize*0.42F,
+                    MessageInnerBorderPaint);
+            if(messageRollPrompt){
+                drawMessageDiceGlyph(canvas, contentX+(glyphSize/2F),
+                        TextYCoordinate-(TextSize*0.32F), glyphSize);
+            }
             canvas.drawText(Message, textX, TextYCoordinate, TextPaint);
+            canvas.restoreToCount(savedAlpha);
         }
         //Dices part
         synchronized (DiceImages) {
@@ -528,10 +682,7 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
                                 ChipRect.set(xChipStart, yChipEnd , xChipEnd, yChipStart);
                             }
                             if(!drawEndBoard) {
-                                //draw chip
-                                canvas.drawOval(ChipRect, localPaint);
-                                //draw border for chip
-                                canvas.drawOval(ChipRect, BorderChipPaint);
+                                drawLuxuryChip(canvas, ChipRect, ChipMatrix[i].getPlayer());
                                 //move y coordinates for drawing next chip on same triangle
                                 if (i >= 12 && i != 24) {
                                     yChipStart = yChipEnd + heightPadding;
@@ -542,10 +693,7 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
                                 }
                             }
                             else{
-                                //draw end chip
-                                canvas.drawRect(ChipRect, localPaint);
-                                //draw border for end chip
-                                canvas.drawRect(ChipRect, BorderChipPaint);
+                                drawLuxuryEndChip(canvas, ChipRect, ChipMatrix[i].getPlayer());
                                 if (i == 27) {
                                     yChipStart = yChipEnd;
                                     yChipEnd = yChipEnd - EndChipHeight;
@@ -596,10 +744,9 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
                 }
                 canvas.drawCircle(MoveChipX + MoveChipSize*0.08F,
                         MoveChipY + MoveChipSize*0.12F, MoveChipSize/2, MoveChipShadowPaint);
-                //draw moving chip
-                canvas.drawCircle(MoveChipX, MoveChipY, MoveChipSize/2, localPaint);
-                //draw border for moving chip
-                canvas.drawCircle(MoveChipX, MoveChipY, MoveChipSize/2, BorderChipPaint);
+                ChipRect.set(MoveChipX-MoveChipSize/2F, MoveChipY-MoveChipSize/2F,
+                        MoveChipX+MoveChipSize/2F, MoveChipY+MoveChipSize/2F);
+                drawLuxuryChip(canvas, ChipRect, MoveChipPlayer);
             }
             if(movePulseField!=-1){
                 float pulseX=FieldCenterX[movePulseField];
@@ -609,8 +756,8 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
                 float radius=(MoveChipSize*0.45F) + (MoveChipSize*0.45F*movePulseProgress);
                 int alpha=(int)(180F * (1F - movePulseProgress));
                 MovePulsePaint.setColor(movePulseHit
-                        ? Color.argb(alpha, 242, 214, 117)
-                        : Color.argb(alpha, 20, 125, 112));
+                        ? Color.argb(alpha, 244, 176, 68)
+                        : Color.argb(alpha, 136, 165, 183));
                 MovePulsePaint.setStrokeWidth(Math.max(3F, MoveChipSize*0.08F));
                 canvas.drawCircle(pulseX, pulseY, radius, MovePulsePaint);
             }

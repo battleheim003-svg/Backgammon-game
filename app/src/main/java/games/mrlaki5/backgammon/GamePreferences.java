@@ -9,6 +9,8 @@ public final class GamePreferences {
     public static final String KEY_BOT_DIFFICULTY = "botDifficulty";
     public static final String KEY_BOARD_THEME = "boardTheme";
     public static final String KEY_LANGUAGE = "language";
+    public static final String KEY_MUSIC_VOLUME = "musicVolume";
+    public static final String KEY_SFX_VOLUME = "sfxVolume";
     public static final String LANGUAGE_EN = "en";
     public static final String LANGUAGE_FA = "fa";
 
@@ -21,6 +23,8 @@ public final class GamePreferences {
     public static final int THEME_POP_ART = 1;
     public static final int THEME_CYBERPUNK = 2;
     public static final int THEME_LUXURY = 3;
+    public static final int DEFAULT_MUSIC_VOLUME = 55;
+    public static final int DEFAULT_SFX_VOLUME = 80;
 
     private GamePreferences() {}
 
@@ -29,15 +33,27 @@ public final class GamePreferences {
     }
 
     public static int getBotDifficulty(Context context) {
-        return preferences(context).getInt(KEY_BOT_DIFFICULTY, BOT_MEDIUM);
+        return getBotDifficulty(preferences(context));
     }
 
     public static int getBoardTheme(Context context) {
-        return preferences(context).getInt(KEY_BOARD_THEME, THEME_ROYAL);
+        return getBoardTheme(preferences(context));
     }
 
     public static String getLanguage(Context context) {
         return preferences(context).getString(KEY_LANGUAGE, LANGUAGE_EN);
+    }
+
+    public static int getMusicVolume(Context context) {
+        return getMusicVolume(preferences(context));
+    }
+
+    public static int getSfxVolume(Context context) {
+        return getSfxVolume(preferences(context));
+    }
+
+    public static void saveAudioVolumes(Context context, int musicVolume, int sfxVolume) {
+        saveAudioVolumes(preferences(context), musicVolume, sfxVolume);
     }
 
     public static void toggleLanguage(Context context) {
@@ -48,9 +64,36 @@ public final class GamePreferences {
     }
 
     public static void saveSelections(Context context, int difficulty, int theme) {
-        preferences(context).edit()
+        saveSelections(preferences(context), difficulty, theme);
+    }
+
+    static int getBotDifficulty(SharedPreferences preferences) {
+        return preferences.getInt(KEY_BOT_DIFFICULTY, BOT_MEDIUM);
+    }
+
+    static int getBoardTheme(SharedPreferences preferences) {
+        return preferences.getInt(KEY_BOARD_THEME, THEME_ROYAL);
+    }
+
+    static int getMusicVolume(SharedPreferences preferences) {
+        return preferences.getInt(KEY_MUSIC_VOLUME, DEFAULT_MUSIC_VOLUME);
+    }
+
+    static int getSfxVolume(SharedPreferences preferences) {
+        return preferences.getInt(KEY_SFX_VOLUME, DEFAULT_SFX_VOLUME);
+    }
+
+    static void saveSelections(SharedPreferences preferences, int difficulty, int theme) {
+        preferences.edit()
                 .putInt(KEY_BOT_DIFFICULTY, difficulty)
                 .putInt(KEY_BOARD_THEME, theme)
+                .apply();
+    }
+
+    static void saveAudioVolumes(SharedPreferences preferences, int musicVolume, int sfxVolume) {
+        preferences.edit()
+                .putInt(KEY_MUSIC_VOLUME, musicVolume)
+                .putInt(KEY_SFX_VOLUME, sfxVolume)
                 .apply();
     }
 }

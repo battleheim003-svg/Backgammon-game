@@ -43,9 +43,13 @@ public class GameTask extends AsyncTask<Void, Void, Void> {
 
     //Method for writing text on view
     private void writeMessage(String Text){
+        writeMessage(Text, false);
+    }
+
+    private void writeMessage(String Text, boolean rollPrompt){
         //Set text on view
         onBoardImage.setMessage(model.getCurrentObjectPlayer().getPlayerName() +
-                ", " +Text, model.getCurrentPlayer());
+                ", " +Text, model.getCurrentPlayer(), rollPrompt);
         //Invalidate view, its redrawn
         onBoardImage.postInvalidate();
     }
@@ -60,7 +64,7 @@ public class GameTask extends AsyncTask<Void, Void, Void> {
                 //State 0: player1 throw one dice
                 case 0:
                     //Set message
-                    writeMessage(gameActivity.getString(R.string.roll_dice));
+                    writeMessage(gameActivity.getString(R.string.roll_dice), true);
                     //Call method on object player to roll dice
                     model.getCurrentObjectPlayer().actionRoll();
                     //Check if thread should finish
@@ -82,7 +86,7 @@ public class GameTask extends AsyncTask<Void, Void, Void> {
                 //State 1: player2 throw one dice
                 case 1:
                     //Set message
-                    writeMessage(gameActivity.getString(R.string.roll_dice));
+                    writeMessage(gameActivity.getString(R.string.roll_dice), true);
                     //Call method in object player to roll dice
                     model.getCurrentObjectPlayer().actionRoll();
                     //Check if thread should finish
@@ -164,7 +168,7 @@ public class GameTask extends AsyncTask<Void, Void, Void> {
                 //State 3: currentPlayer roll dices
                 case 3:
                     //Set message
-                    writeMessage(gameActivity.getString(R.string.roll_dice));
+                    writeMessage(gameActivity.getString(R.string.roll_dice), true);
                     //Call method in object player to roll dice
                     model.getCurrentObjectPlayer().actionRoll();
                     //Check if thread should finish

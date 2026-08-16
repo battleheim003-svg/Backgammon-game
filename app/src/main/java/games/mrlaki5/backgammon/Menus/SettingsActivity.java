@@ -11,6 +11,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import games.mrlaki5.backgammon.LocaleHelper;
+import games.mrlaki5.backgammon.GamePreferences;
 import games.mrlaki5.backgammon.R;
 
 //Activity for showing settings
@@ -71,6 +72,7 @@ public class SettingsActivity extends AppCompatActivity {
     private int TimeSampleValue=0;
     //Volume current preference value
     private int SoundValue=0;
+    private int MusicValue=0;
     //Shake delays current preference value
     private int DiceDelayValue=0;
     //Time between turns in game current preference value
@@ -87,6 +89,7 @@ public class SettingsActivity extends AppCompatActivity {
     private SeekBar timeSampleSlider;
     //Volume slider
     private SeekBar soundSlider;
+    private SeekBar musicSlider;
     //Shake delays slider
     private SeekBar delaySlider;
     //Time between turns slider
@@ -97,6 +100,7 @@ public class SettingsActivity extends AppCompatActivity {
     private TextView TimeSampleTextView;
     //Volume Text View
     private TextView SoundTextView;
+    private TextView MusicTextView;
     //Shake delays Text View
     private TextView DelayTextView;
     //Time between turns Text View
@@ -204,7 +208,29 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             //Update preference with new value
+            editor.putInt(GamePreferences.KEY_SFX_VOLUME, SoundValue);
             editor.putInt(KEY_SOUND_VOLUME, SoundValue);
+            editor.commit();
+        }
+    };
+
+    private SeekBar.OnSeekBarChangeListener musicListener =
+            new SeekBar.OnSeekBarChangeListener() {
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            MusicTextView.setText(getString(R.string.music_volume_value, progress));
+            MusicValue=progress;
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            //Blank
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            editor.putInt(GamePreferences.KEY_MUSIC_VOLUME, MusicValue);
             editor.commit();
         }
     };
@@ -282,7 +308,10 @@ public class SettingsActivity extends AppCompatActivity {
         //Get time value between two shake sensor events
         TimeSampleValue=preferences.getInt(KEY_TIME_SAMPLE, DEF_TIME_SAMPLE);
         //Get value of sound volume
-        SoundValue=preferences.getInt(KEY_SOUND_VOLUME, DEF_SOUND_VOLUME);
+        SoundValue=preferences.getInt(GamePreferences.KEY_SFX_VOLUME,
+                preferences.getInt(KEY_SOUND_VOLUME, DEF_SOUND_VOLUME));
+        MusicValue=preferences.getInt(GamePreferences.KEY_MUSIC_VOLUME,
+                GamePreferences.DEFAULT_MUSIC_VOLUME);
         SoundEnabledValue=preferences.getBoolean(KEY_SOUND_ENABLED, DEF_SOUND_ENABLED);
         EffectsEnabledValue=preferences.getBoolean(KEY_EFFECTS_ENABLED, DEF_EFFECTS_ENABLED);
         //Get value of shake delays
@@ -306,6 +335,8 @@ public class SettingsActivity extends AppCompatActivity {
         //Find sound TextView on view and set text
         SoundTextView=findViewById(R.id.textView3);
         SoundTextView.setText(getString(R.string.sound_value, SoundValue));
+        MusicTextView=findViewById(R.id.textView6);
+        MusicTextView.setText(getString(R.string.music_volume_value, MusicValue));
         //Find dice delay TextView on view and set text
         DelayTextView=findViewById(R.id.textView4);
         DelayTextView.setText(getString(R.string.shake_delay_value, DiceDelayValue));
@@ -324,6 +355,9 @@ public class SettingsActivity extends AppCompatActivity {
         soundSlider = findViewById(R.id.seekBar3);
         soundSlider.setOnSeekBarChangeListener(soundListener);
         soundSlider.setProgress(SoundValue);
+        musicSlider = findViewById(R.id.seekBar6);
+        musicSlider.setOnSeekBarChangeListener(musicListener);
+        musicSlider.setProgress(MusicValue);
         //Find dice delay slider on view and set listener and progress on slider
         delaySlider = findViewById(R.id.seekBar4);
         delaySlider.setOnSeekBarChangeListener(delayListener);
@@ -343,6 +377,7 @@ public class SettingsActivity extends AppCompatActivity {
         int defTime=preferences.getInt(KEY_DEF_TIME_SAMPLE, DEF_TIME_SAMPLE);
         //Get default value of sound volume
         int defSound=preferences.getInt(KEY_DEF_SOUND_VOLUME, DEF_SOUND_VOLUME);
+        int defMusic=GamePreferences.DEFAULT_MUSIC_VOLUME;
         //Get default value of shake delays
         int defDelay=preferences.getInt(KEY_DEF_DICE_SHAKE_DELAY, DEF_DICE_SHAKE_DELAY);
         //Get default value of time between turns in game
@@ -351,6 +386,8 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putInt(KEY_DICE_TRESHOLD, defTreshold);
         editor.putInt(KEY_TIME_SAMPLE, defTime);
         editor.putInt(KEY_SOUND_VOLUME, defSound);
+        editor.putInt(GamePreferences.KEY_SFX_VOLUME, defSound);
+        editor.putInt(GamePreferences.KEY_MUSIC_VOLUME, defMusic);
         editor.putBoolean(KEY_SOUND_ENABLED, DEF_SOUND_ENABLED);
         editor.putBoolean(KEY_EFFECTS_ENABLED, DEF_EFFECTS_ENABLED);
         editor.putInt(KEY_DICE_SHAKE_DELAY, defDelay);
@@ -360,6 +397,7 @@ public class SettingsActivity extends AppCompatActivity {
         ShakeSensibilityValue=defTreshold;
         TimeSampleValue=defTime;
         SoundValue=defSound;
+        MusicValue=defMusic;
         SoundEnabledValue=DEF_SOUND_ENABLED;
         EffectsEnabledValue=DEF_EFFECTS_ENABLED;
         DiceDelayValue=defDelay;
@@ -368,6 +406,7 @@ public class SettingsActivity extends AppCompatActivity {
         ShakeSensibilityTextView.setText(getString(R.string.shake_threshold_value, ShakeSensibilityValue));
         TimeSampleTextView.setText(getString(R.string.shake_precision_value, TimeSampleValue));
         SoundTextView.setText(getString(R.string.sound_value, SoundValue));
+        MusicTextView.setText(getString(R.string.music_volume_value, MusicValue));
         DelayTextView.setText(getString(R.string.shake_delay_value, DiceDelayValue));
         TurnsTextView.setText(getString(R.string.turn_delay_value, TimeBTurnsValue));
         SoundEnabledCheckBox.setChecked(SoundEnabledValue);
@@ -376,6 +415,7 @@ public class SettingsActivity extends AppCompatActivity {
         shakeTresholdSlider.setProgress(ShakeSensibilityValue);
         timeSampleSlider.setProgress(TimeSampleValue);
         soundSlider.setProgress(SoundValue);
+        musicSlider.setProgress(MusicValue);
         delaySlider.setProgress(DiceDelayValue);
         turnsSlider.setProgress(TimeBTurnsValue);
     }

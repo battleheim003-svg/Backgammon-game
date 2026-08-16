@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/settings_title"
-            android:textColor="@color/royal_gold_light"
+            android:textColor="@color/accent_gold"
             android:textSize="26sp"
             android:textStyle="bold" />
 
@@ -33,7 +33,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:background="@color/royal_gold" />
+            android:background="@color/accent_gold" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -46,9 +46,9 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:buttonTint="@color/royal_gold"
+                android:buttonTint="@color/accent_gold"
                 android:text="@string/sound_enabled"
-                android:textColor="@color/royal_ivory"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -57,9 +57,9 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:buttonTint="@color/royal_gold"
+                android:buttonTint="@color/accent_gold"
                 android:text="@string/effects_enabled"
-                android:textColor="@color/royal_ivory"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -68,7 +68,7 @@
             android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/royal_ivory"
+            android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -81,10 +81,26 @@
             android:progress="50" />
 
         <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <SeekBar
+            android:id="@+id/seekBar6"
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:max="100"
+            android:progress="50" />
+
+        <TextView
             android:id="@+id/textView5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/royal_ivory"
+            android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -100,7 +116,7 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/royal_ivory"
+            android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -116,7 +132,7 @@
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/royal_ivory"
+            android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -132,7 +148,7 @@
             android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/royal_ivory"
+            android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -153,7 +169,7 @@
             android:onClick="restoreDef"
             android:text="@string/restore_defaults"
             android:textAllCaps="false"
-            android:textColor="@color/royal_ivory"
+            android:textColor="@color/text_primary"
             android:textSize="16sp"
             android:textStyle="bold" />
 

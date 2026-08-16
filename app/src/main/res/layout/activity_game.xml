@@ -29,7 +29,7 @@
         android:onClick="rollDiceFromButton"
         android:text="@string/roll_dice_button"
         android:textAllCaps="false"
-        android:textColor="@color/royal_walnut_dark"
+        android:textColor="@color/text_on_accent"
         android:textSize="18sp"
         android:textStyle="bold"
         android:visibility="gone"
@@ -56,7 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/tutorial_title"
-            android:textColor="@color/royal_gold_light"
+            android:textColor="@color/accent_gold"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -65,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:textColor="@color/royal_ivory"
+            android:textColor="@color/text_primary"
             android:textSize="15sp" />
 
         <Button
@@ -80,7 +80,7 @@
             android:onClick="advanceTutorial"
             android:text="@string/tutorial_next"
             android:textAllCaps="false"
-            android:textColor="@color/royal_gold_light"
+            android:textColor="@color/accent_gold"
             android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>

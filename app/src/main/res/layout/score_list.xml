@@ -20,7 +20,7 @@
             android:id="@+id/sListP1State"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/royal_gold_light"
+            android:textColor="@color/accent_gold"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -32,7 +32,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@string/player_one"
-            android:textColor="@color/royal_ivory"
+            android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -45,7 +45,7 @@
         android:layout_weight="1"
         android:gravity="center"
         tools:text="3:5"
-        android:textColor="@color/royal_gold_light"
+        android:textColor="@color/accent_gold"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -63,7 +63,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@string/player_two"
-            android:textColor="@color/royal_ivory"
+            android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
-            android:textColor="@color/royal_gold_light"
+            android:textColor="@color/accent_gold"
             android:textSize="16sp"
             android:textStyle="bold" />
 

@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.MotionEvent;
@@ -156,6 +157,10 @@ public class MenuActivity extends AppCompatActivity {
             //Set value of sound volume
             editor.putInt(SettingsActivity.KEY_SOUND_VOLUME,
                     SettingsActivity.DEF_SOUND_VOLUME);
+            editor.putInt(GamePreferences.KEY_SFX_VOLUME,
+                    GamePreferences.DEFAULT_SFX_VOLUME);
+            editor.putInt(GamePreferences.KEY_MUSIC_VOLUME,
+                    GamePreferences.DEFAULT_MUSIC_VOLUME);
             editor.putBoolean(SettingsActivity.KEY_SOUND_ENABLED,
                     SettingsActivity.DEF_SOUND_ENABLED);
             editor.putBoolean(SettingsActivity.KEY_EFFECTS_ENABLED,
@@ -302,6 +307,10 @@ public class MenuActivity extends AppCompatActivity {
         Window dialogWindow=myDialog.getWindow();
         if(dialogWindow!=null){
             dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            DisplayMetrics displayMetrics=getResources().getDisplayMetrics();
+            int dialogWidth=(int)(displayMetrics.widthPixels*0.92F);
+            int dialogHeight=(int)(displayMetrics.heightPixels*0.88F);
+            dialogWindow.setLayout(dialogWidth, dialogHeight);
         }
     }
 

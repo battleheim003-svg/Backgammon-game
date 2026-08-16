@@ -7,7 +7,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.MediaPlayer;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -40,10 +39,6 @@ public class GameActivity extends AppCompatActivity {
         super.attachBaseContext(LocaleHelper.applySelectedLocale(newBase));
     }
 
-    //Player used for all game sounds
-    private MediaPlayer mPlayer;
-    //String used for synchronization on media player
-    private final String mPlayerSem="mPlayer";
     //Current sound volume in which player should play
     private int soundVolume=0;
     private boolean soundEnabled=true;
@@ -212,9 +207,7 @@ public class GameActivity extends AppCompatActivity {
                             if(moveApplied){
                                 BoardImage.playMoveFeedback(moveResult.getDestinationField(),
                                         moveResult.isHit());
-                                playEffect(moveResult.isHit()
-                                        ? GameAudio.EFFECT_CHECKER_HIT
-                                        : GameAudio.EFFECT_CHECKER_MOVE);
+                                playMoveEffect(moveResult);
                                 if(moveResult.isHit()){
                                     showTutorialMessage(4);
                                 }
@@ -459,12 +452,14 @@ public class GameActivity extends AppCompatActivity {
         timeBetweenTurns=preferences.getInt(SettingsActivity.KEY_TIME_BETWEEN_TURNS,
                 SettingsActivity.DEF_TIME_BETWEEN_TURNS);
         //Get value of sound volume
-        soundVolume=preferences.getInt(SettingsActivity.KEY_SOUND_VOLUME,
-                SettingsActivity.DEF_SOUND_VOLUME);
+        soundVolume=GamePreferences.getSfxVolume(this);
         soundEnabled=preferences.getBoolean(SettingsActivity.KEY_SOUND_ENABLED,
                 SettingsActivity.DEF_SOUND_ENABLED);
         effectsEnabled=preferences.getBoolean(SettingsActivity.KEY_EFFECTS_ENABLED,
                 SettingsActivity.DEF_EFFECTS_ENABLED);
+        if(gameAudio!=null){
+            gameAudio.startBackgroundMusic();
+        }
         //Get View
         BoardImage=((OnBoardImage)findViewById(R.id.boardImage) );
         //Create model loader
@@ -581,6 +576,9 @@ public class GameActivity extends AppCompatActivity {
         if(pauseDone==1){
             //Flag reset
             pauseDone=0;
+            if(gameAudio!=null){
+                gameAudio.startBackgroundMusic();
+            }
             //New game thread created
             gameTask=new GameTask(model, gameLogic, BoardImage,
                     getTurnTransitionDelayMs(), this);
@@ -634,6 +632,9 @@ public class GameActivity extends AppCompatActivity {
                 }
                 //Stop sound player
                 clearMPlayer();
+                if(gameAudio!=null){
+                    gameAudio.stopBackgroundMusic();
+                }
                 //Unregister shake listener if it was registered
                 sensorManager.unregisterListener(DiceListener);
             }
@@ -711,15 +712,8 @@ public class GameActivity extends AppCompatActivity {
 
     //Method for stopping and clearing sound player
     public void clearMPlayer(){
-        //Synchronize on sound player string
-        synchronized (mPlayerSem){
-            //if sound player exists stop it and delete it
-            if(mPlayer!=null){
-                mPlayer.stop();
-                mPlayer.reset();
-                mPlayer.release();
-                mPlayer=null;
-            }
+        if(gameAudio!=null){
+            gameAudio.stopDiceShake();
         }
     }
 
@@ -731,9 +725,7 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void run() {
                 BoardImage.playMoveFeedback(moveResult.getDestinationField(), moveResult.isHit());
-                playEffect(moveResult.isHit()
-                        ? GameAudio.EFFECT_CHECKER_HIT
-                        : GameAudio.EFFECT_CHECKER_MOVE);
+                playMoveEffect(moveResult);
                 if(moveResult.isHit()){
                     showTutorialMessage(4);
                 }
@@ -745,7 +737,7 @@ public class GameActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                playEffect(GameAudio.EFFECT_CHECKER_HIT);
+                playEffect(GameAudio.EFFECT_GAME_WIN);
             }
         });
     }
@@ -766,44 +758,32 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    private void playMoveEffect(GameMoveExecutor.MoveResult moveResult) {
+        if(moveResult.getDestinationField()==26 || moveResult.getDestinationField()==27){
+            playEffect(GameAudio.EFFECT_BEAR_OFF);
+        }
+        else {
+            playEffect(moveResult.isHit()
+                    ? GameAudio.EFFECT_CHECKER_HIT
+                    : GameAudio.EFFECT_CHECKER_MOVE);
+        }
+    }
+
     //Method for playing sounds on media player
     //SongNum= 1:diceShake, 2:diceRoll
     public void setMPlayer(int SongNum){
-        if(!soundEnabled || soundVolume<=0){
+        if(!soundEnabled || GamePreferences.getSfxVolume(this)<=0){
             clearMPlayer();
             return;
         }
-        //Synchronize on sound player string
-        synchronized (mPlayerSem){
-            //if sound player exists stop it and delete it
-            if(mPlayer!=null){
-                mPlayer.stop();
-                mPlayer.reset();
-                mPlayer.release();
-                mPlayer=null;
-            }
-            if(SongNum==1){
-                //Play dice_shake sound
-                mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.dice_shake);
-                //Calculate volume
-                final float volume = normalizedVolume();
-                //Set volume
-                mPlayer.setVolume(volume, volume);
-                //Set sound looping so it doesnt end until its turned off
-                mPlayer.setLooping(true);
-                //Play sound
-                mPlayer.start();
-            }
-            else{
-                //Play dice_roll sound
-                mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.dice_roll);
-                //Calculate volume
-                final float volume = normalizedVolume();
-                //Set volume
-                mPlayer.setVolume(volume, volume);
-                //Play sound
-                mPlayer.start();
-            }
+        if(gameAudio==null){
+            return;
+        }
+        if(SongNum==1){
+            gameAudio.startDiceShake();
+        }
+        else{
+            gameAudio.finishDiceRoll();
         }
     }
 

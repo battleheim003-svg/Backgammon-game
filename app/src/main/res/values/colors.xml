@@ -1,23 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="royal_walnut_dark">#1A0F0B</color>
-    <color name="royal_walnut">#3B2115</color>
-    <color name="royal_gold">#D4AF37</color>
-    <color name="royal_gold_light">#F2D675</color>
-    <color name="royal_turquoise">#147D70</color>
-    <color name="royal_ivory">#F7EFD5</color>
-    <color name="royal_muted">#918A7D</color>
-    <color name="battleheim_orange">#FF8700</color>
-    <color name="vibe_black">#090A0D</color>
-    <color name="vibe_surface">#12141A</color>
-    <color name="vibe_surface_high">#1E222C</color>
-    <color name="vibe_orange">#FF7A18</color>
-    <color name="vibe_orange_hot">#FF3D00</color>
-    <color name="vibe_coral">#FFB057</color>
-    <color name="vibe_text">#FFF6EA</color>
-    <color name="vibe_muted">#8D93A1</color>
+    <color name="surface_base">#112532</color>
+    <color name="surface_panel">#183242</color>
+    <color name="surface_inset">#0B1A24</color>
+    <color name="accent_gold">#F4B044</color>
+    <color name="accent_gold_support">#D4AF37</color>
+    <color name="accent_orange">#E0680E</color>
+    <color name="splash_background">#F98401</color>
+    <color name="launcher_icon_background">#1D2338</color>
+    <color name="accent_slate">#88A5B7</color>
+    <color name="text_primary">#F7EFD5</color>
+    <color name="text_on_accent">#112532</color>
+    <color name="text_muted">#88A5B7</color>
+    <color name="shadow_deep">#99000000</color>
 
-    <color name="colorPrimary">#3B2115</color>
-    <color name="colorPrimaryDark">#1A0F0B</color>
-    <color name="colorAccent">#D4AF37</color>
+    <color name="colorPrimary">#112532</color>
+    <color name="colorPrimaryDark">#0B1A24</color>
+    <color name="colorAccent">#F4B044</color>
 </resources>

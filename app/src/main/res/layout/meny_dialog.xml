@@ -10,246 +10,295 @@
     android:paddingEnd="18dp"
     android:paddingBottom="16dp">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:baselineAligned="false"
-        android:orientation="horizontal">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="false"
+        android:overScrollMode="ifContentScrolls">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/neuro_inset_field"
-            android:orientation="vertical"
-            android:padding="14dp">
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:shadowColor="#80000000"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="4"
-                android:text="@string/player_one"
                 android:fontFamily="sans-serif-medium"
-                android:textColor="@color/vibe_orange"
-                android:textSize="20sp"
+                android:gravity="center"
+                android:text="@string/player_setup"
+                android:textColor="@color/accent_gold"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/dialogPName1"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/neuro_inset_field"
-                android:hint="@string/player_name"
-                android:importantForAutofill="no"
-                android:inputType="textPersonName"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:singleLine="true"
-                android:text="@string/player_one"
-                android:fontFamily="sans-serif"
-                android:textColor="@color/vibe_text"
-                android:textColorHint="@color/vibe_muted"
-                android:textDirection="locale"
-                android:textSize="16sp" />
-
-            <RadioGroup
-                android:id="@+id/dialogRadioGP1"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/neuro_inset_field"
-                android:checkedButton="@id/radioButton"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/radioButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginHorizontal="10dp"
-                    android:buttonTint="@color/vibe_orange"
-                    android:gravity="center"
-                    android:text="@string/human_player"
-                    android:fontFamily="sans-serif"
-                    android:textColor="@color/vibe_text"
-                    android:textSize="15sp" />
-
-                <RadioButton
-                    android:id="@+id/radioButton2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginHorizontal="10dp"
-                    android:buttonTint="@color/vibe_orange"
-                    android:gravity="center"
-                    android:text="@string/bot_player"
-                    android:fontFamily="sans-serif"
-                    android:textColor="@color/vibe_text"
-                    android:textSize="15sp" />
-            </RadioGroup>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:layout_weight="1"
-            android:background="@drawable/neuro_inset_field"
-            android:orientation="vertical"
-            android:padding="14dp">
-
-            <TextView
-                android:id="@+id/editText2"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:shadowColor="#80000000"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="4"
-                android:text="@string/player_two"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="@color/vibe_orange"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/dialogPName2"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/neuro_inset_field"
-                android:hint="@string/player_name"
-                android:importantForAutofill="no"
-                android:inputType="textPersonName"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:singleLine="true"
-                android:text="@string/bot_player"
-                android:fontFamily="sans-serif"
-                android:textColor="@color/vibe_text"
-                android:textColorHint="@color/vibe_muted"
-                android:textDirection="locale"
-                android:textSize="16sp" />
-
-            <RadioGroup
-                android:id="@+id/dialogRadioGP2"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/neuro_inset_field"
-                android:checkedButton="@id/radioButton4"
-                android:gravity="center"
+                android:baselineAligned="false"
                 android:orientation="horizontal">
 
-                <RadioButton
-                    android:id="@+id/radioButton3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginHorizontal="10dp"
-                    android:buttonTint="@color/vibe_orange"
-                    android:gravity="center"
-                    android:text="@string/human_player"
-                    android:fontFamily="sans-serif"
-                    android:textColor="@color/vibe_text"
-                    android:textSize="15sp" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/neuro_inset_field"
+                    android:orientation="vertical"
+                    android:padding="14dp">
 
-                <RadioButton
-                    android:id="@+id/radioButton4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginHorizontal="10dp"
-                    android:buttonTint="@color/vibe_orange"
-                    android:gravity="center"
-                    android:text="@string/bot_player"
-                    android:fontFamily="sans-serif"
-                    android:textColor="@color/vibe_text"
-                    android:textSize="15sp" />
-            </RadioGroup>
-        </LinearLayout>
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/editText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:gravity="center"
+                        android:shadowColor="#80000000"
+                        android:shadowDx="0"
+                        android:shadowDy="2"
+                        android:shadowRadius="4"
+                        android:text="@string/player_one"
+                        android:textColor="@color/accent_gold"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:baselineAligned="false"
-        android:orientation="horizontal">
+                    <EditText
+                        android:id="@+id/dialogPName1"
+                        android:layout_width="match_parent"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/neuro_inset_field"
+                        android:fontFamily="sans-serif"
+                        android:hint="@string/player_name"
+                        android:importantForAutofill="no"
+                        android:inputType="textPersonName"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:singleLine="true"
+                        android:text="@string/player_one"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_muted"
+                        android:textDirection="locale"
+                        android:textSize="16sp" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/neuro_inset_field"
-            android:orientation="vertical"
-            android:paddingStart="14dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="14dp"
-            android:paddingBottom="10dp">
+                    <RadioGroup
+                        android:id="@+id/dialogRadioGP1"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/neuro_inset_field"
+                        android:checkedButton="@id/radioButton"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:padding="3dp">
+
+                        <RadioButton
+                            android:id="@+id/radioButton"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/segmented_toggle_button"
+                            android:button="@null"
+                            android:fontFamily="sans-serif"
+                            android:gravity="center"
+                            android:text="@string/human_player"
+                            android:textColor="@color/segmented_toggle_text"
+                            android:textSize="15sp" />
+
+                        <RadioButton
+                            android:id="@+id/radioButton2"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/segmented_toggle_button"
+                            android:button="@null"
+                            android:fontFamily="sans-serif"
+                            android:gravity="center"
+                            android:text="@string/bot_player"
+                            android:textColor="@color/segmented_toggle_text"
+                            android:textSize="15sp" />
+                    </RadioGroup>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/neuro_inset_field"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:id="@+id/editText2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:gravity="center"
+                        android:shadowColor="#80000000"
+                        android:shadowDx="0"
+                        android:shadowDy="2"
+                        android:shadowRadius="4"
+                        android:text="@string/player_two"
+                        android:textColor="@color/accent_gold"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/dialogPName2"
+                        android:layout_width="match_parent"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/neuro_inset_field"
+                        android:fontFamily="sans-serif"
+                        android:hint="@string/player_name"
+                        android:importantForAutofill="no"
+                        android:inputType="textPersonName"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:singleLine="true"
+                        android:text="@string/bot_player"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_muted"
+                        android:textDirection="locale"
+                        android:textSize="16sp" />
+
+                    <RadioGroup
+                        android:id="@+id/dialogRadioGP2"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/neuro_inset_field"
+                        android:checkedButton="@id/radioButton4"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:padding="3dp">
+
+                        <RadioButton
+                            android:id="@+id/radioButton3"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/segmented_toggle_button"
+                            android:button="@null"
+                            android:fontFamily="sans-serif"
+                            android:gravity="center"
+                            android:text="@string/human_player"
+                            android:textColor="@color/segmented_toggle_text"
+                            android:textSize="15sp" />
+
+                        <RadioButton
+                            android:id="@+id/radioButton4"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/segmented_toggle_button"
+                            android:button="@null"
+                            android:fontFamily="sans-serif"
+                            android:gravity="center"
+                            android:text="@string/bot_player"
+                            android:textColor="@color/segmented_toggle_text"
+                            android:textSize="15sp" />
+                    </RadioGroup>
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/royal_gold_divider" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/bot_difficulty"
+                android:layout_marginTop="12dp"
                 android:fontFamily="sans-serif-medium"
-                android:textColor="@color/vibe_orange"
+                android:gravity="center"
+                android:text="@string/bot_board_settings"
+                android:textColor="@color/accent_slate"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <Spinner
-                android:id="@+id/dialogBotDifficulty"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/neuro_inset_field"
-                android:entries="@array/bot_difficulty_entries"
-                android:gravity="center"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:popupBackground="@color/vibe_black" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:layout_weight="1"
-            android:background="@drawable/neuro_inset_field"
-            android:orientation="vertical"
-            android:paddingStart="14dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="14dp"
-            android:paddingBottom="10dp">
-
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/board_theme"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="@color/vibe_orange"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="14dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
 
-            <Spinner
-                android:id="@+id/dialogBoardTheme"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/neuro_inset_field"
-                android:entries="@array/board_theme_entries"
-                android:gravity="center"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:popupBackground="@color/vibe_black" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/neuro_inset_field"
+                    android:orientation="vertical"
+                    android:paddingStart="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:gravity="center"
+                        android:text="@string/bot_difficulty"
+                        android:textColor="@color/accent_gold"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/dialogBotDifficulty"
+                        android:layout_width="match_parent"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/neuro_inset_field"
+                        android:entries="@array/bot_difficulty_entries"
+                        android:gravity="center"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:popupBackground="@color/surface_base" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/neuro_inset_field"
+                    android:orientation="vertical"
+                    android:paddingStart="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:gravity="center"
+                        android:text="@string/board_theme"
+                        android:textColor="@color/accent_gold"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/dialogBoardTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/neuro_inset_field"
+                        android:entries="@array/board_theme_entries"
+                        android:gravity="center"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:popupBackground="@color/surface_base" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -268,7 +317,7 @@
             android:text="@string/cancel"
             android:textAllCaps="false"
             android:fontFamily="sans-serif-medium"
-            android:textColor="@color/vibe_text"
+            android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -284,7 +333,7 @@
             android:text="@string/play"
             android:textAllCaps="false"
             android:fontFamily="sans-serif-medium"
-            android:textColor="@color/vibe_black"
+            android:textColor="@color/surface_base"
             android:textSize="17sp"
             android:textStyle="bold" />
     </LinearLayout>

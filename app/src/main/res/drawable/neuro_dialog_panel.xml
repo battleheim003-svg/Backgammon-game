@@ -2,13 +2,13 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:left="9dp" android:top="11dp" android:right="0dp" android:bottom="0dp">
         <shape android:shape="rectangle">
-            <solid android:color="#92000000" />
+            <solid android:color="@color/shadow_deep" />
             <corners android:radius="25dp" />
         </shape>
     </item>
     <item android:left="0dp" android:top="0dp" android:right="8dp" android:bottom="9dp">
         <shape android:shape="rectangle">
-            <solid android:color="#30FFB057" />
+            <solid android:color="#3388A5B7" />
             <corners android:radius="25dp" />
         </shape>
     </item>
@@ -16,11 +16,11 @@
         <shape android:shape="rectangle">
             <gradient
                 android:angle="315"
-                android:centerColor="#F012141A"
-                android:endColor="#F0090A0D"
-                android:startColor="#F0222630" />
+                android:centerColor="#F0183242"
+                android:endColor="#F0112532"
+                android:startColor="#F00B1A24" />
             <corners android:radius="23dp" />
-            <stroke android:width="1dp" android:color="#BFFF7A18" />
+            <stroke android:width="1dp" android:color="#BFF4B044" />
         </shape>
     </item>
 </layer-list>

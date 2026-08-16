@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/scores_title"
-            android:textColor="@color/royal_gold_light"
+            android:textColor="@color/accent_gold"
             android:textSize="27sp"
             android:textStyle="bold" />
 
@@ -38,7 +38,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="10dp"
-            android:background="@color/royal_gold" />
+            android:background="@color/accent_gold" />
 
         <TextView
             android:id="@+id/emptyScoreText"
@@ -47,7 +47,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/score_empty"
-            android:textColor="@color/royal_muted"
+            android:textColor="@color/text_muted"
             android:textSize="18sp"
             android:visibility="gone" />
 
@@ -57,7 +57,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:cacheColorHint="@android:color/transparent"
-            android:divider="@color/royal_gold"
+            android:divider="@color/accent_gold"
             android:dividerHeight="1dp"
             android:listSelector="@android:color/transparent"
             android:overScrollMode="never" />
@@ -72,7 +72,7 @@
             android:onClick="resetScores"
             android:text="@string/reset_scores"
             android:textAllCaps="false"
-            android:textColor="@color/royal_ivory"
+            android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:textStyle="bold" />
 

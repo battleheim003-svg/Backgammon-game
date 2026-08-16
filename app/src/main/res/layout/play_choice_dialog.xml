@@ -20,7 +20,7 @@
         android:shadowDy="2"
         android:shadowRadius="4"
         android:text="@string/play_choice_title"
-        android:textColor="@color/vibe_orange"
+        android:textColor="@color/accent_gold"
         android:textSize="22sp"
         android:textStyle="bold" />
 
@@ -31,7 +31,7 @@
         android:fontFamily="sans-serif"
         android:gravity="center"
         android:text="@string/play_choice_message"
-        android:textColor="@color/vibe_muted"
+        android:textColor="@color/text_muted"
         android:textSize="14sp" />
 
     <Button
@@ -46,7 +46,7 @@
         android:minWidth="0dp"
         android:text="@string/continue_game"
         android:textAllCaps="false"
-        android:textColor="@color/vibe_text"
+        android:textColor="@color/text_primary"
         android:textSize="17sp"
         android:textStyle="bold" />
 
@@ -62,7 +62,7 @@
         android:minWidth="0dp"
         android:text="@string/new_game"
         android:textAllCaps="false"
-        android:textColor="@color/vibe_black"
+        android:textColor="@color/surface_base"
         android:textSize="19sp"
         android:textStyle="bold" />
 

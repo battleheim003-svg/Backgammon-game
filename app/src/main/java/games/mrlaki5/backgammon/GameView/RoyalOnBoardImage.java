@@ -61,12 +61,12 @@ public class RoyalOnBoardImage extends OnBoardImage {
             chipBorderPaint=getLegacyPaint("BorderChipPaint");
             messagePaint=getLegacyPaint("TextPaint");
 
-            turquoiseChipPaint.setColor(Color.rgb(20, 125, 112));
-            ivoryChipPaint.setColor(Color.rgb(247, 239, 213));
-            chipBorderPaint.setColor(Color.rgb(58, 30, 18));
+            turquoiseChipPaint.setColor(Color.rgb(136, 165, 183));
+            ivoryChipPaint.setColor(Color.rgb(224, 104, 14));
+            chipBorderPaint.setColor(Color.rgb(244, 176, 68));
             chipBorderPaint.setStrokeWidth(3F);
-            messagePaint.setColor(Color.rgb(242, 214, 117));
-            messagePaint.setShadowLayer(3F, 2F, 2F, Color.rgb(26, 15, 11));
+            messagePaint.setColor(Color.rgb(244, 176, 68));
+            messagePaint.setShadowLayer(3F, 2F, 2F, Color.rgb(11, 26, 36));
         } catch (Exception ignored) {
             //If a future legacy renderer changes its fields, the original palette remains usable.
         }
@@ -163,16 +163,21 @@ public class RoyalOnBoardImage extends OnBoardImage {
 
     @Override
     public void setMessage(String text, int playerNum) {
+        setMessage(text, playerNum, false);
+    }
+
+    @Override
+    public void setMessage(String text, int playerNum, boolean rollPrompt) {
         int separator=text.indexOf(", ");
         if(separator>0){
             text=getContext().getString(R.string.current_turn_message,
                     text.substring(0, separator), text.substring(separator + 2));
         }
-        super.setMessage(text, playerNum);
+        super.setMessage(text, playerNum, rollPrompt);
         if(messagePaint!=null){
             messagePaint.setColor(playerNum==1
-                    ? Color.rgb(247, 239, 213)
-                    : Color.rgb(242, 214, 117));
+                    ? Color.rgb(244, 176, 68)
+                    : Color.rgb(247, 239, 213));
         }
     }
 }

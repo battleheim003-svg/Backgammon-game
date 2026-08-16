@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/results_title"
-            android:textColor="@color/royal_gold_light"
+            android:textColor="@color/accent_gold"
             android:textSize="27sp"
             android:textStyle="bold" />
 
@@ -37,7 +37,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="10dp"
-            android:background="@color/royal_gold" />
+            android:background="@color/accent_gold" />
 
         <ListView
             android:id="@+id/resultList"
@@ -45,7 +45,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:cacheColorHint="@android:color/transparent"
-            android:divider="@color/royal_gold"
+            android:divider="@color/accent_gold"
             android:dividerHeight="1dp"
             android:listSelector="@android:color/transparent"
             android:overScrollMode="never" />
@@ -59,7 +59,7 @@
             android:onClick="resetResults"
             android:text="@string/reset_results"
             android:textAllCaps="false"
-            android:textColor="@color/royal_ivory"
+            android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:textStyle="bold" />
 

@@ -17,6 +17,7 @@
 
     <string name="player_one">Player One</string>
     <string name="player_two">Player Two</string>
+    <string name="player_setup">Player setup</string>
     <string name="player_name">Player name</string>
     <string name="human_player">Human</string>
     <string name="bot_player">Bot</string>
@@ -30,6 +31,7 @@
     <string name="difficulty_royal">Royal</string>
 
     <string name="board_theme">Board Theme</string>
+    <string name="bot_board_settings">Bot and board settings</string>
     <string name="theme_royal">Royal</string>
     <string name="theme_pop_art">Pop Art</string>
     <string name="theme_cyberpunk">Cyberpunk</string>
@@ -87,6 +89,7 @@
     <string name="sound_enabled">Sound</string>
     <string name="effects_enabled">Effects</string>
     <string name="sound">Sound Volume</string>
+    <string name="music_volume">Music Volume</string>
     <string name="shake_sensitivity">Shake Sensitivity</string>
     <string name="shake_duration">Shake Detection Precision</string>
     <string name="dice_delay">Dice Detection Delay</string>
@@ -97,6 +100,7 @@
     <string name="shake_threshold_value">Shake sensitivity: %1$d</string>
     <string name="shake_precision_value">Shake detection precision: %1$d ms</string>
     <string name="sound_value">Sound volume: %1$d%%</string>
+    <string name="music_volume_value">Music volume: %1$d%%</string>
     <string name="shake_delay_value">Dice detection delay: %1$d</string>
     <string name="turn_delay_value">Turn change speed: %1$d</string>
 

@@ -3,8 +3,8 @@ package games.mrlaki5.backgammon.Menus;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -57,11 +57,13 @@ public class ResultsActivity extends AppCompatActivity {
                     //Set text and color of text depending on win or lose
                     if(cursor.getInt(columnIndex)==1){
                         tempTW.setText(R.string.win);
-                        tempTW.setTextColor(Color.rgb(52, 158, 70));
+                        tempTW.setTextColor(ContextCompat.getColor(ResultsActivity.this,
+                                R.color.accent_gold));
                     }
                     else{
                         tempTW.setText(R.string.lose);
-                        tempTW.setTextColor(Color.rgb(212, 31, 38));
+                        tempTW.setTextColor(ContextCompat.getColor(ResultsActivity.this,
+                                R.color.accent_orange));
                     }
                     break;
                 //Date of end game time

@@ -14,6 +14,7 @@
 
     <string name="player_one">بازیکن اول</string>
     <string name="player_two">بازیکن دوم</string>
+    <string name="player_setup">تنظیم بازیکنان</string>
     <string name="player_name">نام بازیکن</string>
     <string name="human_player">انسان</string>
     <string name="bot_player">ربات</string>
@@ -27,6 +28,7 @@
     <string name="difficulty_royal">سلطنتی</string>
 
     <string name="board_theme">طرح تخته</string>
+    <string name="bot_board_settings">تنظیمات ربات و تخته</string>
     <string name="theme_royal">سلطنتی</string>
     <string name="theme_pop_art">پاپ‌آرت</string>
     <string name="theme_cyberpunk">سایبرپانک</string>
@@ -84,6 +86,7 @@
     <string name="sound_enabled">صدا</string>
     <string name="effects_enabled">افکت‌ها</string>
     <string name="sound">میزان صدا</string>
+    <string name="music_volume">میزان موسیقی</string>
     <string name="shake_sensitivity">حساسیت تکان دادن گوشی</string>
     <string name="shake_duration">دقت تشخیص تکان</string>
     <string name="dice_delay">تاخیر تشخیص تاس</string>
@@ -94,6 +97,7 @@
     <string name="shake_threshold_value">حساسیت تکان: %1$d</string>
     <string name="shake_precision_value">دقت تشخیص تکان: %1$d میلی‌ثانیه</string>
     <string name="sound_value">میزان صدا: %1$d%%</string>
+    <string name="music_volume_value">میزان موسیقی: %1$d%%</string>
     <string name="shake_delay_value">تاخیر تشخیص تاس: %1$d</string>
     <string name="turn_delay_value">سرعت تعویض نوبت: %1$d</string>
 

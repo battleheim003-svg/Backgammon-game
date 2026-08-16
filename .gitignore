@@ -10,4 +10,5 @@
 .externalNativeBuild
 *.jks
 *.keystore
-app/release/
+app/release/*.apk
+app/release/baselineProfiles/

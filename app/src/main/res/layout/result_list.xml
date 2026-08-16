@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/win"
-                android:textColor="@color/royal_gold_light"
+                android:textColor="@color/accent_gold"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -37,7 +37,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@string/player_one"
-                android:textColor="@color/royal_ivory"
+                android:textColor="@color/text_primary"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -63,7 +63,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@string/player_two"
-                android:textColor="@color/royal_ivory"
+                android:textColor="@color/text_primary"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:text="@string/lose"
-                android:textColor="@color/royal_gold_light"
+                android:textColor="@color/accent_gold"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -88,7 +88,7 @@
         android:layout_marginTop="4dp"
         android:gravity="center"
         android:text="@string/game_time"
-        android:textColor="@color/royal_muted"
+        android:textColor="@color/text_muted"
         android:textSize="14sp"
         android:textStyle="bold" />
 
