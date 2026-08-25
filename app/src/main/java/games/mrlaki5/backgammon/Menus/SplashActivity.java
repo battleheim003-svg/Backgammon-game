@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -15,8 +16,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import games.mrlaki5.backgammon.LocaleHelper;
 import games.mrlaki5.backgammon.R;
 
+/**
+ * Splash screen — shows studio logo briefly before launching menu.
+ *
+ * Optimized: reduced from 3.4s to 1.2s.
+ * - Logo fade-in: 400ms
+ * - Hold: 600ms
+ * - Fade-out to menu: 200ms
+ * - Total perceived wait: ~1.2s
+ * - Tap anywhere to skip immediately
+ */
 public class SplashActivity extends AppCompatActivity {
-    private static final long SPLASH_DURATION_MS = 3400L;
+
+    private static final long SPLASH_DURATION_MS = 1200L;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean openedMenu = false;
 
@@ -25,12 +37,7 @@ public class SplashActivity extends AppCompatActivity {
         super.attachBaseContext(LocaleHelper.applySelectedLocale(newBase));
     }
 
-    private final Runnable openMenuRunnable = new Runnable() {
-        @Override
-        public void run() {
-            openMenu();
-        }
-    };
+    private final Runnable openMenuRunnable = () -> openMenu();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +54,24 @@ public class SplashActivity extends AppCompatActivity {
                 .alpha(1F)
                 .scaleX(1F)
                 .scaleY(1F)
-                .setDuration(520L)
+                .setDuration(400L)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .start();
 
         handler.postDelayed(openMenuRunnable, SPLASH_DURATION_MS);
+    }
+
+    /**
+     * Tap anywhere to skip the splash immediately.
+     */
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            handler.removeCallbacks(openMenuRunnable);
+            openMenu();
+            return true;
+        }
+        return super.onTouchEvent(event);
     }
 
     private void openMenu() {
@@ -62,15 +82,11 @@ public class SplashActivity extends AppCompatActivity {
         View root = findViewById(R.id.splashRoot);
         root.animate()
                 .alpha(0F)
-                .setDuration(220L)
-                .withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        startActivity(new Intent(SplashActivity.this, MenuActivity.class));
-                        finish();
-                        overridePendingTransition(android.R.anim.fade_in,
-                                android.R.anim.fade_out);
-                    }
+                .setDuration(200L)
+                .withEndAction(() -> {
+                    startActivity(new Intent(SplashActivity.this, MenuActivity.class));
+                    finish();
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 })
                 .start();
     }

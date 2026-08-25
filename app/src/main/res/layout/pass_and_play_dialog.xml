@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_pause_dialog"
+    android:layoutDirection="rtl"
+    android:orientation="horizontal"
+    android:paddingStart="20dp"
+    android:paddingTop="18dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="16dp">
+
+    <!-- ===== LEFT COLUMN: Theme Thumbnails (2x2) ===== -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="6dp">
+
+        <!-- Row 1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/pnpThemeThumb0"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_theme_thumb_selected"
+                android:padding="3dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/preview_theme_royal" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/pnpThemeThumb1"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_theme_thumb_normal"
+                android:padding="3dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/preview_theme_pop_art" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- Row 2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/pnpThemeThumb2"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_theme_thumb_normal"
+                android:padding="3dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/preview_theme_cyberpunk" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/pnpThemeThumb3"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_theme_thumb_normal"
+                android:padding="3dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/preview_theme_luxury" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ===== RIGHT COLUMN: Names + Buttons ===== -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <!-- Player 1 Name -->
+        <EditText
+            android:id="@+id/pnpName1"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:background="@drawable/bg_name_field_normal"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:hint="@string/player_one"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:singleLine="true"
+            android:text="@string/pass_and_play_player1_default"
+            android:textColor="#E0E0E0"
+            android:textColorHint="#555555"
+            android:textDirection="rtl"
+            android:textSize="14sp" />
+
+        <!-- Player 2 Name -->
+        <EditText
+            android:id="@+id/pnpName2"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_name_field_normal"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:hint="@string/player_two"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:singleLine="true"
+            android:text="@string/pass_and_play_player2_default"
+            android:textColor="#E0E0E0"
+            android:textColorHint="#555555"
+            android:textDirection="rtl"
+            android:textSize="14sp" />
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/pnpCancel"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_pause_button"
+                android:fontFamily="sans-serif-medium"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:text="@string/cancel"
+                android:textAllCaps="false"
+                android:textColor="#BBBBBB"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/pnpPlay"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1.4"
+                android:background="@drawable/neuro_primary_button"
+                android:fontFamily="sans-serif-medium"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:text="@string/play"
+                android:textAllCaps="false"
+                android:textColor="#0E1721"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

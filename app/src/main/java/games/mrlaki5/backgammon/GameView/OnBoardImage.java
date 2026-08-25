@@ -3,6 +3,7 @@ package games.mrlaki5.backgammon.GameView;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -28,6 +29,73 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
     private static final int COLOR_ACCENT_SLATE = Color.rgb(136, 165, 183);
     private static final int COLOR_TEXT_PRIMARY = Color.rgb(247, 239, 213);
     private static final long MESSAGE_ANIMATION_MS = 260L;
+
+    // --- Cyberpunk theme checker colors ---
+    // Player 1 (user/light): white body, purple inner ring & rim
+    private static final int CYBER_P1_BASE = Color.rgb(245, 245, 250);
+    private static final int CYBER_P1_LIGHT = Color.rgb(255, 255, 255);
+    private static final int CYBER_P1_DARK = Color.rgb(180, 180, 200);
+    private static final int CYBER_P1_GLOW = Color.rgb(200, 160, 255);
+    private static final int CYBER_P1_RIM = Color.rgb(130, 50, 200);
+    private static final int CYBER_P1_INNER = Color.rgb(140, 60, 210);
+    // Player 2 (opponent/dark): very dark purple body, turquoise inner ring, black rim
+    private static final int CYBER_P2_BASE = Color.rgb(35, 15, 60);
+    private static final int CYBER_P2_LIGHT = Color.rgb(70, 35, 100);
+    private static final int CYBER_P2_DARK = Color.rgb(15, 5, 30);
+    private static final int CYBER_P2_GLOW = Color.rgb(0, 210, 210);
+    private static final int CYBER_P2_RIM = Color.rgb(10, 10, 10);
+    private static final int CYBER_P2_INNER = Color.rgb(0, 200, 200);
+
+    // --- Pop Art theme checker colors ---
+    // Player 1 (user/light): light cyan/turquoise disc, bold comic-book style
+    private static final int POP_P1_BASE = Color.rgb(80, 210, 220);
+    private static final int POP_P1_LIGHT = Color.rgb(150, 240, 245);
+    private static final int POP_P1_DARK = Color.rgb(40, 120, 150);
+    private static final int POP_P1_OUTLINE = Color.rgb(15, 30, 60);
+    private static final int POP_P1_HIGHLIGHT = Color.rgb(230, 255, 255);
+    // Player 2 (opponent/dark): deep navy/dark blue disc
+    private static final int POP_P2_BASE = Color.rgb(20, 35, 75);
+    private static final int POP_P2_LIGHT = Color.rgb(50, 75, 130);
+    private static final int POP_P2_DARK = Color.rgb(8, 15, 40);
+    private static final int POP_P2_OUTLINE = Color.rgb(2, 5, 15);
+    private static final int POP_P2_HIGHLIGHT = Color.rgb(70, 120, 180);
+
+    // --- Luxury Persian theme checker colors ---
+    // Player 1 (user/light): ivory-pearl, champagne, satin finish, warm-gold rim
+    private static final int LUX_P1_BASE = Color.rgb(240, 225, 195);
+    private static final int LUX_P1_LIGHT = Color.rgb(255, 250, 235);
+    private static final int LUX_P1_DARK = Color.rgb(185, 155, 110);
+    private static final int LUX_P1_RIM = Color.rgb(195, 160, 80);
+    private static final int LUX_P1_OUTLINE = Color.rgb(70, 45, 25);
+    private static final int LUX_P1_HIGHLIGHT = Color.rgb(255, 252, 240);
+    // Player 2 (opponent/dark): espresso-brown, mahogany, antique-gold rim
+    private static final int LUX_P2_BASE = Color.rgb(55, 30, 20);
+    private static final int LUX_P2_LIGHT = Color.rgb(100, 60, 40);
+    private static final int LUX_P2_DARK = Color.rgb(25, 12, 8);
+    private static final int LUX_P2_RIM = Color.rgb(155, 120, 55);
+    private static final int LUX_P2_OUTLINE = Color.rgb(15, 8, 5);
+    private static final int LUX_P2_HIGHLIGHT = Color.rgb(140, 95, 60);
+
+    // --- Iranian Royal theme checker colors ---
+    // Player 1 (user/light): warm ivory-pearl, champagne cream, aged-brass rim, turquoise accent
+    private static final int IRAN_P1_BASE = Color.rgb(235, 218, 185);
+    private static final int IRAN_P1_LIGHT = Color.rgb(252, 245, 228);
+    private static final int IRAN_P1_DARK = Color.rgb(175, 145, 100);
+    private static final int IRAN_P1_RIM = Color.rgb(170, 140, 65);
+    private static final int IRAN_P1_OUTLINE = Color.rgb(60, 38, 20);
+    private static final int IRAN_P1_HIGHLIGHT = Color.rgb(255, 248, 232);
+    private static final int IRAN_P1_ACCENT = Color.rgb(0, 155, 145);
+    // Player 2 (opponent/dark): deep walnut, mahogany, aged-brass rim, lapis accent
+    private static final int IRAN_P2_BASE = Color.rgb(65, 35, 20);
+    private static final int IRAN_P2_LIGHT = Color.rgb(110, 65, 40);
+    private static final int IRAN_P2_DARK = Color.rgb(30, 15, 8);
+    private static final int IRAN_P2_RIM = Color.rgb(145, 115, 50);
+    private static final int IRAN_P2_OUTLINE = Color.rgb(18, 10, 5);
+    private static final int IRAN_P2_HIGHLIGHT = Color.rgb(150, 105, 55);
+    private static final int IRAN_P2_ACCENT = Color.rgb(30, 60, 140);
+
+    // Current board theme ID
+    private int currentTheme = 0;
     private final Object messageLock = new Object();
 
     //Chips matrix (with number of chips on triangle [0] and player [1] (1-white, 2-red)), length:24
@@ -127,6 +195,15 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
     private Paint MessageInnerBorderPaint;
     private Paint MessageDiceFillPaint;
     private Paint MessageDiceDotPaint;
+    // Reusable Paint objects for themed chip rendering (avoid GC pressure in onDraw)
+    private Paint chipGlowPaint;
+    private Paint chipContactShadowPaint;
+    private Paint chipSpecPaint;
+    private Paint chipBevelPaint;
+    private Paint chipAccentPaint;
+    private Paint chipDotPaint;
+    private RectF chipShadowRect;
+    private RectF chipSpecRect;
     private final Handler animationHandler = new Handler(Looper.getMainLooper());
     private Runnable movePulseRunnable;
     private Runnable messageAnimationRunnable;
@@ -150,6 +227,12 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
     public OnBoardImage(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initOnBoardImage();
+    }
+
+    /** Set the active board theme so chip rendering can adapt. */
+    public void setBoardTheme(int themeId) {
+        this.currentTheme = themeId;
+        invalidate();
     }
 
     //Method used for initialization
@@ -214,6 +297,17 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
         MessageDiceDotPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
         MessageDiceDotPaint.setStyle(Paint.Style.FILL);
         MessageDiceDotPaint.setColor(COLOR_SURFACE_BASE);
+        // Initialize reusable Paint objects for theme chip rendering
+        chipGlowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        chipContactShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        chipSpecPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        chipBevelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        chipBevelPaint.setStyle(Paint.Style.STROKE);
+        chipAccentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        chipAccentPaint.setStyle(Paint.Style.STROKE);
+        chipDotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        chipShadowRect = new RectF();
+        chipSpecRect = new RectF();
     }
 
     //Method called when size of board changes (is called on creation of view)
@@ -510,6 +604,474 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
         canvas.drawRoundRect(rect, rect.width()*0.12F, rect.width()*0.12F, ChipRimPaint);
     }
 
+    // ======================== Cyberpunk theme chip rendering ========================
+
+    private void drawCyberpunkChip(Canvas canvas, RectF rect, int player) {
+        int baseColor = player==1 ? CYBER_P1_BASE : CYBER_P2_BASE;
+        int lightColor = player==1 ? CYBER_P1_LIGHT : CYBER_P2_LIGHT;
+        int darkColor = player==1 ? CYBER_P1_DARK : CYBER_P2_DARK;
+        int glowColor = player==1 ? CYBER_P1_GLOW : CYBER_P2_GLOW;
+        int rimColor = player==1 ? CYBER_P1_RIM : CYBER_P2_RIM;
+        int innerColor = player==1 ? CYBER_P1_INNER : CYBER_P2_INNER;
+
+        float cx = rect.centerX();
+        float cy = rect.centerY();
+        float chipRadius = Math.max(rect.width(), rect.height()) / 2F;
+
+        // 1. Outer neon glow (soft blur behind the chip)
+        int glowAlpha = Color.argb(90, Color.red(glowColor), Color.green(glowColor), Color.blue(glowColor));
+        chipGlowPaint.setColor(glowAlpha);
+        chipGlowPaint.setMaskFilter(new BlurMaskFilter(chipRadius * 0.35F, BlurMaskFilter.Blur.NORMAL));
+        canvas.drawCircle(cx, cy, chipRadius * 0.92F, chipGlowPaint);
+
+        // 2. Drop shadow
+        chipShadowRect.set(rect);
+        chipShadowRect.offset(rect.width() * 0.05F, rect.height() * 0.08F);
+        canvas.drawOval(chipShadowRect, MoveChipShadowPaint);
+
+        // 3. Main body with radial gradient
+        Paint fillPaint = player==1 ? WhiteChipPaint : RedChipPaint;
+        float gradRadius = chipRadius * 1.2F;
+        fillPaint.setShader(new RadialGradient(
+                cx - rect.width() * 0.18F,
+                cy - rect.height() * 0.22F,
+                gradRadius,
+                new int[]{lightColor, baseColor, darkColor},
+                new float[]{0F, 0.5F, 1F},
+                Shader.TileMode.CLAMP));
+        canvas.drawOval(rect, fillPaint);
+        fillPaint.setShader(null);
+
+        // 4. Outer rim
+        ChipRimPaint.setStrokeWidth(Math.max(2F, rect.width() * 0.06F));
+        ChipRimPaint.setColor(rimColor);
+        canvas.drawOval(rect, ChipRimPaint);
+
+        // 5. Inner ring (colored band inside the chip)
+        RectF innerRing = new RectF(rect);
+        float inset = rect.width() * 0.16F;
+        innerRing.inset(inset, inset);
+        ChipHighlightPaint.setStrokeWidth(Math.max(2F, rect.width() * 0.05F));
+        ChipHighlightPaint.setColor(innerColor);
+        canvas.drawOval(innerRing, ChipHighlightPaint);
+
+        // 6. Top specular highlight
+        chipSpecRect.set(rect);
+        chipSpecRect.inset(rect.width() * 0.28F, rect.height() * 0.28F);
+        chipSpecRect.offset(-rect.width() * 0.08F, -rect.height() * 0.12F);
+        chipSpecPaint.setShader(new RadialGradient(
+                chipSpecRect.centerX(), chipSpecRect.centerY(),
+                chipSpecRect.width() * 0.6F,
+                new int[]{Color.argb(60, 255, 255, 255), Color.argb(0, 255, 255, 255)},
+                new float[]{0F, 1F},
+                Shader.TileMode.CLAMP));
+        canvas.drawOval(chipSpecRect, chipSpecPaint);
+    }
+
+    private void drawCyberpunkEndChip(Canvas canvas, RectF rect, int player) {
+        int baseColor = player==1 ? CYBER_P1_BASE : CYBER_P2_BASE;
+        int glowColor = player==1 ? CYBER_P1_GLOW : CYBER_P2_GLOW;
+        int rimColor = player==1 ? CYBER_P1_RIM : CYBER_P2_RIM;
+        int darkColor = player==1 ? CYBER_P1_DARK : CYBER_P2_DARK;
+        int lightColor = player==1 ? CYBER_P1_LIGHT : CYBER_P2_LIGHT;
+
+        float cornerR = rect.width() * 0.12F;
+
+        // Neon glow behind
+        int glowAlpha = Color.argb(70, Color.red(glowColor), Color.green(glowColor), Color.blue(glowColor));
+        chipGlowPaint.setColor(glowAlpha);
+        chipGlowPaint.setMaskFilter(new BlurMaskFilter(rect.width() * 0.25F, BlurMaskFilter.Blur.NORMAL));
+        canvas.drawRoundRect(rect, cornerR, cornerR, chipGlowPaint);
+
+        // Shadow
+        chipShadowRect.set(rect);
+        chipShadowRect.offset(rect.width() * 0.05F, rect.height() * 0.15F);
+        canvas.drawRoundRect(chipShadowRect, cornerR, cornerR, MoveChipShadowPaint);
+
+        // Body with gradient
+        Paint fillPaint = player==1 ? WhiteChipPaint : RedChipPaint;
+        fillPaint.setShader(new RadialGradient(
+                rect.centerX() - rect.width() * 0.15F,
+                rect.centerY() - rect.height() * 0.2F,
+                Math.max(rect.width(), rect.height()) * 0.8F,
+                new int[]{lightColor, baseColor, darkColor},
+                new float[]{0F, 0.5F, 1F},
+                Shader.TileMode.CLAMP));
+        canvas.drawRoundRect(rect, cornerR, cornerR, fillPaint);
+        fillPaint.setShader(null);
+
+        // Neon rim
+        ChipRimPaint.setStrokeWidth(Math.max(1F, rect.width() * 0.05F));
+        ChipRimPaint.setColor(rimColor);
+        canvas.drawRoundRect(rect, cornerR, cornerR, ChipRimPaint);
+    }
+
+    // ======================== Pop Art theme chip rendering ========================
+
+    private void drawPopArtChip(Canvas canvas, RectF rect, int player) {
+        int baseColor = player==1 ? POP_P1_BASE : POP_P2_BASE;
+        int lightColor = player==1 ? POP_P1_LIGHT : POP_P2_LIGHT;
+        int darkColor = player==1 ? POP_P1_DARK : POP_P2_DARK;
+        int outlineColor = player==1 ? POP_P1_OUTLINE : POP_P2_OUTLINE;
+        int highlightColor = player==1 ? POP_P1_HIGHLIGHT : POP_P2_HIGHLIGHT;
+
+        float cx = rect.centerX();
+        float cy = rect.centerY();
+
+        // 1. Soft contact shadow (short, subtle, beneath)
+        chipShadowRect.set(rect);
+        chipShadowRect.offset(rect.width() * 0.03F, rect.height() * 0.09F);
+        chipContactShadowPaint.setColor(Color.argb(80, 0, 0, 0));
+        chipContactShadowPaint.setMaskFilter(new BlurMaskFilter(rect.width() * 0.12F, BlurMaskFilter.Blur.NORMAL));
+        canvas.drawOval(chipShadowRect, chipContactShadowPaint);
+
+        // 2. Main body - flat base color fill (comic-book bold color block)
+        Paint fillPaint = player==1 ? WhiteChipPaint : RedChipPaint;
+        fillPaint.setShader(new RadialGradient(
+                cx - rect.width() * 0.12F,
+                cy - rect.height() * 0.15F,
+                Math.max(rect.width(), rect.height()) * 0.7F,
+                new int[]{lightColor, baseColor, darkColor},
+                new float[]{0F, 0.55F, 1F},
+                Shader.TileMode.CLAMP));
+        canvas.drawOval(rect, fillPaint);
+        fillPaint.setShader(null);
+
+        // 3. Bold thick outline (comic-book crisp stroke)
+        ChipRimPaint.setStrokeWidth(Math.max(3F, rect.width() * 0.09F));
+        ChipRimPaint.setColor(outlineColor);
+        canvas.drawOval(rect, ChipRimPaint);
+
+        // 4. Inner bevel ring (gives cylindrical disc feel)
+        RectF bevelRing = new RectF(rect);
+        float bevelInset = rect.width() * 0.14F;
+        bevelRing.inset(bevelInset, bevelInset);
+        ChipHighlightPaint.setStrokeWidth(Math.max(1.5F, rect.width() * 0.03F));
+        ChipHighlightPaint.setColor(Color.argb(50, Color.red(lightColor), Color.green(lightColor), Color.blue(lightColor)));
+        canvas.drawOval(bevelRing, ChipHighlightPaint);
+
+        // 5. Small comic-book glossy highlight (top-left specular spot)
+        chipSpecRect.set(rect);
+        chipSpecRect.inset(rect.width() * 0.32F, rect.height() * 0.35F);
+        chipSpecRect.offset(-rect.width() * 0.14F, -rect.height() * 0.16F);
+        chipSpecPaint.setShader(new RadialGradient(
+                chipSpecRect.centerX(), chipSpecRect.centerY(),
+                chipSpecRect.width() * 0.55F,
+                new int[]{Color.argb(110, Color.red(highlightColor), Color.green(highlightColor), Color.blue(highlightColor)),
+                           Color.argb(0, 255, 255, 255)},
+                new float[]{0F, 1F},
+                Shader.TileMode.CLAMP));
+        canvas.drawOval(chipSpecRect, chipSpecPaint);
+
+        // 6. Subtle halftone dot pattern (very few dots, comic-book texture)
+        chipDotPaint.setColor(Color.argb(25, Color.red(darkColor), Color.green(darkColor), Color.blue(darkColor)));
+        float dotRadius = rect.width() * 0.025F;
+        float spacing = rect.width() * 0.18F;
+        float startX = cx - spacing;
+        float startY = cy;
+        // Only a few dots in bottom-right quadrant for subtle halftone feel
+        float chipR = rect.width() * 0.38F;
+        for (float dx = 0; dx <= spacing * 2; dx += spacing) {
+            for (float dy = 0; dy <= spacing; dy += spacing) {
+                float px = startX + dx;
+                float py = startY + dy;
+                float dist = (float) Math.sqrt((px - cx) * (px - cx) + (py - cy) * (py - cy));
+                if (dist < chipR) {
+                    canvas.drawCircle(px, py, dotRadius, chipDotPaint);
+                }
+            }
+        }
+    }
+
+    private void drawPopArtEndChip(Canvas canvas, RectF rect, int player) {
+        int baseColor = player==1 ? POP_P1_BASE : POP_P2_BASE;
+        int darkColor = player==1 ? POP_P1_DARK : POP_P2_DARK;
+        int lightColor = player==1 ? POP_P1_LIGHT : POP_P2_LIGHT;
+        int outlineColor = player==1 ? POP_P1_OUTLINE : POP_P2_OUTLINE;
+
+        float cornerR = rect.width() * 0.12F;
+
+        // Contact shadow
+        chipShadowRect.set(rect);
+        chipShadowRect.offset(rect.width() * 0.03F, rect.height() * 0.12F);
+        chipContactShadowPaint.setColor(Color.argb(70, 0, 0, 0));
+        chipContactShadowPaint.setMaskFilter(new BlurMaskFilter(rect.width() * 0.10F, BlurMaskFilter.Blur.NORMAL));
+        canvas.drawRoundRect(chipShadowRect, cornerR, cornerR, chipContactShadowPaint);
+
+        // Body with gradient
+        Paint fillPaint = player==1 ? WhiteChipPaint : RedChipPaint;
+        fillPaint.setShader(new RadialGradient(
+                rect.centerX() - rect.width() * 0.1F,
+                rect.centerY() - rect.height() * 0.15F,
+                Math.max(rect.width(), rect.height()) * 0.7F,
+                new int[]{lightColor, baseColor, darkColor},
+                new float[]{0F, 0.5F, 1F},
+                Shader.TileMode.CLAMP));
+        canvas.drawRoundRect(rect, cornerR, cornerR, fillPaint);
+        fillPaint.setShader(null);
+
+        // Bold outline
+        ChipRimPaint.setStrokeWidth(Math.max(2F, rect.width() * 0.07F));
+        ChipRimPaint.setColor(outlineColor);
+        canvas.drawRoundRect(rect, cornerR, cornerR, ChipRimPaint);
+    }
+
+    // ======================== Luxury Persian theme chip rendering ========================
+
+    private void drawLuxuryPersianChip(Canvas canvas, RectF rect, int player) {
+        int baseColor = player==1 ? LUX_P1_BASE : LUX_P2_BASE;
+        int lightColor = player==1 ? LUX_P1_LIGHT : LUX_P2_LIGHT;
+        int darkColor = player==1 ? LUX_P1_DARK : LUX_P2_DARK;
+        int rimColor = player==1 ? LUX_P1_RIM : LUX_P2_RIM;
+        int outlineColor = player==1 ? LUX_P1_OUTLINE : LUX_P2_OUTLINE;
+        int highlightColor = player==1 ? LUX_P1_HIGHLIGHT : LUX_P2_HIGHLIGHT;
+
+        float cx = rect.centerX();
+        float cy = rect.centerY();
+        float chipRadius = Math.max(rect.width(), rect.height()) / 2F;
+
+        // 1. Soft contact shadow beneath (natural sitting)
+        chipShadowRect.set(rect);
+        chipShadowRect.offset(rect.width() * 0.03F, rect.height() * 0.08F);
+        chipContactShadowPaint.setColor(Color.argb(90, 30, 15, 5));
+        chipContactShadowPaint.setMaskFilter(new BlurMaskFilter(chipRadius * 0.18F, BlurMaskFilter.Blur.NORMAL));
+        canvas.drawOval(chipShadowRect, chipContactShadowPaint);
+
+        // 2. Main body - satin surface with radial gradient
+        Paint fillPaint = player==1 ? WhiteChipPaint : RedChipPaint;
+        float gradRadius = chipRadius * 1.15F;
+        fillPaint.setShader(new RadialGradient(
+                cx - rect.width() * 0.15F,
+                cy - rect.height() * 0.18F,
+                gradRadius,
+                new int[]{lightColor, baseColor, darkColor},
+                new float[]{0F, 0.5F, 1F},
+                Shader.TileMode.CLAMP));
+        canvas.drawOval(rect, fillPaint);
+        fillPaint.setShader(null);
+
+        // 3. Clean outline (dark-brown or very dark)
+        ChipRimPaint.setStrokeWidth(Math.max(2F, rect.width() * 0.055F));
+        ChipRimPaint.setColor(outlineColor);
+        canvas.drawOval(rect, ChipRimPaint);
+
+        // 4. Warm-gold / antique-gold rim (inner to outline)
+        RectF rimRing = new RectF(rect);
+        float rimInset = rect.width() * 0.06F;
+        rimRing.inset(rimInset, rimInset);
+        ChipHighlightPaint.setStrokeWidth(Math.max(1.5F, rect.width() * 0.04F));
+        ChipHighlightPaint.setColor(rimColor);
+        canvas.drawOval(rimRing, ChipHighlightPaint);
+
+        // 5. Subtle bevel inner ring (satin depth)
+        RectF bevelRing = new RectF(rect);
+        float bevelInset = rect.width() * 0.18F;
+        bevelRing.inset(bevelInset, bevelInset);
+        chipBevelPaint.setStrokeWidth(Math.max(1F, rect.width() * 0.02F));
+        chipBevelPaint.setColor(Color.argb(40, Color.red(rimColor), Color.green(rimColor), Color.blue(rimColor)));
+        canvas.drawOval(bevelRing, chipBevelPaint);
+
+        // 6. Soft cream-white highlight (top-left satin specular)
+        chipSpecRect.set(rect);
+        chipSpecRect.inset(rect.width() * 0.30F, rect.height() * 0.32F);
+        chipSpecRect.offset(-rect.width() * 0.10F, -rect.height() * 0.13F);
+        chipSpecPaint.setShader(new RadialGradient(
+                chipSpecRect.centerX(), chipSpecRect.centerY(),
+                chipSpecRect.width() * 0.55F,
+                new int[]{Color.argb(75, Color.red(highlightColor), Color.green(highlightColor), Color.blue(highlightColor)),
+                           Color.argb(0, 255, 255, 255)},
+                new float[]{0F, 1F},
+                Shader.TileMode.CLAMP));
+        canvas.drawOval(chipSpecRect, chipSpecPaint);
+    }
+
+    private void drawLuxuryPersianEndChip(Canvas canvas, RectF rect, int player) {
+        int baseColor = player==1 ? LUX_P1_BASE : LUX_P2_BASE;
+        int lightColor = player==1 ? LUX_P1_LIGHT : LUX_P2_LIGHT;
+        int darkColor = player==1 ? LUX_P1_DARK : LUX_P2_DARK;
+        int rimColor = player==1 ? LUX_P1_RIM : LUX_P2_RIM;
+        int outlineColor = player==1 ? LUX_P1_OUTLINE : LUX_P2_OUTLINE;
+
+        float cornerR = rect.width() * 0.12F;
+
+        // Contact shadow
+        chipShadowRect.set(rect);
+        chipShadowRect.offset(rect.width() * 0.03F, rect.height() * 0.12F);
+        chipContactShadowPaint.setColor(Color.argb(70, 30, 15, 5));
+        chipContactShadowPaint.setMaskFilter(new BlurMaskFilter(rect.width() * 0.10F, BlurMaskFilter.Blur.NORMAL));
+        canvas.drawRoundRect(chipShadowRect, cornerR, cornerR, chipContactShadowPaint);
+
+        // Body with satin gradient
+        Paint fillPaint = player==1 ? WhiteChipPaint : RedChipPaint;
+        fillPaint.setShader(new RadialGradient(
+                rect.centerX() - rect.width() * 0.10F,
+                rect.centerY() - rect.height() * 0.15F,
+                Math.max(rect.width(), rect.height()) * 0.7F,
+                new int[]{lightColor, baseColor, darkColor},
+                new float[]{0F, 0.5F, 1F},
+                Shader.TileMode.CLAMP));
+        canvas.drawRoundRect(rect, cornerR, cornerR, fillPaint);
+        fillPaint.setShader(null);
+
+        // Outline
+        ChipRimPaint.setStrokeWidth(Math.max(1.5F, rect.width() * 0.05F));
+        ChipRimPaint.setColor(outlineColor);
+        canvas.drawRoundRect(rect, cornerR, cornerR, ChipRimPaint);
+
+        // Gold rim accent
+        RectF innerRect = new RectF(rect);
+        innerRect.inset(rect.width() * 0.06F, rect.height() * 0.06F);
+        ChipHighlightPaint.setStrokeWidth(Math.max(1F, rect.width() * 0.03F));
+        ChipHighlightPaint.setColor(rimColor);
+        canvas.drawRoundRect(innerRect, cornerR * 0.8F, cornerR * 0.8F, ChipHighlightPaint);
+    }
+
+    // ======================== Iranian Royal theme chip rendering ========================
+
+    private void drawIranianChip(Canvas canvas, RectF rect, int player) {
+        int baseColor = player==1 ? IRAN_P1_BASE : IRAN_P2_BASE;
+        int lightColor = player==1 ? IRAN_P1_LIGHT : IRAN_P2_LIGHT;
+        int darkColor = player==1 ? IRAN_P1_DARK : IRAN_P2_DARK;
+        int rimColor = player==1 ? IRAN_P1_RIM : IRAN_P2_RIM;
+        int outlineColor = player==1 ? IRAN_P1_OUTLINE : IRAN_P2_OUTLINE;
+        int highlightColor = player==1 ? IRAN_P1_HIGHLIGHT : IRAN_P2_HIGHLIGHT;
+        int accentColor = player==1 ? IRAN_P1_ACCENT : IRAN_P2_ACCENT;
+
+        float cx = rect.centerX();
+        float cy = rect.centerY();
+        float chipRadius = Math.max(rect.width(), rect.height()) / 2F;
+
+        // 1. Soft contact shadow (natural, warm)
+        chipShadowRect.set(rect);
+        chipShadowRect.offset(rect.width() * 0.03F, rect.height() * 0.07F);
+        chipContactShadowPaint.setColor(Color.argb(85, 25, 12, 5));
+        chipContactShadowPaint.setMaskFilter(new BlurMaskFilter(chipRadius * 0.16F, BlurMaskFilter.Blur.NORMAL));
+        canvas.drawOval(chipShadowRect, chipContactShadowPaint);
+
+        // 2. Main body - satin surface with warm radial gradient
+        Paint fillPaint = player==1 ? WhiteChipPaint : RedChipPaint;
+        float gradRadius = chipRadius * 1.15F;
+        fillPaint.setShader(new RadialGradient(
+                cx - rect.width() * 0.14F,
+                cy - rect.height() * 0.17F,
+                gradRadius,
+                new int[]{lightColor, baseColor, darkColor},
+                new float[]{0F, 0.52F, 1F},
+                Shader.TileMode.CLAMP));
+        canvas.drawOval(rect, fillPaint);
+        fillPaint.setShader(null);
+
+        // 3. Clean outline (dark walnut / very dark)
+        ChipRimPaint.setStrokeWidth(Math.max(2F, rect.width() * 0.055F));
+        ChipRimPaint.setColor(outlineColor);
+        canvas.drawOval(rect, ChipRimPaint);
+
+        // 4. Thin aged-brass rim
+        RectF rimRing = new RectF(rect);
+        float rimInset = rect.width() * 0.065F;
+        rimRing.inset(rimInset, rimInset);
+        ChipHighlightPaint.setStrokeWidth(Math.max(1.5F, rect.width() * 0.035F));
+        ChipHighlightPaint.setColor(rimColor);
+        canvas.drawOval(rimRing, ChipHighlightPaint);
+
+        // 5. Subtle geometric accent ring (turquoise/lapis - very thin, Persian inspired)
+        RectF accentRing = new RectF(rect);
+        float accentInset = rect.width() * 0.20F;
+        accentRing.inset(accentInset, accentInset);
+        chipAccentPaint.setStrokeWidth(Math.max(1F, rect.width() * 0.022F));
+        chipAccentPaint.setColor(Color.argb(100, Color.red(accentColor), Color.green(accentColor), Color.blue(accentColor)));
+        canvas.drawOval(accentRing, chipAccentPaint);
+
+        // 6. Inner tiny dot pattern (Khatam-like subtle geometry - 4 small dots)
+        chipDotPaint.setColor(Color.argb(60, Color.red(accentColor), Color.green(accentColor), Color.blue(accentColor)));
+        float dotR = rect.width() * 0.02F;
+        float dotDist = rect.width() * 0.12F;
+        canvas.drawCircle(cx, cy - dotDist, dotR, chipDotPaint);
+        canvas.drawCircle(cx, cy + dotDist, dotR, chipDotPaint);
+        canvas.drawCircle(cx - dotDist, cy, dotR, chipDotPaint);
+        canvas.drawCircle(cx + dotDist, cy, dotR, chipDotPaint);
+
+        // 7. Soft satin highlight (top-left, warm)
+        chipSpecRect.set(rect);
+        chipSpecRect.inset(rect.width() * 0.30F, rect.height() * 0.32F);
+        chipSpecRect.offset(-rect.width() * 0.10F, -rect.height() * 0.12F);
+        chipSpecPaint.setShader(new RadialGradient(
+                chipSpecRect.centerX(), chipSpecRect.centerY(),
+                chipSpecRect.width() * 0.55F,
+                new int[]{Color.argb(65, Color.red(highlightColor), Color.green(highlightColor), Color.blue(highlightColor)),
+                           Color.argb(0, 255, 255, 255)},
+                new float[]{0F, 1F},
+                Shader.TileMode.CLAMP));
+        canvas.drawOval(chipSpecRect, chipSpecPaint);
+    }
+
+    private void drawIranianEndChip(Canvas canvas, RectF rect, int player) {
+        int baseColor = player==1 ? IRAN_P1_BASE : IRAN_P2_BASE;
+        int lightColor = player==1 ? IRAN_P1_LIGHT : IRAN_P2_LIGHT;
+        int darkColor = player==1 ? IRAN_P1_DARK : IRAN_P2_DARK;
+        int rimColor = player==1 ? IRAN_P1_RIM : IRAN_P2_RIM;
+        int outlineColor = player==1 ? IRAN_P1_OUTLINE : IRAN_P2_OUTLINE;
+
+        float cornerR = rect.width() * 0.12F;
+
+        // Contact shadow
+        chipShadowRect.set(rect);
+        chipShadowRect.offset(rect.width() * 0.03F, rect.height() * 0.12F);
+        chipContactShadowPaint.setColor(Color.argb(70, 25, 12, 5));
+        chipContactShadowPaint.setMaskFilter(new BlurMaskFilter(rect.width() * 0.10F, BlurMaskFilter.Blur.NORMAL));
+        canvas.drawRoundRect(chipShadowRect, cornerR, cornerR, chipContactShadowPaint);
+
+        // Body with satin gradient
+        Paint fillPaint = player==1 ? WhiteChipPaint : RedChipPaint;
+        fillPaint.setShader(new RadialGradient(
+                rect.centerX() - rect.width() * 0.10F,
+                rect.centerY() - rect.height() * 0.14F,
+                Math.max(rect.width(), rect.height()) * 0.7F,
+                new int[]{lightColor, baseColor, darkColor},
+                new float[]{0F, 0.5F, 1F},
+                Shader.TileMode.CLAMP));
+        canvas.drawRoundRect(rect, cornerR, cornerR, fillPaint);
+        fillPaint.setShader(null);
+
+        // Outline
+        ChipRimPaint.setStrokeWidth(Math.max(1.5F, rect.width() * 0.05F));
+        ChipRimPaint.setColor(outlineColor);
+        canvas.drawRoundRect(rect, cornerR, cornerR, ChipRimPaint);
+
+        // Aged-brass rim accent
+        RectF innerRect = new RectF(rect);
+        innerRect.inset(rect.width() * 0.06F, rect.height() * 0.06F);
+        ChipHighlightPaint.setStrokeWidth(Math.max(1F, rect.width() * 0.03F));
+        ChipHighlightPaint.setColor(rimColor);
+        canvas.drawRoundRect(innerRect, cornerR * 0.8F, cornerR * 0.8F, ChipHighlightPaint);
+    }
+
+    // ======================== Chip dispatch (routes to theme-specific renderer) ========================
+
+    private void drawThemedChip(Canvas canvas, RectF rect, int player) {
+        if (currentTheme == 2) { // THEME_CYBERPUNK
+            drawCyberpunkChip(canvas, rect, player);
+        } else if (currentTheme == 1) { // THEME_POP_ART
+            drawPopArtChip(canvas, rect, player);
+        } else if (currentTheme == 3) { // THEME_LUXURY
+            drawLuxuryPersianChip(canvas, rect, player);
+        } else { // THEME_ROYAL (0) - Iranian
+            drawIranianChip(canvas, rect, player);
+        }
+    }
+
+    private void drawThemedEndChip(Canvas canvas, RectF rect, int player) {
+        if (currentTheme == 2) { // THEME_CYBERPUNK
+            drawCyberpunkEndChip(canvas, rect, player);
+        } else if (currentTheme == 1) { // THEME_POP_ART
+            drawPopArtEndChip(canvas, rect, player);
+        } else if (currentTheme == 3) { // THEME_LUXURY
+            drawLuxuryPersianEndChip(canvas, rect, player);
+        } else { // THEME_ROYAL (0) - Iranian
+            drawIranianEndChip(canvas, rect, player);
+        }
+    }
+
     //Method for drawing on canvas
     @Override
     protected void onDraw(Canvas canvas) {
@@ -682,7 +1244,7 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
                                 ChipRect.set(xChipStart, yChipEnd , xChipEnd, yChipStart);
                             }
                             if(!drawEndBoard) {
-                                drawLuxuryChip(canvas, ChipRect, ChipMatrix[i].getPlayer());
+                                drawThemedChip(canvas, ChipRect, ChipMatrix[i].getPlayer());
                                 //move y coordinates for drawing next chip on same triangle
                                 if (i >= 12 && i != 24) {
                                     yChipStart = yChipEnd + heightPadding;
@@ -693,7 +1255,7 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
                                 }
                             }
                             else{
-                                drawLuxuryEndChip(canvas, ChipRect, ChipMatrix[i].getPlayer());
+                                drawThemedEndChip(canvas, ChipRect, ChipMatrix[i].getPlayer());
                                 if (i == 27) {
                                     yChipStart = yChipEnd;
                                     yChipEnd = yChipEnd - EndChipHeight;
@@ -746,7 +1308,7 @@ public class OnBoardImage extends androidx.appcompat.widget.AppCompatImageView {
                         MoveChipY + MoveChipSize*0.12F, MoveChipSize/2, MoveChipShadowPaint);
                 ChipRect.set(MoveChipX-MoveChipSize/2F, MoveChipY-MoveChipSize/2F,
                         MoveChipX+MoveChipSize/2F, MoveChipY+MoveChipSize/2F);
-                drawLuxuryChip(canvas, ChipRect, MoveChipPlayer);
+                drawThemedChip(canvas, ChipRect, MoveChipPlayer);
             }
             if(movePulseField!=-1){
                 float pulseX=FieldCenterX[movePulseField];

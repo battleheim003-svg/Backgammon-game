@@ -75,6 +75,13 @@ public class GameTask extends AsyncTask<Void, Void, Void> {
                     model.setState(1);
                     //Change current player
                     model.changeCurrentPlayer();
+                    // Show turn-switch overlay in Pass & Play for initial roll
+                    if (gameActivity.isPassAndPlayMode()) {
+                        gameActivity.showTurnSwitchAndWait(
+                                model.getCurrentObjectPlayer().getPlayerName(),
+                                model.getCurrentPlayer());
+                        if (WorkFlag == 0) break;
+                    }
                     //Wait time between turns
                     try {
                         Thread.sleep(sleep_time);
@@ -135,21 +142,19 @@ public class GameTask extends AsyncTask<Void, Void, Void> {
                                 EndRoutineStarted=1;
                                 //Set working flag to 0
                                 WorkFlag = 0;
-                                //Create end result intent
-                                Intent data = new Intent();
-                                //Add player1 name to intent
-                                data.putExtra(MenuActivity.EXTRA_PLAYER1_NAME,
-                                        model.getPlayers()[0].getPlayerName());
-                                //Add player2 name to intent
-                                data.putExtra(MenuActivity.EXTRA_PLAYER2_NAME,
-                                        model.getPlayers()[1].getPlayerName());
-                                //Add wining player to intent
-                                data.putExtra(MenuActivity.EXTRA_WINING_PLAYER,
-                                        gameLogic.getCurrPlayerFinished());
+                                //Get winner info
+                                int winningPlayer = gameLogic.getCurrPlayerFinished();
+                                String p1Name = model.getPlayers()[0].getPlayerName();
+                                String p2Name = model.getPlayers()[1].getPlayerName();
+                                String gameMode;
+                                if (gameActivity.isPassAndPlayMode()) {
+                                    gameMode = MenuActivity.GAME_MODE_PASS_AND_PLAY;
+                                } else {
+                                    gameMode = MenuActivity.GAME_MODE_VS_BOT;
+                                }
                                 gameActivity.playGameFinishedEffect();
-                                gameActivity.setResult(MenuActivity.GAME_ENDED_OK, data);
-                                //Finish game activity (this will start onPause and onStop)
-                                gameActivity.finish();
+                                // Show game over dialog instead of finishing immediately
+                                gameActivity.onGameFinished(winningPlayer, p1Name, p2Name, gameMode);
                             }
                         }
                         break;
@@ -158,6 +163,20 @@ public class GameTask extends AsyncTask<Void, Void, Void> {
                     model.changeCurrentPlayer();
                     //Set state to State 3
                     model.setState(3);
+                    // Tutorial mode: skip bot turn entirely, stay on player 1
+                    if (gameActivity.isTutorialMode()) {
+                        model.setCurrentPlayer(1);
+                        // Wait briefly then continue loop (scenario already loaded by UI)
+                        try { Thread.sleep(500); } catch (InterruptedException ignored) {}
+                        break;
+                    }
+                    // Show turn-switch overlay in Pass & Play mode
+                    if (gameActivity.isPassAndPlayMode()) {
+                        gameActivity.showTurnSwitchAndWait(
+                                model.getCurrentObjectPlayer().getPlayerName(),
+                                model.getCurrentPlayer());
+                        if (WorkFlag == 0) break;
+                    }
                     //Wait time between turns
                     try {
                         Thread.sleep(sleep_time);

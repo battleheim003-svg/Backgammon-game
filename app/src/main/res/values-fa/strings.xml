@@ -58,14 +58,14 @@
     <string name="tutorial_title">آموزش</string>
     <string name="tutorial_player">شما</string>
     <string name="tutorial_bot">ربات آموزشی</string>
-    <string name="tutorial_intro">هدف: همه مهره‌هایتان را دور تخته حرکت دهید و زودتر از حریف خارج کنید.</string>
-    <string name="tutorial_setup">مهره‌ها روی چند خانه شروع می‌شوند. ستون‌ها امن‌ترند؛ مهره تنها آسیب‌پذیر است.</string>
-    <string name="tutorial_roll">تاس بریزید. هر تاس می‌تواند یک مهره را به همان تعداد خانه حرکت دهد.</string>
-    <string name="tutorial_move">یکی از مهره‌های خودتان را بکشید. راهنماهای سبز مقصدهای مجاز را نشان می‌دهند.</string>
-    <string name="tutorial_hit">اگر روی یک مهره تنها از حریف بنشینید، آن مهره زده می‌شود و به بار می‌رود.</string>
-    <string name="tutorial_bar">وقتی مهره‌ای روی بار دارید، باید اول همان را وارد بازی کنید.</string>
-    <string name="tutorial_bear_off">وقتی همه مهره‌ها در خانه داخلی شما باشند، می‌توانید آن‌ها را خارج کنید و برنده شوید.</string>
-    <string name="tutorial_finished">خوب است. همین بازی آموزشی را ادامه دهید و هر وقت حرکت مجاز دارید از راهنماها کمک بگیرید.</string>
+    <string name="tutorial_intro">خوش آمدید! هدف این است که همه مهره‌هایتان را دور تخته ببرید و زودتر از حریف خارج کنید. بیایید هر مهارت را تمرین کنیم!</string>
+    <string name="tutorial_setup">این چیدمان شروع بازی است. مهره‌های نارنجی شما به سمت خانه‌تان (پایین-راست) حرکت می‌کنند. بیایید تاس بریزیم!</string>
+    <string name="tutorial_roll">دکمه تاس را بزنید — یا گوشی را تکان دهید! هر تاس اجازه حرکت یک مهره به اندازه عددش را می‌دهد.</string>
+    <string name="tutorial_move">حالا یکی از مهره‌هایتان را به مقصد سبز بکشید. روی مهره بزنید تا ببینید کجا می‌تواند برود.</string>
+    <string name="tutorial_hit">آن مهره سفید تنها را می‌بینید؟ مهره‌تان را رویش ببرید تا بزنیدش! مهره تنهای حریف آسیب‌پذیر است.</string>
+    <string name="tutorial_bar">مهره شما روی بار است. باید اول آن را به تخته برگردانید. تاس بریزید و وارد کنید!</string>
+    <string name="tutorial_bear_off">همه مهره‌هایتان در خانه هستند! حالا با ریختن تاس آن‌ها را خارج کنید. خارج کنید تا ببرید!</string>
+    <string name="tutorial_finished">عالی! اصول بازی را یاد گرفتید. حالا واقعی بازی کنید!</string>
 
     <string name="scores_title">جدول امتیازها</string>
     <string name="results_title">نتیجه بازی‌ها</string>
@@ -108,8 +108,94 @@
 
     <string name="reset">بازنشانی</string>
 
+    <!-- Pass & Play -->
+    <string name="pass_and_play">دو نفره</string>
+    <string name="pass_and_play_subtitle">بازی روی یک گوشی</string>
+    <string name="pass_and_play_setup">تنظیم بازی دو نفره</string>
+    <string name="pass_and_play_player1_default">بازیکن ۱</string>
+    <string name="pass_and_play_player2_default">بازیکن ۲</string>
+    <string name="turn_switch_title">گوشی را رد کنید!</string>
+    <string name="turn_switch_message">نوبت %1$s است</string>
+    <string name="turn_switch_ready">آماده‌ام</string>
+    <string name="game_mode_vs_bot">مقابل ربات</string>
+    <string name="game_mode_pass_and_play">دو نفره</string>
+
+    <!-- Online Multiplayer (NOT YET ACTIVE) -->
+    <string name="online_play">آنلاین</string>
+    <string name="online_play_subtitle">به‌زودی</string>
+    <string name="online_coming_soon">بازی آنلاین به‌زودی اضافه می‌شود!</string>
+    <string name="online_random_match">پیدا کردن حریف</string>
+    <string name="online_invite_friend">دعوت دوست</string>
+    <string name="online_join_room">ورود به اتاق</string>
+    <string name="online_enter_code">کد دعوت را وارد کنید</string>
+    <string name="online_invite_code_label">کد دعوت</string>
+    <string name="online_share_code">این کد را با دوستتان به اشتراک بگذارید:</string>
+    <string name="online_searching">در حال جستجوی حریف…</string>
+    <string name="online_waiting_friend">منتظر پیوستن دوست…</string>
+    <string name="online_match_found">حریف پیدا شد!</string>
+    <string name="online_connecting">در حال اتصال…</string>
+    <string name="online_connection_lost">اتصال قطع شد</string>
+    <string name="online_reconnecting">در حال اتصال مجدد… (%1$d ثانیه)</string>
+    <string name="online_opponent_disconnected">حریف قطع شد (%1$d ثانیه)</string>
+    <string name="online_opponent_reconnected">حریف بازگشت</string>
+    <string name="online_match_forfeited">بازی به دلیل قطعی باخته شد</string>
+    <string name="online_opponent_resigned">حریف انصراف داد — شما برنده‌اید!</string>
+    <string name="online_invalid_move">حرکت نامعتبر از حریف تشخیص داده شد</string>
+    <string name="online_cancel">انصراف</string>
+    <string name="online_resign">تسلیم</string>
+    <string name="online_resign_confirm">آیا مطمئن هستید که می‌خواهید تسلیم شوید؟</string>
+
+    <!-- Leaderboard -->
+    <string name="leaderboard_title">جدول رتبه‌بندی</string>
+    <string name="leaderboard_this_week">این هفته</string>
+    <string name="leaderboard_this_month">این ماه</string>
+    <string name="leaderboard_all_time">کل</string>
+    <string name="leaderboard_empty">هنوز بازی‌ای انجام نشده. بازی کنید تا رتبه‌بندی ببینید!</string>
+    <string name="leaderboard_legacy_scores">تاریخچه بازی‌ها</string>
+    <string name="leaderboard_games_format">%1$d بازی • %2$d%% برد</string>
+    <string name="leaderboard_elo_label">امتیاز</string>
+    <string name="leaderboard_avatar_desc">آواتار بازیکن</string>
+    <string name="leaderboard_rank">رتبه</string>
+
     <string name="play_game">بازی</string>
     <string name="play_choice_title">انتخاب بازی</string>
     <string name="play_choice_message">بازی ذخیره‌شده را ادامه بدهید یا از نو شروع کنید.</string>
+
+    <!-- Monetization -->
+    <string name="iap_remove_ads">حذف تبلیغات</string>
+    <string name="iap_remove_ads_desc">حذف دائمی تمام تبلیغات میان‌صفحه‌ای</string>
+    <string name="iap_theme_unlock">باز کردن طرح</string>
+    <string name="iap_restore_purchases">بازیابی خریدها</string>
+    <string name="iap_purchase_success">خرید موفقیت‌آمیز!</string>
+    <string name="iap_purchase_failed">خرید ناموفق. لطفاً دوباره تلاش کنید.</string>
+    <string name="hint_button">راهنما</string>
+    <string name="hint_watch_ad">یک ویدیوی کوتاه ببینید تا بهترین حرکت نشان داده شود</string>
+    <string name="hint_best_move">بهترین حرکت مشخص شد!</string>
+    <string name="theme_locked">قفل — برای خرید بزنید</string>
+
+    <!-- Pause Menu -->
+    <string name="pause_title">مکث</string>
+    <string name="pause_resume">ادامه</string>
+    <string name="pause_restart">از نو</string>
+    <string name="pause_quit">خروج</string>
+    <string name="pause_volume_desc">صدا</string>
+    <string name="roll_button_label">بنداز</string>
+
+    <!-- Game Over / Rematch -->
+    <string name="game_over_title">پایان بازی</string>
+    <string name="game_over_winner">%1$s برنده شد!</string>
+    <string name="game_over_duration">مدت: %1$d:%2$02d</string>
+    <string name="game_over_game_number">بازی #%1$d</string>
+    <string name="game_over_win_streak">برد متوالی: %1$d 🔥</string>
+    <string name="game_over_best_streak">بهترین: %1$d</string>
+    <string name="daily_challenge_done">چالش روزانه انجام شد! ✓</string>
+    <string name="review_title">از بازی لذت می‌برید؟</string>
+    <string name="review_message">اگر تخته‌نرد سلطنتی رو دوست دارید، لطفاً در فروشگاه امتیاز بدید. خیلی کمک می‌کنه!</string>
+    <string name="review_rate">امتیاز بدم</string>
+    <string name="review_later">بعداً</string>
+    <string name="review_never">نه ممنون</string>
+    <string name="rematch">بازی مجدد</string>
+    <string name="change_settings">تغییر تنظیمات</string>
+    <string name="main_menu">منوی اصلی</string>
 
 </resources>

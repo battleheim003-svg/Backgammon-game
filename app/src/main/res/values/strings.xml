@@ -61,14 +61,14 @@
     <string name="tutorial_title">Tutorial</string>
     <string name="tutorial_player">You</string>
     <string name="tutorial_bot">Tutor Bot</string>
-    <string name="tutorial_intro">Goal: move all your checkers around the board and bear them off before your opponent.</string>
-    <string name="tutorial_setup">Your checkers start on several points. Stacks protect each other; a single checker is vulnerable.</string>
-    <string name="tutorial_roll">Roll the dice. Each die can move one checker by that many points.</string>
-    <string name="tutorial_move">Drag one of your checkers. Green hints show legal destinations.</string>
-    <string name="tutorial_hit">If you land on one opposing checker, it is hit and sent to the bar.</string>
-    <string name="tutorial_bar">A checker on the bar must re-enter before you can move other checkers.</string>
-    <string name="tutorial_bear_off">When all your checkers are in your home board, move them off the board to win.</string>
-    <string name="tutorial_finished">Nice. Keep playing this guided game and use the hints whenever a move is available.</string>
+    <string name="tutorial_intro">Welcome! Your goal is to move all your checkers around the board and bear them off before your opponent. Let\'s practice each skill!</string>
+    <string name="tutorial_setup">This is the starting position. Your orange checkers move toward your home board (bottom-right). Let\'s roll!</string>
+    <string name="tutorial_roll">Tap the dice button to roll — or shake your phone! Each die lets you move one checker by that many points.</string>
+    <string name="tutorial_move">Now drag one of your checkers to a green-highlighted destination. Tap a checker to see where it can go.</string>
+    <string name="tutorial_hit">See that lone white checker? Move your checker onto it to hit it! A single opponent checker is vulnerable.</string>
+    <string name="tutorial_bar">Your checker is on the bar. You must re-enter it onto the board before moving any other checker. Roll and enter!</string>
+    <string name="tutorial_bear_off">All your checkers are in your home board! Now bear them off by rolling and moving past position 24. Bear off to win!</string>
+    <string name="tutorial_finished">Excellent! You\'ve mastered the basics. Enjoy playing for real!</string>
 
     <string name="scores_title">Scoreboard</string>
     <string name="results_title">Game Results</string>
@@ -110,5 +110,91 @@
     <string name="numeric_value">%1$d</string>
 
     <string name="reset">Reset</string>
+
+    <!-- Pass & Play -->
+    <string name="pass_and_play">Two Player</string>
+    <string name="pass_and_play_subtitle">Play on one device</string>
+    <string name="pass_and_play_setup">Two Player Setup</string>
+    <string name="pass_and_play_player1_default">Player 1</string>
+    <string name="pass_and_play_player2_default">Player 2</string>
+    <string name="turn_switch_title">Pass the device!</string>
+    <string name="turn_switch_message">It\'s %1$s\'s turn</string>
+    <string name="turn_switch_ready">I\'m Ready</string>
+    <string name="game_mode_vs_bot">vs Bot</string>
+    <string name="game_mode_pass_and_play">Two Player</string>
+
+    <!-- Online Multiplayer (NOT YET ACTIVE — architecture exists, no backend) -->
+    <string name="online_play">Online</string>
+    <string name="online_play_subtitle">Coming Soon</string>
+    <string name="online_coming_soon">Online multiplayer is coming soon!</string>
+    <string name="online_random_match">Find Opponent</string>
+    <string name="online_invite_friend">Invite Friend</string>
+    <string name="online_join_room">Join Room</string>
+    <string name="online_enter_code">Enter invite code</string>
+    <string name="online_invite_code_label">Invite Code</string>
+    <string name="online_share_code">Share this code with your friend:</string>
+    <string name="online_searching">Searching for opponent…</string>
+    <string name="online_waiting_friend">Waiting for friend to join…</string>
+    <string name="online_match_found">Opponent found!</string>
+    <string name="online_connecting">Connecting…</string>
+    <string name="online_connection_lost">Connection lost</string>
+    <string name="online_reconnecting">Reconnecting… (%1$d s)</string>
+    <string name="online_opponent_disconnected">Opponent disconnected (%1$d s)</string>
+    <string name="online_opponent_reconnected">Opponent reconnected</string>
+    <string name="online_match_forfeited">Match forfeited due to timeout</string>
+    <string name="online_opponent_resigned">Opponent resigned — you win!</string>
+    <string name="online_invalid_move">Invalid move detected from opponent</string>
+    <string name="online_cancel">Cancel</string>
+    <string name="online_resign">Resign</string>
+    <string name="online_resign_confirm">Are you sure you want to resign?</string>
+
+    <!-- Leaderboard -->
+    <string name="leaderboard_title">Leaderboard</string>
+    <string name="leaderboard_this_week">This Week</string>
+    <string name="leaderboard_this_month">This Month</string>
+    <string name="leaderboard_all_time">All Time</string>
+    <string name="leaderboard_empty">No games played yet. Play to see rankings!</string>
+    <string name="leaderboard_legacy_scores">Match History</string>
+    <string name="leaderboard_games_format">%1$d games • %2$d%% win</string>
+    <string name="leaderboard_elo_label">ELO</string>
+    <string name="leaderboard_avatar_desc">Player avatar</string>
+    <string name="leaderboard_rank">Rank</string>
+
+    <!-- Monetization -->
+    <string name="iap_remove_ads">Remove Ads</string>
+    <string name="iap_remove_ads_desc">Remove all interstitial ads permanently</string>
+    <string name="iap_theme_unlock">Unlock Theme</string>
+    <string name="iap_restore_purchases">Restore Purchases</string>
+    <string name="iap_purchase_success">Purchase successful!</string>
+    <string name="iap_purchase_failed">Purchase failed. Please try again.</string>
+    <string name="hint_button">Hint</string>
+    <string name="hint_watch_ad">Watch a short video to see the best move</string>
+    <string name="hint_best_move">Best move highlighted!</string>
+    <string name="theme_locked">Locked — tap to purchase</string>
+
+    <!-- Pause Menu -->
+    <string name="pause_title">PAUSE</string>
+    <string name="pause_resume">Resume</string>
+    <string name="pause_restart">Restart</string>
+    <string name="pause_quit">Quit</string>
+    <string name="pause_volume_desc">Volume</string>
+    <string name="roll_button_label">ROLL</string>
+
+    <!-- Game Over / Rematch -->
+    <string name="game_over_title">Game Over</string>
+    <string name="game_over_winner">%1$s wins!</string>
+    <string name="game_over_duration">Duration: %1$d:%2$02d</string>
+    <string name="game_over_game_number">Game #%1$d</string>
+    <string name="game_over_win_streak">Win streak: %1$d 🔥</string>
+    <string name="game_over_best_streak">Best: %1$d</string>
+    <string name="daily_challenge_done">Daily challenge complete! ✓</string>
+    <string name="review_title">Enjoying the game?</string>
+    <string name="review_message">If you like Royal Backgammon, please rate us in the store. It helps a lot!</string>
+    <string name="review_rate">Rate Now</string>
+    <string name="review_later">Maybe Later</string>
+    <string name="review_never">No Thanks</string>
+    <string name="rematch">Rematch</string>
+    <string name="change_settings">Change Settings</string>
+    <string name="main_menu">Main Menu</string>
 
 </resources>

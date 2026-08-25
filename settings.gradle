@@ -5,6 +5,7 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven { url "https://developer.tapsell.ir/maven" }
     }
 }
 
@@ -15,8 +16,10 @@ dependencyResolutionManagement {
         maven { url "https://maven.aliyun.com/repository/public" }
         google()
         mavenCentral()
+        maven { url "https://developer.tapsell.ir/maven" }
     }
 }
 
 rootProject.name = "Backgammon-game"
 include ':app'
+include ':game-core'
