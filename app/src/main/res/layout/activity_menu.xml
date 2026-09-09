@@ -13,6 +13,108 @@
         android:layout_height="match_parent"
         android:background="#78112532" />
 
+    <LinearLayout
+        android:id="@+id/menuTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Coin Balance -->
+        <LinearLayout
+            android:id="@+id/coinBalanceContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_pause_button"
+            android:gravity="center_vertical"
+            android:paddingStart="10dp"
+            android:paddingEnd="12dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🪙"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvCoinBalance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/accent_gold"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:text="0" />
+        </LinearLayout>
+
+        <!-- Free Coins Button -->
+        <Button
+            android:id="@+id/btnFreeCoins"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/neuro_primary_button"
+            android:elevation="4dp"
+            android:fontFamily="sans-serif-medium"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:onClick="onFreeCoinsClicked"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="@string/free_coins"
+            android:textAllCaps="false"
+            android:textColor="@color/surface_base"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- ELO rating badge -->
+        <TextView
+            android:id="@+id/tvEloRating"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_pause_button"
+            android:gravity="center"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:text="ELO 1200" />
+
+        <!-- Shop Button -->
+        <Button
+            android:id="@+id/btnShop"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/neuro_secondary_button"
+            android:elevation="4dp"
+            android:fontFamily="sans-serif-medium"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:onClick="openCoinShop"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="@string/coin_shop"
+            android:textAllCaps="false"
+            android:textColor="@color/accent_gold"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/royalLogo"
         android:layout_width="172dp"

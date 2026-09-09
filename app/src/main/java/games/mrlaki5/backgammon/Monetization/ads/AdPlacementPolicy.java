@@ -1,37 +1,39 @@
 package games.mrlaki5.backgammon.Monetization.ads;
 
 /**
- * Documents and enforces ad placement rules.
+ * Documents and enforces ad placement rules — v2.0.
  *
- * ALLOWED placements:
- * ┌──────────────────────────────────────────────────────────┐
- * │ Interstitial                                             │
- * │ • After game ends, before results screen                 │
- * │ • Max frequency: 1 per 3 completed games                │
- * │ • Never during gameplay                                  │
- * ├──────────────────────────────────────────────────────────┤
- * │ Rewarded Video                                           │
- * │ • "Get Hint" button — suggests best move                 │
- * │ • Only shown when user explicitly requests it            │
- * │ • No forced viewing                                      │
- * └──────────────────────────────────────────────────────────┘
+ * INTERSTITIAL (between games):
+ * ┌────────────────────────────────────────────────────────┐
+ * │ • After game ends, before results screen               │
+ * │ • Max frequency: 1 per N completed games (see AdConfig)│
+ * │ • Never during gameplay                                │
+ * │ • Disabled by "Remove Ads" IAP                         │
+ * └────────────────────────────────────────────────────────┘
  *
- * FORBIDDEN placements:
- * ✗ Banner ads on game screen (causes negative reviews)
- * ✗ Interstitial mid-turn or mid-game
+ * REWARDED VIDEO (5 placements, all opt-in):
+ * ┌────────────────────────────────────────────────────────┐
+ * │ 1. HINT — during game, max 3/game, coin alternative   │
+ * │ 2. FREE_COINS — main menu, 3/day, 15min cooldown      │
+ * │ 3. DOUBLE_REWARD — after win, doubles coin reward      │
+ * │ 4. SAVE_STREAK — after loss w/ streak≥3, 1/day        │
+ * │ 5. BONUS_CHEST — after daily challenge, 1/day          │
+ * ├────────────────────────────────────────────────────────┤
+ * │ GLOBAL: max 5 rewarded/day, 60s cooldown between any  │
+ * │ "Remove Ads" does NOT disable rewarded (user benefits) │
+ * └────────────────────────────────────────────────────────┘
+ *
+ * FORBIDDEN:
+ * ✗ Banner ads anywhere
+ * ✗ Any ad mid-turn or mid-game
  * ✗ Forced ad viewing before game starts
  * ✗ Any ad that interrupts active gameplay
  *
- * Integration points in code:
- * - MenuActivity.onActivityResult (GAME_ENDED_OK) → adManager.showInterstitialIfReady()
- * - GameActivity: "Hint" button → adManager.showRewardedAd() → reveal best move
+ * If ad fails to load → fall back to coin payment, never block the feature.
  */
 public final class AdPlacementPolicy {
     private AdPlacementPolicy() {}
 
-    /** Rewarded ad is NEVER forced — user must tap a button to opt in. */
     public static final boolean REWARDED_IS_OPT_IN = true;
-
-    /** Banner ads are NEVER shown. */
     public static final boolean BANNERS_ALLOWED = false;
 }

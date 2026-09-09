@@ -34,6 +34,49 @@
         app:layout_constraintEnd_toEndOf="@id/boardImage"
         app:layout_constraintTop_toTopOf="@id/boardImage" />
 
+    <Button
+        android:id="@+id/btnHint"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/bg_pause_button"
+        android:elevation="16dp"
+        android:fontFamily="sans-serif-medium"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:text="@string/hint_button"
+        android:textAllCaps="false"
+        android:textColor="@color/accent_gold"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/btnPause"
+        app:layout_constraintTop_toTopOf="@id/boardImage" />
+
+    <Button
+        android:id="@+id/btnUndo"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/bg_pause_button"
+        android:elevation="16dp"
+        android:fontFamily="sans-serif-medium"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:text="@string/undo_move"
+        android:textAllCaps="false"
+        android:textColor="@color/accent_gold"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/btnHint"
+        app:layout_constraintTop_toTopOf="@id/boardImage" />
+
     <ImageButton
         android:id="@+id/rollDiceButton"
         android:layout_width="62dp"

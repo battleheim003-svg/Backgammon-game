@@ -24,11 +24,17 @@ import android.widget.Spinner;
 import java.io.File;
 
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
+import games.mrlaki5.backgammon.Economy.CoinConfig;
+import games.mrlaki5.backgammon.Economy.CoinManager;
+import games.mrlaki5.backgammon.Economy.DailyLoginManager;
 import games.mrlaki5.backgammon.GameControllers.GameActivity;
 import games.mrlaki5.backgammon.GameAudio;
 import games.mrlaki5.backgammon.GamePreferences;
 import games.mrlaki5.backgammon.LocaleHelper;
 import games.mrlaki5.backgammon.MenuAudioManager;
+import games.mrlaki5.backgammon.Monetization.ads.AdCallback;
+import games.mrlaki5.backgammon.Monetization.ads.RewardedAdPlacement;
+import games.mrlaki5.backgammon.Monetization.ads.RewardedAdTracker;
 import games.mrlaki5.backgammon.R;
 
 //Activity class for main menu
@@ -67,6 +73,12 @@ public class MenuActivity extends AppCompatActivity {
     private View myView;
     private GameAudio gameAudio;
     private games.mrlaki5.backgammon.Monetization.ads.AdManager adManager;
+    private CoinManager coinManager;
+    private RewardedAdTracker rewardedAdTracker;
+    private DailyLoginManager dailyLoginManager;
+    private android.widget.TextView tvCoinBalance;
+    private android.widget.TextView tvEloRating;
+    private Button btnFreeCoins;
 
     /**
      * Returns the shared AdManager instance.
@@ -214,6 +226,15 @@ public class MenuActivity extends AppCompatActivity {
         //Change color of continue game button from gray to yellow if save file exists
         checkAndChangeButtonColor();
         polishMenuButtons();
+
+        coinManager = new CoinManager(this);
+        rewardedAdTracker = new RewardedAdTracker(this);
+        dailyLoginManager = new DailyLoginManager(this);
+        tvCoinBalance = findViewById(R.id.tvCoinBalance);
+        tvEloRating = findViewById(R.id.tvEloRating);
+        btnFreeCoins = findViewById(R.id.btnFreeCoins);
+        updateCoinDisplay();
+
         // Start menu background music
         MenuAudioManager.get().startMenuMusic(this);
     }
@@ -222,6 +243,64 @@ public class MenuActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         MenuAudioManager.get().startMenuMusic(this);
+        updateCoinDisplay();
+    }
+
+    private void updateCoinDisplay() {
+        if (tvCoinBalance != null && coinManager != null) {
+            tvCoinBalance.setText(String.valueOf(coinManager.getBalance()));
+        }
+        if (btnFreeCoins != null && rewardedAdTracker != null) {
+            btnFreeCoins.setEnabled(rewardedAdTracker.canShow(RewardedAdPlacement.FREE_COINS));
+        }
+    }
+
+    public void onFreeCoinsClicked(View v) {
+        playMenuTap();
+        if (rewardedAdTracker != null && !rewardedAdTracker.canShow(RewardedAdPlacement.FREE_COINS)) {
+            android.widget.Toast.makeText(this, R.string.insufficient_coins, android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (adManager != null && adManager.isRewardedAdReady()) {
+            adManager.showRewardedAd(this, new AdCallback() {
+                @Override
+                public void onAdLoaded() {}
+
+                @Override
+                public void onAdFailedToLoad(String error) {
+                    runOnUiThread(() -> android.widget.Toast.makeText(MenuActivity.this,
+                            R.string.iap_purchase_failed, android.widget.Toast.LENGTH_SHORT).show());
+                }
+
+                @Override
+                public void onAdShown() {}
+
+                @Override
+                public void onAdDismissed() {}
+
+                @Override
+                public void onAdClicked() {}
+
+                @Override
+                public void onRewardEarned() {
+                    if (coinManager != null) {
+                        coinManager.earn(CoinConfig.REWARDED_AD_WATCH, "free_coins");
+                    }
+                    if (rewardedAdTracker != null) {
+                        rewardedAdTracker.recordShow(RewardedAdPlacement.FREE_COINS);
+                    }
+                    GameAnalytics.get().trackRewardedAdWatched("free_coins");
+                    runOnUiThread(() -> updateCoinDisplay());
+                }
+            });
+        } else {
+            if (adManager != null) adManager.preloadAds();
+            android.widget.Toast.makeText(this, R.string.iap_purchase_failed, android.widget.Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void openCoinShop(View v) {
+        playMenuTap();
     }
 
     @Override

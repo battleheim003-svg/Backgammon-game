@@ -37,6 +37,8 @@ import games.mrlaki5.backgammon.Economy.CoinManager;
 import games.mrlaki5.backgammon.Menus.MenuActivity;
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
 import games.mrlaki5.backgammon.WinStreakTracker;
+import games.mrlaki5.backgammon.Monetization.ads.RewardedAdPlacement;
+import games.mrlaki5.backgammon.Monetization.ads.RewardedAdTracker;
 import games.mrlaki5.backgammon.Retention.AchievementManager;
 import games.mrlaki5.backgammon.Retention.DailyChallenge;
 import games.mrlaki5.backgammon.Retention.ReviewPromptManager;
@@ -129,6 +131,9 @@ public class GameActivity extends AppCompatActivity {
     private volatile boolean turnSwitchWaiting = false;
 
     private CoinManager coinManager;
+    private RewardedAdTracker rewardedAdTracker;
+    private Button btnHint;
+    private Button btnUndo;
 
     //Touch listener activated when human needs to move chips
     private View.OnTouchListener BoardListener= new View.OnTouchListener() {
@@ -514,9 +519,11 @@ public class GameActivity extends AppCompatActivity {
             gameAudio.startBackgroundMusic();
         }
         coinManager = new CoinManager(this);
+        rewardedAdTracker = new RewardedAdTracker(this);
         //Get View
         BoardImage=((OnBoardImage)findViewById(R.id.boardImage) );
         BoardImage.setBoardTheme(GamePreferences.getBoardTheme(this));
+        setupHintButton();
         //Create model loader
         modelLoader=new ModelLoader();
         //Build model
@@ -1526,6 +1533,89 @@ public class GameActivity extends AppCompatActivity {
         startActivity(intent);
         // Skip default activity transition for smoother feel
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    private void setupHintButton() {
+        btnHint = findViewById(R.id.btnHint);
+        if (btnHint != null) {
+            btnHint.setOnClickListener(v -> showHintChoiceDialog());
+        }
+        btnUndo = findViewById(R.id.btnUndo);
+    }
+
+    private void showHintChoiceDialog() {
+        if (model == null || model.getState() != 2 || model.getNextMoves() == null || model.getNextMoves().isEmpty()) {
+            return;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.hint_choice_title);
+        String[] options = new String[] {
+                getString(R.string.hint_use_coins, CoinConfig.HINT_COST),
+                getString(R.string.hint_watch_video)
+        };
+        builder.setItems(options, (dialog, which) -> {
+            if (which == 0) {
+                if (coinManager != null && coinManager.spend(CoinConfig.HINT_COST, "hint")) {
+                    revealBestMove();
+                } else {
+                    android.widget.Toast.makeText(this, R.string.insufficient_coins, android.widget.Toast.LENGTH_SHORT).show();
+                }
+            } else if (which == 1) {
+                if (rewardedAdTracker != null && rewardedAdTracker.canShow(RewardedAdPlacement.HINT)) {
+                    games.mrlaki5.backgammon.Monetization.ads.AdManager adMgr = MenuActivity.getSharedAdManager();
+                    if (adMgr != null && adMgr.isRewardedAdReady()) {
+                        adMgr.showRewardedAd(this, new games.mrlaki5.backgammon.Monetization.ads.AdCallback() {
+                            @Override
+                            public void onAdLoaded() {}
+
+                            @Override
+                            public void onAdFailedToLoad(String error) {
+                                runOnUiThread(() -> android.widget.Toast.makeText(GameActivity.this,
+                                        R.string.iap_purchase_failed, android.widget.Toast.LENGTH_SHORT).show());
+                            }
+
+                            @Override
+                            public void onAdShown() {}
+
+                            @Override
+                            public void onAdDismissed() {}
+
+                            @Override
+                            public void onAdClicked() {}
+
+                            @Override
+                            public void onRewardEarned() {
+                                if (rewardedAdTracker != null) {
+                                    rewardedAdTracker.recordShow(RewardedAdPlacement.HINT);
+                                }
+                                GameAnalytics.get().trackRewardedAdWatched("hint");
+                                runOnUiThread(() -> revealBestMove());
+                            }
+                        });
+                    } else {
+                        if (adMgr != null) adMgr.preloadAds();
+                        android.widget.Toast.makeText(this, R.string.iap_purchase_failed, android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    android.widget.Toast.makeText(this, R.string.insufficient_coins, android.widget.Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    private void revealBestMove() {
+        if (model == null || model.getNextMoves() == null || model.getNextMoves().isEmpty() || BoardImage == null || gameLogic == null) return;
+        games.mrlaki5.backgammon.Players.BotMoveStrategy strategy = new games.mrlaki5.backgammon.Players.BotMoveStrategy();
+        games.mrlaki5.backgammon.Beans.NextJump bestMove = strategy.chooseMove(model, model.getNextMoves(), 3, new java.util.Random());
+        if (bestMove != null) {
+            int[] currNextMoves = gameLogic.calculateNextMovesForSpecificField(model.getNextMoves(), bestMove.getSrcField());
+            if (currNextMoves != null) {
+                BoardImage.setNextMoveArray(currNextMoves);
+                BoardImage.invalidate();
+                android.widget.Toast.makeText(this, R.string.hint_best_move, android.widget.Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     /** Extra key for passing game number across rematches within a session. */

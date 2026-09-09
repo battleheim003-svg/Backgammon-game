@@ -59,4 +59,11 @@ public class WinStreakTracker {
     public int getBestStreak() {
         return prefs.getInt(KEY_BEST_STREAK, 0);
     }
+
+    /**
+     * Restores the streak to a specific value (used by streak-save rewarded ad).
+     */
+    public void restoreStreak(int value) {
+        prefs.edit().putInt(KEY_CURRENT_STREAK, value).apply();
+    }
 }
