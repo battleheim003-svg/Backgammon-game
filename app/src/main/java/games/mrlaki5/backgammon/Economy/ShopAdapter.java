@@ -13,6 +13,8 @@ import java.util.List;
 
 import games.mrlaki5.backgammon.Database.PlayerProfileManager;
 import games.mrlaki5.backgammon.GameAudio;
+import games.mrlaki5.backgammon.GamePreferences;
+import games.mrlaki5.backgammon.GameView.themes.BoardThemeFactory;
 import games.mrlaki5.backgammon.R;
 
 /**
@@ -120,6 +122,7 @@ public class ShopAdapter extends BaseAdapter {
             case TITLE:
                 return item.getId().equals(profileManager.getActiveTitle());
             case THEME:
+                return item.getId().equals(profileManager.getActiveTheme());
             default:
                 return false;
         }
@@ -137,6 +140,10 @@ public class ShopAdapter extends BaseAdapter {
                 profileManager.setActiveTitle(item.getId());
                 break;
             case THEME:
+                profileManager.setActiveTheme(item.getId());
+                int themeId = BoardThemeFactory.themeIdFromString(item.getId());
+                int difficulty = GamePreferences.getBotDifficulty(context);
+                GamePreferences.saveSelections(context, difficulty, themeId);
                 break;
         }
     }

@@ -2,12 +2,13 @@ package games.mrlaki5.backgammon.Retention;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import games.mrlaki5.backgammon.Util.DateUtil;
+import games.mrlaki5.backgammon.Economy.CoinConfig;
+import games.mrlaki5.backgammon.Economy.CoinManager;
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
 
 /**
  * Weekly challenge system. Three concurrent challenges per week.
- * Resets every Monday (start of ISO week).
+ * Resets every 7 days (epoch-week comparison).
  *
  * Challenges:
  * 1. "Player of the Week" — Complete all 7 daily challenges
@@ -28,23 +29,37 @@ public class WeeklyChallenge {
     public static final int DAILY_TARGET = 7;
     public static final int WINS_TARGET = 15;
     public static final int ENDURANCE_TARGET = 20;
-    public static final int REWARD_PLAYER_OF_WEEK = 100;
-    public static final int REWARD_WARRIOR = 75;
-    public static final int REWARD_ENDURANCE = 75;
+    public static final int REWARD_PLAYER_OF_WEEK = CoinConfig.WEEKLY_CHALLENGE_1_REWARD;
+    public static final int REWARD_WARRIOR = CoinConfig.WEEKLY_CHALLENGE_2_REWARD;
+    public static final int REWARD_ENDURANCE = CoinConfig.WEEKLY_CHALLENGE_3_REWARD;
 
     private final SharedPreferences prefs;
+    private final CoinManager coinManager;
 
     public WeeklyChallenge(Context context) {
+        this(context, new CoinManager(context));
+    }
+
+    public WeeklyChallenge(Context context, CoinManager coinManager) {
         this.prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        this.coinManager = coinManager;
         refreshIfNewWeek();
     }
 
+    private long getLastWeekEpoch() {
+        try {
+            return prefs.getLong(KEY_LAST_WEEK, -1L);
+        } catch (ClassCastException e) {
+            return -1L;
+        }
+    }
+
     private void refreshIfNewWeek() {
-        int currentWeek = DateUtil.getWeekOfYear();
-        int lastWeek = prefs.getInt(KEY_LAST_WEEK, -1);
-        if (currentWeek != lastWeek) {
+        long epochWeek = System.currentTimeMillis() / (7L * 86400000L);
+        long lastWeek = getLastWeekEpoch();
+        if (epochWeek != lastWeek) {
             prefs.edit()
-                    .putInt(KEY_LAST_WEEK, currentWeek)
+                    .putLong(KEY_LAST_WEEK, epochWeek)
                     .putInt(KEY_DAILY_CHALLENGES_DONE, 0)
                     .putInt(KEY_WINS, 0)
                     .putInt(KEY_GAMES_NO_QUIT, 0)
@@ -86,7 +101,27 @@ public class WeeklyChallenge {
     public boolean isChallenge2Claimed() { return prefs.getBoolean(KEY_CHALLENGE_2_CLAIMED, false); }
     public boolean isChallenge3Claimed() { return prefs.getBoolean(KEY_CHALLENGE_3_CLAIMED, false); }
 
-    public void claimChallenge1() { prefs.edit().putBoolean(KEY_CHALLENGE_1_CLAIMED, true).apply(); }
-    public void claimChallenge2() { prefs.edit().putBoolean(KEY_CHALLENGE_2_CLAIMED, true).apply(); }
-    public void claimChallenge3() { prefs.edit().putBoolean(KEY_CHALLENGE_3_CLAIMED, true).apply(); }
+    public void claimChallenge1() {
+        prefs.edit().putBoolean(KEY_CHALLENGE_1_CLAIMED, true).apply();
+        if (coinManager != null) {
+            coinManager.earn(CoinConfig.WEEKLY_CHALLENGE_1_REWARD, "weekly_challenge_1");
+        }
+        GameAnalytics.getInstance().trackWeeklyChallengeCompleted("weekly_challenge_1", CoinConfig.WEEKLY_CHALLENGE_1_REWARD);
+    }
+
+    public void claimChallenge2() {
+        prefs.edit().putBoolean(KEY_CHALLENGE_2_CLAIMED, true).apply();
+        if (coinManager != null) {
+            coinManager.earn(CoinConfig.WEEKLY_CHALLENGE_2_REWARD, "weekly_challenge_2");
+        }
+        GameAnalytics.getInstance().trackWeeklyChallengeCompleted("weekly_challenge_2", CoinConfig.WEEKLY_CHALLENGE_2_REWARD);
+    }
+
+    public void claimChallenge3() {
+        prefs.edit().putBoolean(KEY_CHALLENGE_3_CLAIMED, true).apply();
+        if (coinManager != null) {
+            coinManager.earn(CoinConfig.WEEKLY_CHALLENGE_3_REWARD, "weekly_challenge_3");
+        }
+        GameAnalytics.getInstance().trackWeeklyChallengeCompleted("weekly_challenge_3", CoinConfig.WEEKLY_CHALLENGE_3_REWARD);
+    }
 }

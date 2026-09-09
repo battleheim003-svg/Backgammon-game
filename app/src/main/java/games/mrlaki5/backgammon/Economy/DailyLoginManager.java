@@ -2,7 +2,6 @@ package games.mrlaki5.backgammon.Economy;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import games.mrlaki5.backgammon.Util.DateUtil;
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
 
 /**
@@ -25,29 +24,38 @@ public class DailyLoginManager {
         this.prefs = this.context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
+    private long getLastLoginEpochDay() {
+        try {
+            return prefs.getLong(KEY_LAST_LOGIN_DAY, -1L);
+        } catch (ClassCastException e) {
+            return -1L;
+        }
+    }
+
     /**
      * Returns true if the user can claim today's reward.
      */
-    public boolean canClaimToday() {
+    public synchronized boolean canClaimToday() {
         return !isClaimedToday();
     }
 
     /**
      * Returns current streak day (1..7).
      */
-    public int getCurrentStreak() {
+    public synchronized int getCurrentStreak() {
         return getCurrentDay() + 1;
     }
 
     /**
      * Claims today's daily reward and credits coins. Returns reward amount.
      */
-    public int claimDailyReward() {
+    public synchronized int claimDailyReward() {
+        if (hasClaimedToday()) return 0;
         int reward = checkAndGetReward();
         if (reward > 0) {
-            claimReward();
+            prefs.edit().putBoolean(KEY_CLAIMED_TODAY, true).commit();
             CoinManager coinManager = new CoinManager(context);
-            coinManager.earn(reward, "daily_login_reward");
+            coinManager.earn(reward, "daily_login");
             GameAnalytics.get().trackDailyLoginClaimed(getCurrentStreak(), reward);
         }
         return reward;
@@ -56,22 +64,23 @@ public class DailyLoginManager {
     /**
      * Call on app open. Returns the reward amount if unclaimed today, or 0 if already claimed.
      */
-    public int checkAndGetReward() {
-        int today = DateUtil.getDayOfYear();
-        int lastLogin = prefs.getInt(KEY_LAST_LOGIN_DAY, -1);
+    public synchronized int checkAndGetReward() {
+        long todayEpoch = System.currentTimeMillis() / 86400000L;
+        long lastEpoch = getLastLoginEpochDay();
         boolean claimedToday = prefs.getBoolean(KEY_CLAIMED_TODAY, false);
 
-        if (today == lastLogin && claimedToday) {
+        if (todayEpoch == lastEpoch && claimedToday) {
             return 0; // Already claimed
         }
 
         int consecutive = prefs.getInt(KEY_CONSECUTIVE_DAYS, 0);
 
-        if (today != lastLogin) {
-            // Is it the next consecutive day? (allowing 1-day tolerance via day diff)
-            if (lastLogin > 0 && (today - lastLogin) == 1) {
+        if (todayEpoch != lastEpoch) {
+            long diff = (lastEpoch > 0) ? (todayEpoch - lastEpoch) : -1;
+            // Is it the next consecutive day?
+            if (diff == 1) {
                 consecutive++;
-            } else if (lastLogin > 0) {
+            } else if (diff > 1) {
                 consecutive = 0; // Streak broken
             }
 
@@ -81,10 +90,10 @@ public class DailyLoginManager {
             }
 
             prefs.edit()
-                    .putInt(KEY_LAST_LOGIN_DAY, today)
+                    .putLong(KEY_LAST_LOGIN_DAY, todayEpoch)
                     .putInt(KEY_CONSECUTIVE_DAYS, consecutive)
                     .putBoolean(KEY_CLAIMED_TODAY, false)
-                    .apply();
+                    .commit();
         }
 
         return CoinConfig.DAILY_LOGIN_REWARDS[consecutive];
@@ -93,19 +102,23 @@ public class DailyLoginManager {
     /**
      * Marks today's reward as claimed. Call after showing the reward animation.
      */
-    public void claimReward() {
-        prefs.edit().putBoolean(KEY_CLAIMED_TODAY, true).apply();
+    public synchronized void claimReward() {
+        prefs.edit().putBoolean(KEY_CLAIMED_TODAY, true).commit();
     }
 
     /** Returns current day index in the 7-day cycle (0-6). */
-    public int getCurrentDay() {
+    public synchronized int getCurrentDay() {
         return prefs.getInt(KEY_CONSECUTIVE_DAYS, 0);
     }
 
     /** Returns true if today's reward has been claimed. */
-    public boolean isClaimedToday() {
-        int today = DateUtil.getDayOfYear();
-        int lastLogin = prefs.getInt(KEY_LAST_LOGIN_DAY, -1);
-        return today == lastLogin && prefs.getBoolean(KEY_CLAIMED_TODAY, false);
+    public synchronized boolean isClaimedToday() {
+        long todayEpoch = System.currentTimeMillis() / 86400000L;
+        long lastEpoch = getLastLoginEpochDay();
+        return todayEpoch == lastEpoch && prefs.getBoolean(KEY_CLAIMED_TODAY, false);
+    }
+
+    public synchronized boolean hasClaimedToday() {
+        return isClaimedToday();
     }
 }

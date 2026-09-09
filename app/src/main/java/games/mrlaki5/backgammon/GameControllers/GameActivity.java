@@ -942,7 +942,7 @@ public class GameActivity extends AppCompatActivity {
                 if (rewardedAdTracker != null && rewardedAdTracker.canShow(RewardedAdPlacement.HINT)) {
                     AdManager adMgr = MenuActivity.getSharedAdManager();
                     if (adMgr != null && adMgr.isRewardedAdReady()) {
-                        adMgr.showRewardedAd(this, new AdCallback() {
+                        adMgr.showRewardedAd(this, RewardedAdPlacement.HINT, new AdCallback() {
                             @Override
                             public void onAdLoaded() {}
 

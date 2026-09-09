@@ -192,6 +192,7 @@ public class GameTask {
             synchronized (this) {
                 this.notifyAll();
             }
+            executor.shutdown();
         }
     }
 

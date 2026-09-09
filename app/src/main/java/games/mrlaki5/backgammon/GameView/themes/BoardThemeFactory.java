@@ -12,6 +12,29 @@ public class BoardThemeFactory {
     private static final BoardTheme CYBERPUNK = new CyberpunkTheme();
     private static final BoardTheme LUXURY = new LuxuryTheme();
 
+    public static int themeIdFromString(String themeString) {
+        if (themeString == null) return GamePreferences.THEME_ROYAL;
+        switch (themeString) {
+            case "theme_pop_art": return GamePreferences.THEME_POP_ART;
+            case "theme_cyberpunk": return GamePreferences.THEME_CYBERPUNK;
+            case "theme_luxury": return GamePreferences.THEME_LUXURY;
+            case "theme_royal":
+            default:
+                return GamePreferences.THEME_ROYAL;
+        }
+    }
+
+    public static String themeStringFromId(int themeId) {
+        switch (themeId) {
+            case GamePreferences.THEME_POP_ART: return "theme_pop_art";
+            case GamePreferences.THEME_CYBERPUNK: return "theme_cyberpunk";
+            case GamePreferences.THEME_LUXURY: return "theme_luxury";
+            case GamePreferences.THEME_ROYAL:
+            default:
+                return "theme_royal";
+        }
+    }
+
     public static BoardTheme getTheme(int themeId) {
         switch (themeId) {
             case GamePreferences.THEME_POP_ART:
@@ -24,5 +47,9 @@ public class BoardThemeFactory {
             default:
                 return ROYAL;
         }
+    }
+
+    public static BoardTheme getTheme(String themeString) {
+        return getTheme(themeIdFromString(themeString));
     }
 }

@@ -273,7 +273,7 @@ public class MenuActivity extends AppCompatActivity {
             return;
         }
         if (adManager != null && adManager.isRewardedAdReady()) {
-            adManager.showRewardedAd(this, new AdCallback() {
+            adManager.showRewardedAd(this, RewardedAdPlacement.FREE_COINS, new AdCallback() {
                 @Override
                 public void onAdLoaded() {}
 

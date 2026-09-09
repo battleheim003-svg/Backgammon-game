@@ -41,6 +41,10 @@ public class GameAnalytics {
         return instance;
     }
 
+    public static GameAnalytics getInstance() {
+        return get();
+    }
+
     /** Returns the raw provider for direct logEvent calls if needed. */
     public AnalyticsProvider getProvider() {
         return analytics;
@@ -403,8 +407,15 @@ public class GameAnalytics {
     }
 
     public void trackWeeklyChallengeCompleted(String challengeId) {
+        trackWeeklyChallengeCompleted(challengeId, 0);
+    }
+
+    public void trackWeeklyChallengeCompleted(String challengeId, int amount) {
         Bundle params = new Bundle();
         params.putString(AnalyticsEvent.PARAM_CHALLENGE_ID, challengeId);
+        if (amount > 0) {
+            params.putInt(AnalyticsEvent.PARAM_AMOUNT, amount);
+        }
         analytics.logEvent(AnalyticsEvent.WEEKLY_CHALLENGE_COMPLETED, params);
     }
 

@@ -326,7 +326,7 @@ public class GameOverHandler {
                 btnDoubleReward.setOnClickListener(v -> {
                     AdManager adMgr = MenuActivity.getSharedAdManager();
                     if (adMgr != null && adMgr.isRewardedAdReady()) {
-                        adMgr.showRewardedAd(activity, new AdCallback() {
+                        adMgr.showRewardedAd(activity, RewardedAdPlacement.DOUBLE_REWARD, new AdCallback() {
                             @Override
                             public void onAdLoaded() {}
 
@@ -381,7 +381,7 @@ public class GameOverHandler {
                 btnSaveStreak.setOnClickListener(v -> {
                     AdManager adMgr = MenuActivity.getSharedAdManager();
                     if (adMgr != null && adMgr.isRewardedAdReady()) {
-                        adMgr.showRewardedAd(activity, new AdCallback() {
+                        adMgr.showRewardedAd(activity, RewardedAdPlacement.SAVE_STREAK, new AdCallback() {
                             @Override
                             public void onAdLoaded() {}
 

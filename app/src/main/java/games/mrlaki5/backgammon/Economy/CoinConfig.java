@@ -20,6 +20,9 @@ public final class CoinConfig {
     public static final int REWARDED_AD_WATCH = 15;
     public static final int DAILY_CHALLENGE_BONUS_CHEST = 25;  // on top of base 25
     public static final int DOUBLE_REWARD_MULTIPLIER = 2;
+    public static final int WEEKLY_CHALLENGE_1_REWARD = 100;
+    public static final int WEEKLY_CHALLENGE_2_REWARD = 75;
+    public static final int WEEKLY_CHALLENGE_3_REWARD = 75;
 
     // === Spending ===
     public static final int HINT_COST = 20;

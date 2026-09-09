@@ -20,6 +20,7 @@ public class PlayerProfileManager {
     private static final String KEY_ACTIVE_FRAME = "active_frame";
     private static final String KEY_ACTIVE_DICE = "active_dice";
     private static final String KEY_ACTIVE_TITLE = "active_title";
+    public static final String KEY_ACTIVE_THEME = "active_theme";
     private static final String KEY_PURCHASED_ITEMS = "purchased_items";
 
     public static final int BOT_ELO_EASY = 800;
@@ -49,11 +50,13 @@ public class PlayerProfileManager {
                     .putString(KEY_ACTIVE_FRAME, "frame_default")
                     .putString(KEY_ACTIVE_DICE, "dice_default")
                     .putString(KEY_ACTIVE_TITLE, "title_beginner")
+                    .putString(KEY_ACTIVE_THEME, "theme_royal")
                     .apply();
 
             addPurchasedItem("frame_default");
             addPurchasedItem("dice_default");
             addPurchasedItem("title_beginner");
+            addPurchasedItem("theme_royal");
         }
     }
 
@@ -119,6 +122,14 @@ public class PlayerProfileManager {
 
     public void setActiveTitle(String titleId) {
         prefs.edit().putString(KEY_ACTIVE_TITLE, titleId).apply();
+    }
+
+    public String getActiveTheme() {
+        return prefs.getString(KEY_ACTIVE_THEME, "theme_royal");
+    }
+
+    public void setActiveTheme(String themeId) {
+        prefs.edit().putString(KEY_ACTIVE_THEME, themeId).apply();
     }
 
     public Set<String> getPurchasedItems() {

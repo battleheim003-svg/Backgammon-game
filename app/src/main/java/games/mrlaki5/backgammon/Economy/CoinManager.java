@@ -22,7 +22,7 @@ public class CoinManager {
         this.prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
-    public int getBalance() {
+    public synchronized int getBalance() {
         return prefs.getInt(KEY_BALANCE, 0);
     }
 
@@ -32,14 +32,14 @@ public class CoinManager {
      * @param source identifier for analytics (e.g., "game_win", "daily_challenge", "rewarded_ad")
      * @return new balance
      */
-    public int earn(int amount, String source) {
+    public synchronized int earn(int amount, String source) {
         if (amount <= 0) return getBalance();
         int newBalance = getBalance() + amount;
         int totalEarned = prefs.getInt(KEY_TOTAL_EARNED, 0) + amount;
         prefs.edit()
                 .putInt(KEY_BALANCE, newBalance)
                 .putInt(KEY_TOTAL_EARNED, totalEarned)
-                .apply();
+                .commit();
         GameAnalytics.get().trackCoinEarned(amount, source, newBalance);
         return newBalance;
     }
@@ -49,7 +49,7 @@ public class CoinManager {
      * @param amount positive number of coins to spend
      * @param item identifier for analytics (e.g., "hint", "undo", "theme_rental")
      */
-    public boolean spend(int amount, String item) {
+    public synchronized boolean spend(int amount, String item) {
         if (amount <= 0) return false;
         int balance = getBalance();
         if (balance < amount) return false;
@@ -58,20 +58,20 @@ public class CoinManager {
         prefs.edit()
                 .putInt(KEY_BALANCE, newBalance)
                 .putInt(KEY_TOTAL_SPENT, totalSpent)
-                .apply();
+                .commit();
         GameAnalytics.get().trackCoinSpent(amount, item, newBalance);
         return true;
     }
 
-    public boolean canAfford(int amount) {
+    public synchronized boolean canAfford(int amount) {
         return getBalance() >= amount;
     }
 
-    public int getTotalEarned() {
+    public synchronized int getTotalEarned() {
         return prefs.getInt(KEY_TOTAL_EARNED, 0);
     }
 
-    public int getTotalSpent() {
+    public synchronized int getTotalSpent() {
         return prefs.getInt(KEY_TOTAL_SPENT, 0);
     }
 }

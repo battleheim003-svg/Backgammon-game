@@ -21,11 +21,21 @@ public class AdManager {
 
     private final AdProvider adProvider;
     private final SharedPreferences prefs;
+    private final RewardedAdTracker rewardedAdTracker;
     private boolean adsRemoved = false;
 
     public AdManager(Context context, AdProvider adProvider) {
+        this(context, adProvider, new RewardedAdTracker(context));
+    }
+
+    public AdManager(Context context, AdProvider adProvider, RewardedAdTracker rewardedAdTracker) {
         this.adProvider = adProvider;
         this.prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        this.rewardedAdTracker = rewardedAdTracker;
+    }
+
+    public RewardedAdTracker getRewardedAdTracker() {
+        return rewardedAdTracker;
     }
 
     /**
@@ -110,12 +120,19 @@ public class AdManager {
     }
 
     /**
-     * Shows a rewarded ad (for hints, retry, etc).
-     * Available regardless of frequency cap. User chooses to watch.
+     * Shows a rewarded ad for the given placement (hints, retry, double reward, etc).
+     * Enforces daily limits and cooldowns through RewardedAdTracker.
      *
      * @return true if the ad was shown
      */
-    public boolean showRewardedAd(Activity activity, AdCallback callback) {
+    public boolean showRewardedAd(Activity activity, RewardedAdPlacement placement, AdCallback callback) {
+        if (rewardedAdTracker != null && !rewardedAdTracker.canShow(placement)) {
+            if (callback != null) {
+                callback.onAdFailedToLoad("Ad cap reached");
+            }
+            return false;
+        }
+
         if (!adProvider.isAdReady(AdType.REWARDED)) {
             adProvider.loadAd(AdType.REWARDED, null);
             return false;
@@ -123,7 +140,9 @@ public class AdManager {
 
         return adProvider.showAd(activity, AdType.REWARDED, new AdCallback() {
             @Override
-            public void onAdLoaded() {}
+            public void onAdLoaded() {
+                if (callback != null) callback.onAdLoaded();
+            }
 
             @Override
             public void onAdFailedToLoad(String error) {
@@ -148,9 +167,16 @@ public class AdManager {
 
             @Override
             public void onRewardEarned() {
+                if (rewardedAdTracker != null) {
+                    rewardedAdTracker.recordShow(placement);
+                }
                 if (callback != null) callback.onRewardEarned();
             }
         });
+    }
+
+    public boolean showRewardedAd(RewardedAdPlacement placement, AdCallback callback) {
+        return showRewardedAd(null, placement, callback);
     }
 
     /**
