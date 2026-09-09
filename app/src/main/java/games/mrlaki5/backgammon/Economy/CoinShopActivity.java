@@ -70,29 +70,136 @@ public class CoinShopActivity extends AppCompatActivity {
     private void buildShopCatalog() {
         allItems.clear();
 
-        // 1. Avatar Frames
-        allItems.add(new ShopItem("frame_default", "Classic Frame", "Simple wooden border", 0, ShopItem.Category.AVATAR_FRAME, "🪵"));
-        allItems.add(new ShopItem("frame_bronze", "Bronze Frame", "Polished antique bronze border", 200, ShopItem.Category.AVATAR_FRAME, "🥉"));
-        allItems.add(new ShopItem("frame_silver", "Silver Frame", "Lustrous sterling silver rim", 500, ShopItem.Category.AVATAR_FRAME, "🥈"));
-        allItems.add(new ShopItem("frame_gold", "Gold Frame", "Royal Persian 24k gold leaf", 1000, ShopItem.Category.AVATAR_FRAME, "🥇"));
-        allItems.add(new ShopItem("frame_diamond", "Diamond Frame", "Radiant gemstone crown", 2500, ShopItem.Category.AVATAR_FRAME, "💎"));
+        // ═══════════════════════════════════════════
+        // AVATAR FRAMES — 8 items
+        // ═══════════════════════════════════════════
+        allItems.add(ShopItem.permanent(
+            "frame_default", "فریم کلاسیک", "حاشیه چوبی ساده",
+            0, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.COMMON, "🪵"));
 
-        // 2. Dice Skins
-        allItems.add(new ShopItem("dice_default", "Classic Dice", "Standard white bone dice", 0, ShopItem.Category.DICE_SKIN, "🎲"));
-        allItems.add(new ShopItem("dice_ruby", "Ruby Dice", "Crimson jewel dice", 400, ShopItem.Category.DICE_SKIN, "🔴"));
-        allItems.add(new ShopItem("dice_emerald", "Emerald Dice", "Vibrant green mineral dice", 750, ShopItem.Category.DICE_SKIN, "🟢"));
-        allItems.add(new ShopItem("dice_obsidian", "Obsidian Dice", "Deep volcanic glass dice", 1200, ShopItem.Category.DICE_SKIN, "⚫"));
+        allItems.add(ShopItem.permanent(
+            "frame_bronze", "فریم برنز", "حاشیه برنز عتیقه صیقلی",
+            150, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.COMMON, "🥉"));
 
-        // 3. Titles
-        allItems.add(new ShopItem("title_beginner", "Beginner", "Starting player title", 0, ShopItem.Category.TITLE, "🌱"));
-        allItems.add(new ShopItem("title_strategist", "Strategist", "Clever tactician on the board", 300, ShopItem.Category.TITLE, "🧠"));
-        allItems.add(new ShopItem("title_master", "Master", "Experienced backgammon player", 800, ShopItem.Category.TITLE, "👑"));
-        allItems.add(new ShopItem("title_grandmaster", "Grandmaster", "Legendary master of Takhteh", 2000, ShopItem.Category.TITLE, "🏆"));
+        allItems.add(ShopItem.withUnlock(
+            "frame_silver", "فریم نقره", "حاشیه نقره استرلینگ درخشان",
+            400, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.RARE, "🥈", 10));
 
-        // 4. Themes
-        allItems.add(new ShopItem("theme_pop_art", "Pop Art Board", "Comic-book style board & chips", 350, ShopItem.Category.THEME, "🎨"));
-        allItems.add(new ShopItem("theme_cyberpunk", "Cyberpunk Board", "Neon futuristic board & glow", 500, ShopItem.Category.THEME, "⚡"));
-        allItems.add(new ShopItem("theme_luxury", "Luxury Persian", "Ivory & gold satin board", 750, ShopItem.Category.THEME, "🏛️"));
+        allItems.add(ShopItem.withUnlock(
+            "frame_carpet", "فریم فرش ایرانی", "نقوش سنتی فرش دستباف اصفهان",
+            550, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.RARE, "🟥", 20));
+
+        allItems.add(ShopItem.withUnlock(
+            "frame_gold", "فریم طلا", "طلای ۲۴ عیار ایرانی با نقش شاهانه",
+            1000, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.EPIC, "🥇", 50));
+
+        allItems.add(ShopItem.withUnlock(
+            "frame_peacock", "فریم طاووس", "نقوش طاووس فارسی با جواهرات",
+            1500, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.EPIC, "🦚", 75));
+
+        allItems.add(new ShopItem(
+            "frame_diamond", "تاج الماس", "تاج سلطنتی با الماسهای درخشان",
+            3000, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.LEGENDARY, "💎", 150, false, "پرطرفدار"));
+
+        allItems.add(new ShopItem(
+            "frame_sultan", "فریم سلطان", "فریم ویژه سلاطین تختهنرد",
+            5000, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.LEGENDARY, "👑", 300, false, null));
+
+        // ═══════════════════════════════════════════
+        // DICE SKINS — 6 items
+        // ═══════════════════════════════════════════
+        allItems.add(ShopItem.permanent(
+            "dice_default", "تاس استخوانی", "تاس کلاسیک سفید",
+            0, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.COMMON, "🎲"));
+
+        allItems.add(ShopItem.permanent(
+            "dice_walnut", "تاس گردو", "تاس ماهونی تیره طبیعی",
+            200, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.COMMON, "🟫"));
+
+        allItems.add(ShopItem.withUnlock(
+            "dice_ruby", "تاس یاقوت", "تاس یاقوت قرمز آتشین",
+            500, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.RARE, "🔴", 15));
+
+        allItems.add(ShopItem.withUnlock(
+            "dice_marble", "تاس مرمر", "تاس مرمر ابروباد زیبا",
+            700, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.RARE, "⬜", 30));
+
+        allItems.add(new ShopItem(
+            "dice_crystal", "تاس کریستال", "تاس بلور شفاف با درخش نور",
+            1400, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.EPIC, "🔷", 100, false, "جدید"));
+
+        allItems.add(new ShopItem(
+            "dice_dragon", "تاس اژدها", "تاس اسطورهای با نقش اژدها",
+            3500, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.LEGENDARY, "🐉", 200, false, null));
+
+        // ═══════════════════════════════════════════
+        // TITLES — 6 items (Farsi)
+        // ═══════════════════════════════════════════
+        allItems.add(ShopItem.permanent(
+            "title_beginner", "نوآموز", "عنوان شروع بازیکن",
+            0, ShopItem.Category.TITLE, ShopItem.Rarity.COMMON, "🌱"));
+
+        allItems.add(ShopItem.withUnlock(
+            "title_sharp", "تیزهوش", "بازیکن باهوش تختهنرد",
+            100, ShopItem.Category.TITLE, ShopItem.Rarity.COMMON, "🧩", 5));
+
+        allItems.add(ShopItem.withUnlock(
+            "title_tactician", "تاکتیسین", "خبره استراتژی و تاکتیک",
+            350, ShopItem.Category.TITLE, ShopItem.Rarity.RARE, "⚔️", 25));
+
+        allItems.add(ShopItem.withUnlock(
+            "title_master", "استاد تخته", "استاد شناختهشده تختهنرد",
+            600, ShopItem.Category.TITLE, ShopItem.Rarity.RARE, "🎓", 60));
+
+        allItems.add(new ShopItem(
+            "title_king", "شاهباز", "بازیکن سلطنتی تختهنرد",
+            1200, ShopItem.Category.TITLE, ShopItem.Rarity.EPIC, "♔", 100, false, null));
+
+        allItems.add(new ShopItem(
+            "title_sultan", "سلطان تخته", "عنوان افسانهای — فقط برای نخبگان",
+            2500, ShopItem.Category.TITLE, ShopItem.Rarity.LEGENDARY, "🏆", 250, false, null));
+
+        // ═══════════════════════════════════════════
+        // THEMES — 4 items
+        // ═══════════════════════════════════════════
+        allItems.add(ShopItem.permanent(
+            "theme_royal", "تخته سلطنتی", "تخته کلاسیک — پیشفرض",
+            0, ShopItem.Category.THEME, ShopItem.Rarity.COMMON, "♟️"));
+
+        allItems.add(ShopItem.badged(
+            "theme_pop_art", "تخته پاپ آرت", "تخته کمیکبوک رنگارنگ",
+            600, ShopItem.Category.THEME, ShopItem.Rarity.RARE, "🎨", "پرطرفدار"));
+
+        allItems.add(ShopItem.permanent(
+            "theme_cyberpunk", "تخته سایبرپانک", "تخته آیندهنگر نئوندار",
+            1000, ShopItem.Category.THEME, ShopItem.Rarity.EPIC, "⚡"));
+
+        allItems.add(new ShopItem(
+            "theme_luxury", "تخته فاخر ایرانی", "عاج و طلا — بهترین تجربه",
+            2000, ShopItem.Category.THEME, ShopItem.Rarity.LEGENDARY, "🏛️", 0, false, "برتر"));
+
+        // ═══════════════════════════════════════════
+        // RENTALS — 24-hour try-before-you-buy
+        // ═══════════════════════════════════════════
+        allItems.add(ShopItem.rental(
+            "rental_cyberpunk", "سایبرپانک — ۲۴ ساعت", "تخته نئوندار را امتحان کنید",
+            80, ShopItem.Category.THEME, ShopItem.Rarity.EPIC, "⚡"));
+
+        allItems.add(ShopItem.rental(
+            "rental_luxury", "تخته فاخر — ۲۴ ساعت", "تجربه لوکس را امتحان کنید",
+            120, ShopItem.Category.THEME, ShopItem.Rarity.LEGENDARY, "🏛️"));
+
+        allItems.add(ShopItem.rental(
+            "rental_diamond", "تاج الماس — ۲۴ ساعت", "فریم افسانهای برای یک روز",
+            50, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.LEGENDARY, "💎"));
+
+        allItems.add(ShopItem.rental(
+            "rental_sultan", "فریم سلطان — ۲۴ ساعت", "فریم سلطانی برای یک روز",
+            80, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.LEGENDARY, "👑"));
+
+        allItems.add(ShopItem.rental(
+            "rental_dragon", "تاس اژدها — ۲۴ ساعت", "تاس افسانهای برای یک روز",
+            60, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.LEGENDARY, "🐉"));
     }
 
     private void setupCategoryTabs() {
@@ -107,6 +214,8 @@ public class CoinShopActivity extends AppCompatActivity {
                     filterItems(ShopItem.Category.TITLE);
                 } else if (checkedId == R.id.rbCategoryThemes) {
                     filterItems(ShopItem.Category.THEME);
+                } else if (checkedId == R.id.rbCategoryRental) {
+                    filterItems(ShopItem.Category.RENTAL);
                 } else {
                     filterItems(null);
                 }

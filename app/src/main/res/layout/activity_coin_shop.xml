@@ -148,12 +148,27 @@
                 android:id="@+id/rbCategoryThemes"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
+                android:layout_marginEnd="6dp"
                 android:background="@drawable/bg_pause_button"
                 android:button="@null"
                 android:gravity="center"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
-                android:text="@string/theme_rental"
+                android:text="@string/board_theme"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <RadioButton
+                android:id="@+id/rbCategoryRental"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_pause_button"
+                android:button="@null"
+                android:gravity="center"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:text="@string/shop_category_rental"
                 android:textColor="@color/text_primary"
                 android:textSize="12sp"
                 android:textStyle="bold" />

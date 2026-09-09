@@ -236,6 +236,14 @@
     <string name="shop_item_equipped">فعال</string>
     <string name="shop_item_buy">%1$d سکه</string>
     <string name="shop_purchase_success">آیتم خریداری و فعال شد!</string>
+    <string name="shop_category_rental">اجاره‌ای (۲۴ ساعت)</string>
+    <string name="shop_rarity_common">معمولی</string>
+    <string name="shop_rarity_rare">نادر</string>
+    <string name="shop_rarity_epic">حماسی</string>
+    <string name="shop_rarity_legendary">افسانه‌ای</string>
+    <string name="shop_locked_format">🔒 %1$d برد لازم</string>
+    <string name="shop_rental_button">اجاره %1$d 🪙</string>
+    <string name="shop_rental_active">در حال اجاره</string>
     <string name="elo_rating_format">امتیاز: %1$d</string>
     <string name="elo_delta_positive">+%1$d رتبه</string>
     <string name="elo_delta_negative">%1$d رتبه</string>

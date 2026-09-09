@@ -78,6 +78,12 @@ public class PlayerProfileManager {
         return prefs.getInt(KEY_WINS, 0);
     }
 
+    /** Returns the total wins ever recorded for unlock requirement checks. */
+    public int getTotalWins() {
+        int totalWins = prefs.getInt("total_wins", 0);
+        return Math.max(totalWins, getWins());
+    }
+
     public int getLosses() {
         return prefs.getInt(KEY_LOSSES, 0);
     }
@@ -166,12 +172,16 @@ public class PlayerProfileManager {
         int losses = getLosses() + (won ? 0 : 1);
         int newTotalGames = totalGames + 1;
 
-        prefs.edit()
+        SharedPreferences.Editor editor = prefs.edit()
                 .putInt(KEY_ELO, newElo)
                 .putInt(KEY_WINS, wins)
                 .putInt(KEY_LOSSES, losses)
-                .putInt(KEY_TOTAL_GAMES, newTotalGames)
-                .apply();
+                .putInt(KEY_TOTAL_GAMES, newTotalGames);
+        if (won) {
+            int totalWins = prefs.getInt("total_wins", 0);
+            editor.putInt("total_wins", totalWins + 1);
+        }
+        editor.apply();
 
         // Update database profile
         try {

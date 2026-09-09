@@ -235,6 +235,14 @@
     <string name="shop_item_equipped">Equipped</string>
     <string name="shop_item_buy">%1$d Coins</string>
     <string name="shop_purchase_success">Item purchased and equipped!</string>
+    <string name="shop_category_rental">Rentals (24h)</string>
+    <string name="shop_rarity_common">Common</string>
+    <string name="shop_rarity_rare">Rare</string>
+    <string name="shop_rarity_epic">Epic</string>
+    <string name="shop_rarity_legendary">Legendary</string>
+    <string name="shop_locked_format">🔒 %1$d wins required</string>
+    <string name="shop_rental_button">Rent %1$d 🪙</string>
+    <string name="shop_rental_active">Rented</string>
     <string name="elo_rating_format">ELO %1$d</string>
     <string name="elo_delta_positive">+%1$d ELO</string>
     <string name="elo_delta_negative">%1$d ELO</string>

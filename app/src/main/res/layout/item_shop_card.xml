@@ -2,62 +2,127 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="6dp">
+    android:padding="5dp">
 
+    <!-- Card background -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_pause_dialog"
-        android:elevation="3dp"
-        android:gravity="center"
+        android:elevation="4dp"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="0dp">
 
-        <TextView
-            android:id="@+id/tvShopItemIcon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_pause_button"
-            android:gravity="center"
-            android:text="🖼️"
-            android:textSize="26sp" />
-
-        <TextView
-            android:id="@+id/tvShopItemTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif-medium"
-            android:gravity="center"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvShopItemDesc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:gravity="center"
-            android:textColor="@color/accent_slate"
-            android:textSize="11sp" />
-
-        <Button
-            android:id="@+id/btnShopItemAction"
+        <!-- Rarity color bar (top) -->
+        <View
+            android:id="@+id/viewRarityBar"
             android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/neuro_primary_button"
-            android:fontFamily="sans-serif-medium"
-            android:minHeight="0dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:text="200 Coins"
-            android:textAllCaps="false"
-            android:textColor="@color/surface_base"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+            android:layout_height="3dp"
+            android:background="#9E9E9E" />
 
+        <!-- Card body -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <!-- Icon -->
+            <TextView
+                android:id="@+id/tvShopItemIcon"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/bg_pause_button"
+                android:gravity="center"
+                android:text="🖼️"
+                android:textSize="28sp" />
+
+            <!-- Rarity label -->
+            <TextView
+                android:id="@+id/tvShopItemRarity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.05"
+                android:text="معمولی"
+                android:textColor="#9E9E9E"
+                android:textSize="9sp"
+                android:textAllCaps="false" />
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvShopItemTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:maxLines="1"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <!-- Description -->
+            <TextView
+                android:id="@+id/tvShopItemDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:gravity="center"
+                android:maxLines="2"
+                android:textColor="@color/accent_slate"
+                android:textSize="10sp" />
+
+            <!-- Unlock requirement (hidden when not needed) -->
+            <TextView
+                android:id="@+id/tvShopItemUnlock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textColor="#FF7043"
+                android:textSize="10sp"
+                android:visibility="gone" />
+
+            <!-- Buy / Equip button -->
+            <Button
+                android:id="@+id/btnShopItemAction"
+                android:layout_width="match_parent"
+                android:layout_height="34dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/neuro_primary_button"
+                android:fontFamily="sans-serif-medium"
+                android:minHeight="0dp"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:text="200 🪙"
+                android:textAllCaps="false"
+                android:textColor="@color/surface_base"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
     </LinearLayout>
+
+    <!-- Badge overlay (top-right corner) -->
+    <TextView
+        android:id="@+id/tvShopItemBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="3dp"
+        android:background="#E65100"
+        android:fontFamily="sans-serif-black"
+        android:paddingStart="5dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="2dp"
+        android:text="جدید"
+        android:textColor="#FFFFFF"
+        android:textSize="8sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
 
 </FrameLayout>
