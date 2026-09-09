@@ -377,6 +377,51 @@ public class GameAnalytics {
         analytics.logEvent(AnalyticsEvent.ACHIEVEMENT_UNLOCKED, params);
     }
 
+    // ==================== ECONOMY & REWARDS ====================
+
+    public void trackCoinEarned(int amount, String source, int newBalance) {
+        Bundle params = new Bundle();
+        params.putInt(AnalyticsEvent.PARAM_AMOUNT, amount);
+        params.putString(AnalyticsEvent.PARAM_SOURCE, source);
+        params.putInt(AnalyticsEvent.PARAM_NEW_BALANCE, newBalance);
+        analytics.logEvent(AnalyticsEvent.COIN_EARNED, params);
+    }
+
+    public void trackCoinSpent(int amount, String item, int newBalance) {
+        Bundle params = new Bundle();
+        params.putInt(AnalyticsEvent.PARAM_AMOUNT, amount);
+        params.putString(AnalyticsEvent.PARAM_ITEM, item);
+        params.putInt(AnalyticsEvent.PARAM_NEW_BALANCE, newBalance);
+        analytics.logEvent(AnalyticsEvent.COIN_SPENT, params);
+    }
+
+    public void trackDailyLoginClaimed(int day, int amount) {
+        Bundle params = new Bundle();
+        params.putInt(AnalyticsEvent.PARAM_DAY, day);
+        params.putInt(AnalyticsEvent.PARAM_AMOUNT, amount);
+        analytics.logEvent(AnalyticsEvent.DAILY_LOGIN_CLAIMED, params);
+    }
+
+    public void trackWeeklyChallengeCompleted(String challengeId) {
+        Bundle params = new Bundle();
+        params.putString(AnalyticsEvent.PARAM_CHALLENGE_ID, challengeId);
+        analytics.logEvent(AnalyticsEvent.WEEKLY_CHALLENGE_COMPLETED, params);
+    }
+
+    public void trackRewardedAdWatched(String placement) {
+        Bundle params = new Bundle();
+        params.putString(AnalyticsEvent.PARAM_PLACEMENT, placement);
+        analytics.logEvent(AnalyticsEvent.REWARDED_AD_WATCHED, params);
+    }
+
+    public void trackStreakSaved() {
+        analytics.logEvent(AnalyticsEvent.STREAK_SAVED, null);
+    }
+
+    public void trackDoubleRewardClaimed() {
+        analytics.logEvent(AnalyticsEvent.DOUBLE_REWARD_CLAIMED, null);
+    }
+
     // ==================== MATCHMAKING (future) ====================
 
     public void trackMatchmakingStarted() {

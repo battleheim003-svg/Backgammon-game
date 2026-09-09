@@ -197,4 +197,37 @@
     <string name="change_settings">Change Settings</string>
     <string name="main_menu">Main Menu</string>
 
+    <!-- Coin Economy -->
+    <string name="coins">Coins</string>
+    <string name="coin_balance">%1$d coins</string>
+    <string name="coin_earned">+%1$d coins</string>
+    <string name="coin_spent">-%1$d coins</string>
+    <string name="daily_login_title">Daily Bonus</string>
+    <string name="daily_login_claim">Claim</string>
+    <string name="daily_login_claimed">Claimed!</string>
+    <string name="daily_login_day">Day %1$d</string>
+    <string name="free_coins">Free Coins</string>
+    <string name="watch_ad_for_coins">Watch video for %1$d coins</string>
+    <string name="double_reward">Double Coins</string>
+    <string name="double_reward_desc">Watch a video to double your reward!</string>
+    <string name="save_streak">Save Streak</string>
+    <string name="save_streak_desc">Watch a video to keep your %1$d win streak!</string>
+    <string name="bonus_chest">Bonus Chest</string>
+    <string name="bonus_chest_desc">Watch a video for %1$d bonus coins!</string>
+    <string name="hint_choice_title">Get Hint</string>
+    <string name="hint_use_coins">Use %1$d coins</string>
+    <string name="hint_watch_video">Watch video (free)</string>
+    <string name="insufficient_coins">Not enough coins</string>
+    <string name="weekly_challenge">Weekly Challenge</string>
+    <string name="weekly_player">Player of the Week</string>
+    <string name="weekly_warrior">Weekly Warrior</string>
+    <string name="weekly_endurance">Endurance</string>
+    <string name="weekly_progress">%1$d / %2$d</string>
+    <string name="undo_move">Undo Move</string>
+    <string name="coin_shop">Shop</string>
+    <string name="avatar_frames">Avatar Frames</string>
+    <string name="dice_skins">Dice Skins</string>
+    <string name="profile_titles">Titles</string>
+    <string name="theme_rental">Rent Theme (24h)</string>
+
 </resources>

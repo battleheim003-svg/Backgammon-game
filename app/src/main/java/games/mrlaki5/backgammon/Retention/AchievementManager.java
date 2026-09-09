@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
+import games.mrlaki5.backgammon.Economy.CoinConfig;
+import games.mrlaki5.backgammon.Economy.CoinManager;
 import games.mrlaki5.backgammon.Util.DateUtil;
 
 /**
@@ -45,9 +47,19 @@ public class AchievementManager {
     };
 
     private final SharedPreferences prefs;
+    private CoinManager coinManager;
 
     public AchievementManager(Context context) {
+        this(context, new CoinManager(context));
+    }
+
+    public AchievementManager(Context context, CoinManager coinManager) {
         this.prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        this.coinManager = coinManager;
+    }
+
+    public void setCoinManager(CoinManager coinManager) {
+        this.coinManager = coinManager;
     }
 
     /**
@@ -152,6 +164,11 @@ public class AchievementManager {
         if (!isUnlocked(achievementId)) {
             prefs.edit().putBoolean("unlocked_" + achievementId, true).apply();
             GameAnalytics.get().trackAchievementUnlocked(achievementId);
+            if (coinManager != null) {
+                boolean isMajor = "games_100".equals(achievementId) || "beat_royal".equals(achievementId);
+                int reward = isMajor ? CoinConfig.ACHIEVEMENT_UNLOCK_MAJOR : CoinConfig.ACHIEVEMENT_UNLOCK;
+                coinManager.earn(reward, "achievement_" + achievementId);
+            }
         }
     }
 }

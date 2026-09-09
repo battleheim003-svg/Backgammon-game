@@ -32,12 +32,16 @@ import java.util.Locale;
 import games.mrlaki5.backgammon.Database.DbHelper;
 import games.mrlaki5.backgammon.Database.GameResultRecorder;
 import games.mrlaki5.backgammon.Database.ScoresTableEntry;
+import games.mrlaki5.backgammon.Economy.CoinConfig;
+import games.mrlaki5.backgammon.Economy.CoinManager;
 import games.mrlaki5.backgammon.Menus.MenuActivity;
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
 import games.mrlaki5.backgammon.WinStreakTracker;
 import games.mrlaki5.backgammon.Retention.AchievementManager;
 import games.mrlaki5.backgammon.Retention.DailyChallenge;
 import games.mrlaki5.backgammon.Retention.ReviewPromptManager;
+import games.mrlaki5.backgammon.Retention.WeeklyChallenge;
+import games.mrlaki5.backgammon.Util.DateUtil;
 import games.mrlaki5.backgammon.GameAudio;
 import games.mrlaki5.backgammon.LocaleHelper;
 import games.mrlaki5.backgammon.GameModel.Model;
@@ -123,6 +127,8 @@ public class GameActivity extends AppCompatActivity {
     private Button turnSwitchReady;
     private final Object turnSwitchLock = new Object();
     private volatile boolean turnSwitchWaiting = false;
+
+    private CoinManager coinManager;
 
     //Touch listener activated when human needs to move chips
     private View.OnTouchListener BoardListener= new View.OnTouchListener() {
@@ -507,6 +513,7 @@ public class GameActivity extends AppCompatActivity {
         if(gameAudio!=null){
             gameAudio.startBackgroundMusic();
         }
+        coinManager = new CoinManager(this);
         //Get View
         BoardImage=((OnBoardImage)findViewById(R.id.boardImage) );
         BoardImage.setBoardTheme(GamePreferences.getBoardTheme(this));
@@ -1029,6 +1036,10 @@ public class GameActivity extends AppCompatActivity {
             if(tempFlag==1) {
                 modelLoader.saveModel(model, this);
             }
+            if(!gameResultRecorded && !passAndPlayMode && !tutorialMode) {
+                WeeklyChallenge weeklyChallenge = new WeeklyChallenge(this);
+                weeklyChallenge.onGameAbandoned();
+            }
         }
     }
 
@@ -1242,24 +1253,53 @@ public class GameActivity extends AppCompatActivity {
         File saveFile = new File(getFilesDir(), MenuActivity.GAME_CONTINUE_SAVE_FILE_NAME);
         saveFile.delete();
 
-        // Update win streak (only for vs_bot, not tutorial/pass_and_play)
+        // Update win streak and coin rewards (only for vs_bot, not tutorial/pass_and_play)
         int currentStreak = 0;
+        int coinsEarned = 0;
         if (!passAndPlayMode && !tutorialMode) {
             WinStreakTracker streakTracker = new WinStreakTracker(this);
+            int difficulty = GamePreferences.getBotDifficulty(this);
             if (winningPlayer == 1) {
                 currentStreak = streakTracker.recordWin();
+                coinsEarned = CoinConfig.WIN_BASE;
+                if (difficulty == 1) coinsEarned += CoinConfig.WIN_BONUS_MEDIUM;
+                else if (difficulty == 2) coinsEarned += CoinConfig.WIN_BONUS_HARD;
+                else if (difficulty == 3) coinsEarned += CoinConfig.WIN_BONUS_ROYAL;
+                if (coinManager != null) {
+                    coinManager.earn(coinsEarned, "game_win");
+                }
+
+                // Check first game of the day
+                SharedPreferences flowPrefs = getSharedPreferences("game_flow_prefs", Context.MODE_PRIVATE);
+                int today = DateUtil.getDayOfYear();
+                if (today != flowPrefs.getInt("last_game_day", -1)) {
+                    if (coinManager != null) {
+                        coinManager.earn(CoinConfig.FIRST_GAME_OF_DAY, "first_game_of_day");
+                    }
+                    flowPrefs.edit().putInt("last_game_day", today).apply();
+                }
+
+                // Streak milestone check
+                if (currentStreak > 0 && currentStreak % CoinConfig.STREAK_MILESTONE_EVERY == 0) {
+                    if (coinManager != null) {
+                        coinManager.earn(CoinConfig.STREAK_MILESTONE_REWARD, "streak_milestone");
+                    }
+                }
             } else {
                 streakTracker.recordLoss();
             }
 
             // Update achievements
-            AchievementManager achievements = new AchievementManager(this);
-            int difficulty = GamePreferences.getBotDifficulty(this);
+            AchievementManager achievements = new AchievementManager(this, coinManager);
             achievements.onGameCompleted(winningPlayer == 1, difficulty, currentStreak);
 
             // Update daily challenge
-            DailyChallenge dailyChallenge = new DailyChallenge(this);
+            DailyChallenge dailyChallenge = new DailyChallenge(this, coinManager);
             dailyChallenge.onGameCompleted(winningPlayer == 1, difficulty, false, currentStreak);
+
+            // Update weekly challenge
+            WeeklyChallenge weeklyChallenge = new WeeklyChallenge(this);
+            weeklyChallenge.onGameCompleted(winningPlayer == 1);
         }
 
         // Show game-over dialog on UI thread

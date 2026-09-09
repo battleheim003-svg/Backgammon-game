@@ -75,6 +75,15 @@ public final class AnalyticsEvent {
     public static final String MATCHMAKING_MATCHED = "matchmaking_matched";
     public static final String MATCHMAKING_ABANDONED = "matchmaking_abandoned";
 
+    // ==================== ECONOMY & REWARDS ====================
+    public static final String COIN_EARNED = "coin_earned";
+    public static final String COIN_SPENT = "coin_spent";
+    public static final String DAILY_LOGIN_CLAIMED = "daily_login_claimed";
+    public static final String WEEKLY_CHALLENGE_COMPLETED = "weekly_challenge_completed";
+    public static final String REWARDED_AD_WATCHED = "rewarded_ad_watched";
+    public static final String STREAK_SAVED = "streak_saved";
+    public static final String DOUBLE_REWARD_CLAIMED = "double_reward_claimed";
+
     // Legacy alias
     public static final String AD_REWARD_EARNED = REWARDED_AD_COMPLETED;
 
@@ -87,6 +96,14 @@ public final class AnalyticsEvent {
     public static final String PARAM_GAMES_PLAYED = "games_played";
     public static final String PARAM_ELO_BEFORE = "elo_before";
     public static final String PARAM_ELO_AFTER = "elo_after";
+
+    // Economy parameters
+    public static final String PARAM_AMOUNT = "amount";
+    public static final String PARAM_SOURCE = "source";
+    public static final String PARAM_ITEM = "item";
+    public static final String PARAM_NEW_BALANCE = "new_balance";
+    public static final String PARAM_DAY = "day";
+    public static final String PARAM_CHALLENGE_ID = "challenge_id";
 
     // Ad parameters
     public static final String PARAM_AD_TYPE = "ad_type";           // interstitial, rewarded

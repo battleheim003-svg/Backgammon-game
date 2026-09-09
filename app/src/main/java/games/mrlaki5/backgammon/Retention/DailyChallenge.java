@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
+import games.mrlaki5.backgammon.Economy.CoinConfig;
+import games.mrlaki5.backgammon.Economy.CoinManager;
 import games.mrlaki5.backgammon.Util.DateUtil;
 
 /**
@@ -43,10 +45,22 @@ public class DailyChallenge {
     };
 
     private final SharedPreferences prefs;
+    private final Context context;
+    private CoinManager coinManager;
 
     public DailyChallenge(Context context) {
+        this(context, new CoinManager(context));
+    }
+
+    public DailyChallenge(Context context, CoinManager coinManager) {
+        this.context = context.getApplicationContext();
         this.prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        this.coinManager = coinManager;
         refreshIfNewDay();
+    }
+
+    public void setCoinManager(CoinManager coinManager) {
+        this.coinManager = coinManager;
     }
 
     /**
@@ -141,6 +155,13 @@ public class DailyChallenge {
                 editor.putBoolean(KEY_CHALLENGE_COMPLETED, true);
                 editor.putInt(KEY_TOTAL_COMPLETED, getTotalCompleted() + 1);
                 GameAnalytics.get().trackMissionCompleted(challenge.id);
+                if (coinManager != null) {
+                    coinManager.earn(CoinConfig.DAILY_CHALLENGE_COMPLETE, "daily_challenge");
+                }
+                if (context != null) {
+                    WeeklyChallenge weeklyChallenge = new WeeklyChallenge(context);
+                    weeklyChallenge.onDailyChallengeCompleted();
+                }
             }
             editor.apply();
         }

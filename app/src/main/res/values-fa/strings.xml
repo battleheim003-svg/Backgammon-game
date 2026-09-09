@@ -198,4 +198,37 @@
     <string name="change_settings">تغییر تنظیمات</string>
     <string name="main_menu">منوی اصلی</string>
 
+    <!-- Coin Economy -->
+    <string name="coins">سکه</string>
+    <string name="coin_balance">%1$d سکه</string>
+    <string name="coin_earned">+%1$d سکه</string>
+    <string name="coin_spent">-%1$d سکه</string>
+    <string name="daily_login_title">پاداش روزانه</string>
+    <string name="daily_login_claim">دریافت</string>
+    <string name="daily_login_claimed">دریافت شد!</string>
+    <string name="daily_login_day">روز %1$d</string>
+    <string name="free_coins">سکه رایگان</string>
+    <string name="watch_ad_for_coins">تماشای ویدئو برای %1$d سکه</string>
+    <string name="double_reward">سکه دوبرابر</string>
+    <string name="double_reward_desc">تماشای ویدئو برای دوبرابر شدن پاداش!</string>
+    <string name="save_streak">حفظ رکورد</string>
+    <string name="save_streak_desc">تماشای ویدئو برای حفظ رکورد %1$d بردت!</string>
+    <string name="bonus_chest">صندوق بونوس</string>
+    <string name="bonus_chest_desc">تماشای ویدئو برای %1$d سکه بونوس!</string>
+    <string name="hint_choice_title">راهنمایی</string>
+    <string name="hint_use_coins">استفاده از %1$d سکه</string>
+    <string name="hint_watch_video">تماشای ویدئو (رایگان)</string>
+    <string name="insufficient_coins">سکه کافی نیست</string>
+    <string name="weekly_challenge">چالش هفتگی</string>
+    <string name="weekly_player">بازیکن هفته</string>
+    <string name="weekly_warrior">جنگجوی هفته</string>
+    <string name="weekly_endurance">استقامت</string>
+    <string name="weekly_progress">%1$d / %2$d</string>
+    <string name="undo_move">برگشت حرکت</string>
+    <string name="coin_shop">فروشگاه</string>
+    <string name="avatar_frames">فریم آواتار</string>
+    <string name="dice_skins">طرح تاس</string>
+    <string name="profile_titles">عنوانها</string>
+    <string name="theme_rental">اجاره تم (۲۴ ساعت)</string>
+
 </resources>
