@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.royalbackgammon.core.GameEngineTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-09-08T22:06:01.685Z" hostname="DESKTOP-D5OERPK" time="0.006">
+  <properties/>
+  <testcase name="initial roll phase determines who goes first" classname="com.royalbackgammon.core.GameEngineTest" time="0.002"/>
+  <testcase name="full turn cycle - roll, move all, end turn" classname="com.royalbackgammon.core.GameEngineTest" time="0.003"/>
+  <testcase name="doubles dice provides 4 moves" classname="com.royalbackgammon.core.GameEngineTest" time="0.001"/>
+  <testcase name="makeMove applies a valid move" classname="com.royalbackgammon.core.GameEngineTest" time="0.0"/>
+  <testcase name="initial roll with P1 higher means white goes first" classname="com.royalbackgammon.core.GameEngineTest" time="0.0"/>
+  <testcase name="game detects winner" classname="com.royalbackgammon.core.GameEngineTest" time="0.0"/>
+  <testcase name="endTurn switches player and sets roll state" classname="com.royalbackgammon.core.GameEngineTest" time="0.0"/>
+  <testcase name="makeMove rejects illegal destination" classname="com.royalbackgammon.core.GameEngineTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

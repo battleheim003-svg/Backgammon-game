@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
+import games.mrlaki5.backgammon.Util.DateUtil;
 
 /**
  * Manages 10 offline achievements.
@@ -86,7 +87,7 @@ public class AchievementManager {
         if (gamesNoQuit >= 10) unlock("no_quit_10");
 
         // Daily win check
-        int today = getDayOfYear();
+        int today = DateUtil.getDayOfYear();
         int lastDay = prefs.getInt(KEY_LAST_PLAY_DAY, -1);
         if (today != lastDay) {
             prefs.edit()
@@ -152,10 +153,5 @@ public class AchievementManager {
             prefs.edit().putBoolean("unlocked_" + achievementId, true).apply();
             GameAnalytics.get().trackAchievementUnlocked(achievementId);
         }
-    }
-
-    private int getDayOfYear() {
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        return cal.get(java.util.Calendar.YEAR) * 1000 + cal.get(java.util.Calendar.DAY_OF_YEAR);
     }
 }

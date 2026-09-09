@@ -955,6 +955,9 @@ public class GameActivity extends AppCompatActivity {
             gameAudio.release();
             gameAudio=null;
         }
+        if(gameTask!=null){
+            gameTask.shutdown();
+        }
         super.onDestroy();
     }
 

@@ -3,9 +3,8 @@ package games.mrlaki5.backgammon.Retention;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.util.Calendar;
-
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
+import games.mrlaki5.backgammon.Util.DateUtil;
 
 /**
  * Simple offline daily challenge system.
@@ -54,7 +53,7 @@ public class DailyChallenge {
      * Checks if it's a new day and rotates the challenge if needed.
      */
     private void refreshIfNewDay() {
-        int today = getDayOfYear();
+        int today = DateUtil.getDayOfYear();
         int lastDay = prefs.getInt(KEY_LAST_CHALLENGE_DAY, -1);
         if (today != lastDay) {
             // New day — rotate to next challenge
@@ -145,11 +144,6 @@ public class DailyChallenge {
             }
             editor.apply();
         }
-    }
-
-    private int getDayOfYear() {
-        Calendar cal = Calendar.getInstance();
-        return cal.get(Calendar.YEAR) * 1000 + cal.get(Calendar.DAY_OF_YEAR);
     }
 
     // ==================== Data classes ====================

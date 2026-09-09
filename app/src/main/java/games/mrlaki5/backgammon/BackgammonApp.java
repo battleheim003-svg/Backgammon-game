@@ -29,8 +29,6 @@ import ir.tapsell.plus.model.AdNetworkError;
 public class BackgammonApp extends Application {
 
     private static final String TAG = "BackgammonApp";
-    private static final String TAPSELL_APP_KEY =
-            "icqpgedfgrrbfflttiglpqbfneimtpltlnbodeaginjtfcreqkthhblofgmcegogkgpeij";
 
     private static final String PREFS_NAME = "app_prefs";
     private static final String KEY_FIRST_LAUNCH = "first_launch_done";
@@ -44,7 +42,7 @@ public class BackgammonApp extends Application {
 
         // Initialize TapsellPlus SDK
         TapsellPlus.setDebugMode(Log.DEBUG);
-        TapsellPlus.initialize(this, TAPSELL_APP_KEY, new TapsellPlusInitListener() {
+        TapsellPlus.initialize(this, BuildConfig.TAPSELL_APP_KEY, new TapsellPlusInitListener() {
             @Override
             public void onInitializeSuccess(AdNetworks adNetworks) {
                 Log.d(TAG, "TapsellPlus initialized successfully");

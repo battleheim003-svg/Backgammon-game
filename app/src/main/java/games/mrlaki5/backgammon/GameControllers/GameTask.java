@@ -1,148 +1,136 @@
 package games.mrlaki5.backgammon.GameControllers;
 
-import android.content.Intent;
-import android.os.AsyncTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import games.mrlaki5.backgammon.Menus.MenuActivity;
 import games.mrlaki5.backgammon.GameModel.Model;
 import games.mrlaki5.backgammon.GameView.OnBoardImage;
 import games.mrlaki5.backgammon.R;
 
-//Class for game thread
-public class GameTask extends AsyncTask<Void, Void, Void> {
+/**
+ * Game execution thread using ExecutorService for thread-safe turn handling.
+ */
+public class GameTask {
 
-    //Time between two turns
-    private long sleep_time;
-    //Flag for work, when set off thread will finish
-    private int WorkFlag=1;
-    //Flag turned on when thread finishes execution
-    private int FinishedFlag=0;
-    //Flag for synchronization of end routines
-    private int EndRoutineStarted=0;
-    //Game activity context
-    private GameActivity gameActivity;
-    //Model of game state
-    private Model model;
-    //Object of game logic
-    private GameLogic gameLogic;
-    //View
-    private OnBoardImage onBoardImage;
+    // Time between two turns
+    private final long sleepTime;
+    // Flag for work, when set to 0 execution loop terminates
+    private final AtomicInteger workFlag = new AtomicInteger(1);
+    // Flag set to 1 when task finishes execution
+    private final AtomicInteger finishedFlag = new AtomicInteger(0);
+    // Flag for synchronization of end routines
+    private final AtomicInteger endRoutineStarted = new AtomicInteger(0);
 
-    //Constructor
-    public GameTask(Model model, GameLogic gamLogic, OnBoardImage onBoardImage, long sleep_time,
-                    GameActivity gameActivity){
-        this.model=model;
-        this.gameLogic=gamLogic;
-        this.onBoardImage=onBoardImage;
-        this.sleep_time=sleep_time;
-        this.gameActivity=gameActivity;
-        if(this.sleep_time==0){
-            this.sleep_time=1;
-        }
+    // Single-thread executor for game loop
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    // Game activity context
+    private final GameActivity gameActivity;
+    // Model of game state
+    private final Model model;
+    // Object of game logic
+    private final GameLogic gameLogic;
+    // View
+    private final OnBoardImage onBoardImage;
+
+    // Constructor
+    public GameTask(Model model, GameLogic gameLogic, OnBoardImage onBoardImage, long sleepTime,
+                    GameActivity gameActivity) {
+        this.model = model;
+        this.gameLogic = gameLogic;
+        this.onBoardImage = onBoardImage;
+        this.sleepTime = (sleepTime == 0) ? 1 : sleepTime;
+        this.gameActivity = gameActivity;
     }
 
-    //Method for writing text on view
-    private void writeMessage(String Text){
-        writeMessage(Text, false);
+    // Method for writing text on view
+    private void writeMessage(String text) {
+        writeMessage(text, false);
     }
 
-    private void writeMessage(String Text, boolean rollPrompt){
-        //Set text on view
+    private void writeMessage(String text, boolean rollPrompt) {
         onBoardImage.setMessage(model.getCurrentObjectPlayer().getPlayerName() +
-                ", " +Text, model.getCurrentPlayer(), rollPrompt);
-        //Invalidate view, its redrawn
+                ", " + text, model.getCurrentPlayer(), rollPrompt);
         onBoardImage.postInvalidate();
     }
 
-    //Run method
-    @Override
-    protected Void doInBackground(Void... voids) {
-        //While working flag is on thread runs
-        while(WorkFlag==1){
-            //Depending on state go
-            switch(model.getState()){
-                //State 0: player1 throw one dice
-                case 0:
-                    //Set message
-                    writeMessage(gameActivity.getString(R.string.roll_dice), true);
-                    //Call method on object player to roll dice
-                    model.getCurrentObjectPlayer().actionRoll();
-                    //Check if thread should finish
-                    if(WorkFlag==0){
-                        break;
-                    }
-                    //Change state to State 1
-                    model.setState(1);
-                    //Change current player
-                    model.changeCurrentPlayer();
-                    // Show turn-switch overlay in Pass & Play for initial roll
-                    if (gameActivity.isPassAndPlayMode()) {
-                        gameActivity.showTurnSwitchAndWait(
-                                model.getCurrentObjectPlayer().getPlayerName(),
-                                model.getCurrentPlayer());
-                        if (WorkFlag == 0) break;
-                    }
-                    //Wait time between turns
-                    try {
-                        Thread.sleep(sleep_time);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+    /**
+     * Starts execution of the game loop on a background thread.
+     */
+    public void execute(Void... voids) {
+        executor.execute(this::runGameLoop);
+    }
 
-                    break;
-                //State 1: player2 throw one dice
-                case 1:
-                    //Set message
-                    writeMessage(gameActivity.getString(R.string.roll_dice), true);
-                    //Call method in object player to roll dice
-                    model.getCurrentObjectPlayer().actionRoll();
-                    //Check if thread should finish
-                    if(WorkFlag==0){
-                        break;
-                    }
-                    //Check which player got higher number, that one plays first
-                    if(model.getDiceThrows()[0].getThrowNumber()>=
-                            model.getDiceThrows()[1].getThrowNumber()){
-                        model.setCurrentPlayer(1);
-                    }
-                    else{
-                        model.setCurrentPlayer(2);
-                    }
-                    //Change state to State 3
-                    model.setState(2);
-                    //Wait time between turns
-                    try {
-                        Thread.sleep(sleep_time);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                //State 2: currentPlayer move chips
-                case 2:
-                    //Calculate all next moves for current player
-                    model.setNextMoves(gameLogic.calculateMoves(model.getBoardFields(),
-                            model.getCurrentPlayer(), model.getDiceThrows()));
-                    //If there are next moves
-                    if(!model.getNextMoves().isEmpty()) {
-                        //Write message
-                        writeMessage(gameActivity.getString(R.string.move_checkers));
-                        //Call method in object player to move chips
-                        model.getCurrentObjectPlayer().actionMove();
-                        //Check if thread should finish
-                        if(WorkFlag==0){
+    private void runGameLoop() {
+        try {
+            while (workFlag.get() == 1 && !Thread.currentThread().isInterrupted()) {
+                switch (model.getState()) {
+                    // State 0: Player 1 rolls one die for opening
+                    case 0:
+                        writeMessage(gameActivity.getString(R.string.roll_dice), true);
+                        model.getCurrentObjectPlayer().actionRoll();
+                        if (workFlag.get() == 0) break;
+
+                        model.setState(1);
+                        model.changeCurrentPlayer();
+
+                        // Show turn-switch overlay in Pass & Play for initial roll
+                        if (gameActivity.isPassAndPlayMode()) {
+                            gameActivity.showTurnSwitchAndWait(
+                                    model.getCurrentObjectPlayer().getPlayerName(),
+                                    model.getCurrentPlayer());
+                            if (workFlag.get() == 0) break;
+                        }
+
+                        try {
+                            Thread.sleep(sleepTime);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
                             break;
                         }
-                    }
-                    //Check if current player finished game
-                    if(gameLogic.getCurrPlayerFinished()!=0){
-                        synchronized (this) {
-                            //Check end routine synchronization flag
-                            if(EndRoutineStarted==0) {
-                                //Set end routine synchronization flag
-                                EndRoutineStarted=1;
-                                //Set working flag to 0
-                                WorkFlag = 0;
-                                //Get winner info
+                        break;
+
+                    // State 1: Player 2 rolls one die for opening
+                    case 1:
+                        writeMessage(gameActivity.getString(R.string.roll_dice), true);
+                        model.getCurrentObjectPlayer().actionRoll();
+                        if (workFlag.get() == 0) break;
+
+                        // Check which player got higher number, that one plays first
+                        if (model.getDiceThrows()[0].getThrowNumber() >=
+                                model.getDiceThrows()[1].getThrowNumber()) {
+                            model.setCurrentPlayer(1);
+                        } else {
+                            model.setCurrentPlayer(2);
+                        }
+
+                        model.setState(2);
+
+                        try {
+                            Thread.sleep(sleepTime);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
+                        break;
+
+                    // State 2: Current player moves checkers
+                    case 2:
+                        model.setNextMoves(gameLogic.calculateMoves(model.getBoardFields(),
+                                model.getCurrentPlayer(), model.getDiceThrows()));
+
+                        if (!model.getNextMoves().isEmpty()) {
+                            writeMessage(gameActivity.getString(R.string.move_checkers));
+                            model.getCurrentObjectPlayer().actionMove();
+                            if (workFlag.get() == 0) break;
+                        }
+
+                        // Check if current player finished game
+                        if (gameLogic.getCurrPlayerFinished() != 0) {
+                            if (endRoutineStarted.compareAndSet(0, 1)) {
+                                workFlag.set(0);
                                 int winningPlayer = gameLogic.getCurrPlayerFinished();
                                 String p1Name = model.getPlayers()[0].getPlayerName();
                                 String p2Name = model.getPlayers()[1].getPlayerName();
@@ -153,82 +141,90 @@ public class GameTask extends AsyncTask<Void, Void, Void> {
                                     gameMode = MenuActivity.GAME_MODE_VS_BOT;
                                 }
                                 gameActivity.playGameFinishedEffect();
-                                // Show game over dialog instead of finishing immediately
                                 gameActivity.onGameFinished(winningPlayer, p1Name, p2Name, gameMode);
                             }
+                            break;
+                        }
+
+                        model.changeCurrentPlayer();
+                        model.setState(3);
+
+                        // Tutorial mode: skip bot turn entirely, stay on player 1
+                        if (gameActivity.isTutorialMode()) {
+                            model.setCurrentPlayer(1);
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException ignored) {
+                                Thread.currentThread().interrupt();
+                                break;
+                            }
+                            break;
+                        }
+
+                        // Show turn-switch overlay in Pass & Play mode
+                        if (gameActivity.isPassAndPlayMode()) {
+                            gameActivity.showTurnSwitchAndWait(
+                                    model.getCurrentObjectPlayer().getPlayerName(),
+                                    model.getCurrentPlayer());
+                            if (workFlag.get() == 0) break;
+                        }
+
+                        try {
+                            Thread.sleep(sleepTime);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            break;
                         }
                         break;
-                    }
-                    //Change current player
-                    model.changeCurrentPlayer();
-                    //Set state to State 3
-                    model.setState(3);
-                    // Tutorial mode: skip bot turn entirely, stay on player 1
-                    if (gameActivity.isTutorialMode()) {
-                        model.setCurrentPlayer(1);
-                        // Wait briefly then continue loop (scenario already loaded by UI)
-                        try { Thread.sleep(500); } catch (InterruptedException ignored) {}
+
+                    // State 3: Current player rolls dice
+                    case 3:
+                        writeMessage(gameActivity.getString(R.string.roll_dice), true);
+                        model.getCurrentObjectPlayer().actionRoll();
+                        if (workFlag.get() == 0) break;
+
+                        model.setState(2);
                         break;
-                    }
-                    // Show turn-switch overlay in Pass & Play mode
-                    if (gameActivity.isPassAndPlayMode()) {
-                        gameActivity.showTurnSwitchAndWait(
-                                model.getCurrentObjectPlayer().getPlayerName(),
-                                model.getCurrentPlayer());
-                        if (WorkFlag == 0) break;
-                    }
-                    //Wait time between turns
-                    try {
-                        Thread.sleep(sleep_time);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                //State 3: currentPlayer roll dices
-                case 3:
-                    //Set message
-                    writeMessage(gameActivity.getString(R.string.roll_dice), true);
-                    //Call method in object player to roll dice
-                    model.getCurrentObjectPlayer().actionRoll();
-                    //Check if thread should finish
-                    if(WorkFlag==0){
-                        break;
-                    }
-                    //Change state to State 2
-                    model.setState(2);
-                    break;
+                }
+            }
+        } finally {
+            finishedFlag.set(1);
+            synchronized (this) {
+                this.notifyAll();
             }
         }
-        //Set finished flag and notify if UI thread is waiting for it
-        synchronized (this) {
-            FinishedFlag = 1;
-            this.notifyAll();
-        }
-        return null;
     }
 
-    //Getters and setters
+    /**
+     * Shuts down the background executor immediately.
+     */
+    public void shutdown() {
+        workFlag.set(0);
+        executor.shutdownNow();
+    }
+
+    // Getters and setters for compatibility
     public int getWorkFlag() {
-        return WorkFlag;
+        return workFlag.get();
     }
 
     public void setWorkFlag(int workFlag) {
-        WorkFlag = workFlag;
+        this.workFlag.set(workFlag);
     }
 
     public int getFinishedFlag() {
-        return FinishedFlag;
+        return finishedFlag.get();
     }
 
     public void setFinishedFlag(int finishedFlag) {
-        FinishedFlag = finishedFlag;
+        this.finishedFlag.set(finishedFlag);
     }
 
     public int getEndRoutineStarted() {
-        return EndRoutineStarted;
+        return endRoutineStarted.get();
     }
 
     public void setEndRoutineStarted(int endRoutineStarted) {
-        EndRoutineStarted = endRoutineStarted;
+        this.endRoutineStarted.set(endRoutineStarted);
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.royalbackgammon.core.MoveExecutorTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-09-08T22:06:01.724Z" hostname="DESKTOP-D5OERPK" time="0.001">
+  <properties/>
+  <testcase name="tryApplyMove fails for illegal move" classname="com.royalbackgammon.core.MoveExecutorTest" time="0.001"/>
+  <testcase name="apply move removes checker from source" classname="com.royalbackgammon.core.MoveExecutorTest" time="0.0"/>
+  <testcase name="apply move to empty destination" classname="com.royalbackgammon.core.MoveExecutorTest" time="0.0"/>
+  <testcase name="source field clears owner when empty" classname="com.royalbackgammon.core.MoveExecutorTest" time="0.0"/>
+  <testcase name="apply move consumes the correct die" classname="com.royalbackgammon.core.MoveExecutorTest" time="0.0"/>
+  <testcase name="doubles allow 4 consecutive moves" classname="com.royalbackgammon.core.MoveExecutorTest" time="0.0"/>
+  <testcase name="apply move hits opponent blot" classname="com.royalbackgammon.core.MoveExecutorTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

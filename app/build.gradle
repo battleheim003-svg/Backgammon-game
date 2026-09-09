@@ -37,6 +37,10 @@ android {
         versionName "2.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "TAPSELL_APP_KEY", "\"icqpgedfgrrbfflttiglpqbfneimtpltlnbodeaginjtfcreqkthhblofgmcegogkgpeij\""
+        buildConfigField "String", "TAPSELL_ZONE_INTERSTITIAL", "\"6a8b35a0f34d73758477ec0a\""
+        buildConfigField "String", "TAPSELL_ZONE_REWARDED", "\"6a8dddf3488ef01a725b3afd\""
     }
 
     signingConfigs {

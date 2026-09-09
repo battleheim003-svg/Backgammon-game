@@ -1,5 +1,7 @@
 package games.mrlaki5.backgammon.Monetization.ads;
 
+import games.mrlaki5.backgammon.BuildConfig;
+
 /**
  * Centralized ad configuration.
  * All ad-related constants and zone IDs live here for easy management.
@@ -16,13 +18,13 @@ public final class AdConfig {
      * Tapsell Plus Interstitial Zone ID.
      * Shown between games (post-game result screen).
      */
-    public static final String ZONE_INTERSTITIAL = "6a8b35a0f34d73758477ec0a";
+    public static final String ZONE_INTERSTITIAL = BuildConfig.TAPSELL_ZONE_INTERSTITIAL;
 
     /**
      * Tapsell Plus Rewarded Video Zone ID.
      * Shown when user requests a hint.
      */
-    public static final String ZONE_REWARDED = "6a8dddf3488ef01a725b3afd";
+    public static final String ZONE_REWARDED = BuildConfig.TAPSELL_ZONE_REWARDED;
 
     // ==================== Frequency Config ====================
 

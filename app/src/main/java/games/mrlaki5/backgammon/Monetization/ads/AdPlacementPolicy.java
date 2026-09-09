@@ -29,9 +29,6 @@ package games.mrlaki5.backgammon.Monetization.ads;
 public final class AdPlacementPolicy {
     private AdPlacementPolicy() {}
 
-    /** Interstitial shows every N games. */
-    public static final int INTERSTITIAL_EVERY_N_GAMES = 3;
-
     /** Rewarded ad is NEVER forced — user must tap a button to opt in. */
     public static final boolean REWARDED_IS_OPT_IN = true;
 
