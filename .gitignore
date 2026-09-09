@@ -12,3 +12,5 @@
 *.keystore
 app/release/*.apk
 app/release/baselineProfiles/
+hs_err_pid*
+replay_pid*
