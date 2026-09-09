@@ -21,4 +21,12 @@ public interface BoardTheme {
                      Paint fillPaint, Paint rimPaint, Paint shadowPaint,
                      Paint highlightPaint, Paint glowPaint, Paint contactShadowPaint,
                      RectF shadowRect);
+
+    /**
+     * Returns a programmatically-drawn board background, or null to fall back
+     * to {@link #getBackgroundDrawableRes()}.
+     */
+    default android.graphics.drawable.Drawable createBackgroundDrawable() {
+        return null;
+    }
 }

@@ -11,6 +11,7 @@ public class BoardThemeFactory {
     private static final BoardTheme POP_ART = new PopArtTheme();
     private static final BoardTheme CYBERPUNK = new CyberpunkTheme();
     private static final BoardTheme LUXURY = new LuxuryTheme();
+    private static final BoardTheme WOODLAND = new WoodlandTheme();
 
     public static int themeIdFromString(String themeString) {
         if (themeString == null) return GamePreferences.THEME_ROYAL;
@@ -18,6 +19,7 @@ public class BoardThemeFactory {
             case "theme_pop_art": return GamePreferences.THEME_POP_ART;
             case "theme_cyberpunk": return GamePreferences.THEME_CYBERPUNK;
             case "theme_luxury": return GamePreferences.THEME_LUXURY;
+            case "theme_woodland": return GamePreferences.THEME_WOODLAND;
             case "theme_royal":
             default:
                 return GamePreferences.THEME_ROYAL;
@@ -29,6 +31,7 @@ public class BoardThemeFactory {
             case GamePreferences.THEME_POP_ART: return "theme_pop_art";
             case GamePreferences.THEME_CYBERPUNK: return "theme_cyberpunk";
             case GamePreferences.THEME_LUXURY: return "theme_luxury";
+            case GamePreferences.THEME_WOODLAND: return "theme_woodland";
             case GamePreferences.THEME_ROYAL:
             default:
                 return "theme_royal";
@@ -43,6 +46,8 @@ public class BoardThemeFactory {
                 return CYBERPUNK;
             case GamePreferences.THEME_LUXURY:
                 return LUXURY;
+            case GamePreferences.THEME_WOODLAND:
+                return WOODLAND;
             case GamePreferences.THEME_ROYAL:
             default:
                 return ROYAL;

@@ -276,5 +276,6 @@
     <string name="watch_ad_unlock">📺 تبلیغ</string>
     <string name="theme_unlocked_toast">طرح باز شد!</string>
     <string name="ad_not_ready">تبلیغ آماده نیست — کمی بعد تلاش کنید</string>
+    <string name="theme_woodland_name">جنگل</string>
 
 </resources>

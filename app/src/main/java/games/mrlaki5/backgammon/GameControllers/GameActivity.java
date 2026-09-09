@@ -632,7 +632,13 @@ public class GameActivity extends AppCompatActivity {
     private void applySelectedBoardTheme() {
         int themeId = GamePreferences.getBoardTheme(this);
         BoardTheme theme = BoardThemeFactory.getTheme(themeId);
-        findViewById(R.id.gameRoot).setBackgroundResource(theme.getBackgroundDrawableRes());
+        android.view.View root = findViewById(R.id.gameRoot);
+        android.graphics.drawable.Drawable programmatic = theme.createBackgroundDrawable();
+        if (programmatic != null) {
+            root.setBackground(programmatic);
+        } else {
+            root.setBackgroundResource(theme.getBackgroundDrawableRes());
+        }
     }
 
     @Override
@@ -851,6 +857,7 @@ public class GameActivity extends AppCompatActivity {
             case GamePreferences.THEME_POP_ART: return "pop_art";
             case GamePreferences.THEME_CYBERPUNK: return "cyberpunk";
             case GamePreferences.THEME_LUXURY: return "luxury";
+            case GamePreferences.THEME_WOODLAND: return "woodland";
             default: return "royal";
         }
     }

@@ -428,8 +428,10 @@ public class MenuActivity extends AppCompatActivity {
         // --- Theme selection (thumbnails with ad-gate for locked themes) ---
         final int[] selectedTheme = {GamePreferences.getBoardTheme(this)};
         setupThemePicker(dialogView,
-                new int[]{R.id.themeThumb0, R.id.themeThumb1, R.id.themeThumb2, R.id.themeThumb3},
-                new int[]{0, R.id.lockOverlay1, R.id.lockOverlay2, R.id.lockOverlay3},
+                new int[]{R.id.themeThumb0, R.id.themeThumb1, R.id.themeThumb2,
+                          R.id.themeThumb3, R.id.themeThumb4},
+                new int[]{0, R.id.lockOverlay1, R.id.lockOverlay2,
+                          R.id.lockOverlay3, R.id.lockOverlay4},
                 selectedTheme);
 
         // --- Difficulty selection (4 buttons) ---
@@ -556,8 +558,10 @@ public class MenuActivity extends AppCompatActivity {
         // --- Theme selection (thumbnails with ad-gate for locked themes) ---
         final int[] selectedTheme = {GamePreferences.getBoardTheme(this)};
         setupThemePicker(dialogView,
-                new int[]{R.id.pnpThemeThumb0, R.id.pnpThemeThumb1, R.id.pnpThemeThumb2, R.id.pnpThemeThumb3},
-                new int[]{0, R.id.pnpLockOverlay1, R.id.pnpLockOverlay2, R.id.pnpLockOverlay3},
+                new int[]{R.id.pnpThemeThumb0, R.id.pnpThemeThumb1, R.id.pnpThemeThumb2,
+                          R.id.pnpThemeThumb3, R.id.pnpThemeThumb4},
+                new int[]{0, R.id.pnpLockOverlay1, R.id.pnpLockOverlay2,
+                          R.id.pnpLockOverlay3, R.id.pnpLockOverlay4},
                 selectedTheme);
 
         // --- Player names: inline edit ---

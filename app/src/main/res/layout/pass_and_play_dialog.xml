@@ -10,7 +10,7 @@
     android:paddingEnd="20dp"
     android:paddingBottom="16dp">
 
-    <!-- ===== LEFT COLUMN: Theme Thumbnails (2x2) ===== -->
+    <!-- ===== LEFT COLUMN: Theme Thumbnails (2×4) ===== -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -19,157 +19,118 @@
         android:orientation="vertical"
         android:padding="6dp">
 
-        <!-- Row 1 -->
+        <!-- Row 1: themes 0–3 (original) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <FrameLayout
-                android:id="@+id/pnpThemeThumb0"
-                android:layout_width="0dp"
-                android:layout_height="54dp"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_theme_thumb_selected"
-                android:padding="3dp">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/preview_theme_royal" />
+            <FrameLayout android:id="@+id/pnpThemeThumb0"
+                android:layout_width="0dp" android:layout_height="52dp"
+                android:layout_margin="3dp" android:layout_weight="1"
+                android:background="@drawable/bg_theme_thumb_selected" android:padding="3dp">
+                <ImageView android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:scaleType="centerCrop" android:src="@drawable/preview_theme_royal"/>
             </FrameLayout>
 
-            <FrameLayout
-                android:id="@+id/pnpThemeThumb1"
-                android:layout_width="0dp"
-                android:layout_height="54dp"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_theme_thumb_normal"
-                android:padding="3dp">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/preview_theme_pop_art" />
-
-                <LinearLayout
-                    android:id="@+id/pnpLockOverlay1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#CC000000"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🔒"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/watch_ad_unlock"
-                        android:textColor="#F4B044"
-                        android:textSize="8sp"
-                        android:textStyle="bold"
-                        android:gravity="center" />
+            <FrameLayout android:id="@+id/pnpThemeThumb1"
+                android:layout_width="0dp" android:layout_height="52dp"
+                android:layout_margin="3dp" android:layout_weight="1"
+                android:background="@drawable/bg_theme_thumb_normal" android:padding="3dp">
+                <ImageView android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:scaleType="centerCrop" android:src="@drawable/preview_theme_pop_art"/>
+                <LinearLayout android:id="@+id/pnpLockOverlay1"
+                    android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:background="#CC000000" android:gravity="center"
+                    android:orientation="vertical" android:visibility="gone">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="🔒" android:textSize="13sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="@string/watch_ad_unlock" android:textColor="#F4B044"
+                        android:textSize="6sp" android:textStyle="bold" android:gravity="center"/>
                 </LinearLayout>
             </FrameLayout>
+
+            <FrameLayout android:id="@+id/pnpThemeThumb2"
+                android:layout_width="0dp" android:layout_height="52dp"
+                android:layout_margin="3dp" android:layout_weight="1"
+                android:background="@drawable/bg_theme_thumb_normal" android:padding="3dp">
+                <ImageView android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:scaleType="centerCrop" android:src="@drawable/preview_theme_cyberpunk"/>
+                <LinearLayout android:id="@+id/pnpLockOverlay2"
+                    android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:background="#CC000000" android:gravity="center"
+                    android:orientation="vertical" android:visibility="gone">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="🔒" android:textSize="13sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="@string/watch_ad_unlock" android:textColor="#F4B044"
+                        android:textSize="6sp" android:textStyle="bold" android:gravity="center"/>
+                </LinearLayout>
+            </FrameLayout>
+
+            <FrameLayout android:id="@+id/pnpThemeThumb3"
+                android:layout_width="0dp" android:layout_height="52dp"
+                android:layout_margin="3dp" android:layout_weight="1"
+                android:background="@drawable/bg_theme_thumb_normal" android:padding="3dp">
+                <ImageView android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:scaleType="centerCrop" android:src="@drawable/preview_theme_luxury"/>
+                <LinearLayout android:id="@+id/pnpLockOverlay3"
+                    android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:background="#CC000000" android:gravity="center"
+                    android:orientation="vertical" android:visibility="gone">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="🔒" android:textSize="13sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="@string/watch_ad_unlock" android:textColor="#F4B044"
+                        android:textSize="6sp" android:textStyle="bold" android:gravity="center"/>
+                </LinearLayout>
+            </FrameLayout>
+
         </LinearLayout>
 
-        <!-- Row 2 -->
+        <!-- Row 2: themes 4–7 (new; 5/6/7 hidden until added) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <FrameLayout
-                android:id="@+id/pnpThemeThumb2"
-                android:layout_width="0dp"
-                android:layout_height="54dp"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_theme_thumb_normal"
-                android:padding="3dp">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/preview_theme_cyberpunk" />
-
-                <LinearLayout
-                    android:id="@+id/pnpLockOverlay2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#CC000000"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🔒"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/watch_ad_unlock"
-                        android:textColor="#F4B044"
-                        android:textSize="8sp"
-                        android:textStyle="bold"
-                        android:gravity="center" />
+            <FrameLayout android:id="@+id/pnpThemeThumb4"
+                android:layout_width="0dp" android:layout_height="52dp"
+                android:layout_margin="3dp" android:layout_weight="1"
+                android:background="@drawable/bg_theme_thumb_normal" android:padding="3dp">
+                <ImageView android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:scaleType="centerCrop" android:src="@drawable/preview_theme_woodland"/>
+                <LinearLayout android:id="@+id/pnpLockOverlay4"
+                    android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:background="#CC000000" android:gravity="center"
+                    android:orientation="vertical" android:visibility="gone">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="🔒" android:textSize="13sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="@string/watch_ad_unlock" android:textColor="#F4B044"
+                        android:textSize="6sp" android:textStyle="bold" android:gravity="center"/>
                 </LinearLayout>
             </FrameLayout>
 
-            <FrameLayout
-                android:id="@+id/pnpThemeThumb3"
-                android:layout_width="0dp"
-                android:layout_height="54dp"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
+            <FrameLayout android:id="@+id/pnpThemeThumb5"
+                android:layout_width="0dp" android:layout_height="52dp"
+                android:layout_margin="3dp" android:layout_weight="1"
                 android:background="@drawable/bg_theme_thumb_normal"
-                android:padding="3dp">
+                android:visibility="gone"/>
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/preview_theme_luxury" />
+            <FrameLayout android:id="@+id/pnpThemeThumb6"
+                android:layout_width="0dp" android:layout_height="52dp"
+                android:layout_margin="3dp" android:layout_weight="1"
+                android:background="@drawable/bg_theme_thumb_normal"
+                android:visibility="gone"/>
 
-                <LinearLayout
-                    android:id="@+id/pnpLockOverlay3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#CC000000"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:visibility="gone">
+            <FrameLayout android:id="@+id/pnpThemeThumb7"
+                android:layout_width="0dp" android:layout_height="52dp"
+                android:layout_margin="3dp" android:layout_weight="1"
+                android:background="@drawable/bg_theme_thumb_normal"
+                android:visibility="gone"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🔒"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/watch_ad_unlock"
-                        android:textColor="#F4B044"
-                        android:textSize="8sp"
-                        android:textStyle="bold"
-                        android:gravity="center" />
-                </LinearLayout>
-            </FrameLayout>
         </LinearLayout>
     </LinearLayout>
 

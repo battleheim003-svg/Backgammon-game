@@ -23,6 +23,7 @@ public final class GamePreferences {
     public static final int THEME_POP_ART = 1;
     public static final int THEME_CYBERPUNK = 2;
     public static final int THEME_LUXURY = 3;
+    public static final int THEME_WOODLAND = 4;
     public static final int DEFAULT_MUSIC_VOLUME = 55;
     public static final int DEFAULT_SFX_VOLUME = 80;
 

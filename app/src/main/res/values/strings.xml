@@ -275,5 +275,6 @@
     <string name="watch_ad_unlock">📺 Ad</string>
     <string name="theme_unlocked_toast">Theme unlocked!</string>
     <string name="ad_not_ready">Ad not ready — try again shortly</string>
+    <string name="theme_woodland_name">Woodland</string>
 
 </resources>
