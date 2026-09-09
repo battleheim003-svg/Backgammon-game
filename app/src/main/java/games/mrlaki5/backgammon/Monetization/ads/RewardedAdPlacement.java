@@ -9,7 +9,8 @@ public enum RewardedAdPlacement {
     FREE_COINS("free_coins", 0, 3, 15 * 60),  // 3 per day, 15 min cooldown (seconds)
     DOUBLE_REWARD("double_reward", 0, 0, 0),   // no cap (naturally limited to wins)
     SAVE_STREAK("save_streak", 0, 1, 0),       // 1 per day
-    BONUS_CHEST("bonus_chest", 0, 1, 0);       // 1 per day (1 daily challenge)
+    BONUS_CHEST("bonus_chest", 0, 1, 0),       // 1 per day (1 daily challenge)
+    THEME_UNLOCK("theme_unlock", 0, 0, 0);     // no cap — permanent unlock
 
     public final String id;
     public final int maxPerGame;       // 0 = unlimited within game

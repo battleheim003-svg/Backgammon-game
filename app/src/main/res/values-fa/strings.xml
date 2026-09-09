@@ -272,4 +272,9 @@
     <string name="settings_shake_delay">تاخیر تشخیص</string>
     <string name="settings_delay_value">%1$d</string>
 
+    <!-- Theme unlock via ad -->
+    <string name="watch_ad_unlock">📺 تبلیغ</string>
+    <string name="theme_unlocked_toast">طرح باز شد!</string>
+    <string name="ad_not_ready">تبلیغ آماده نیست — کمی بعد تلاش کنید</string>
+
 </resources>

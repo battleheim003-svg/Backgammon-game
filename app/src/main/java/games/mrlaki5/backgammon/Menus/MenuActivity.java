@@ -425,24 +425,12 @@ public class MenuActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
 
-        // --- Theme selection (thumbnails) ---
+        // --- Theme selection (thumbnails with ad-gate for locked themes) ---
         final int[] selectedTheme = {GamePreferences.getBoardTheme(this)};
-        final FrameLayout[] thumbs = {
-                dialogView.findViewById(R.id.themeThumb0),
-                dialogView.findViewById(R.id.themeThumb1),
-                dialogView.findViewById(R.id.themeThumb2),
-                dialogView.findViewById(R.id.themeThumb3)
-        };
-        // Set initial selection
-        updateThemeSelection(thumbs, selectedTheme[0]);
-        // Click listeners
-        for (int i = 0; i < thumbs.length; i++) {
-            final int idx = i;
-            thumbs[i].setOnClickListener(v -> {
-                selectedTheme[0] = idx;
-                updateThemeSelection(thumbs, idx);
-            });
-        }
+        setupThemePicker(dialogView,
+                new int[]{R.id.themeThumb0, R.id.themeThumb1, R.id.themeThumb2, R.id.themeThumb3},
+                new int[]{0, R.id.lockOverlay1, R.id.lockOverlay2, R.id.lockOverlay3},
+                selectedTheme);
 
         // --- Difficulty selection (4 buttons) ---
         final int[] selectedDiff = {GamePreferences.getBotDifficulty(this)};
@@ -565,22 +553,12 @@ public class MenuActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
 
-        // --- Theme selection (thumbnails) ---
+        // --- Theme selection (thumbnails with ad-gate for locked themes) ---
         final int[] selectedTheme = {GamePreferences.getBoardTheme(this)};
-        final FrameLayout[] thumbs = {
-                dialogView.findViewById(R.id.pnpThemeThumb0),
-                dialogView.findViewById(R.id.pnpThemeThumb1),
-                dialogView.findViewById(R.id.pnpThemeThumb2),
-                dialogView.findViewById(R.id.pnpThemeThumb3)
-        };
-        updateThemeSelection(thumbs, selectedTheme[0]);
-        for (int i = 0; i < thumbs.length; i++) {
-            final int idx = i;
-            thumbs[i].setOnClickListener(v -> {
-                selectedTheme[0] = idx;
-                updateThemeSelection(thumbs, idx);
-            });
-        }
+        setupThemePicker(dialogView,
+                new int[]{R.id.pnpThemeThumb0, R.id.pnpThemeThumb1, R.id.pnpThemeThumb2, R.id.pnpThemeThumb3},
+                new int[]{0, R.id.pnpLockOverlay1, R.id.pnpLockOverlay2, R.id.pnpLockOverlay3},
+                selectedTheme);
 
         // --- Player names: inline edit ---
         EditText name1 = dialogView.findViewById(R.id.pnpName1);
@@ -694,6 +672,89 @@ public class MenuActivity extends AppCompatActivity {
 
     private void playMenuTap() {
         MenuAudioManager.get().playClick();
+    }
+
+    // ── Theme Unlock Helpers ──────────────────────────────────────────────────
+
+    /**
+     * Sets up the 2x2 theme picker in a new-game dialog.
+     *
+     * @param root         The dialog's root View
+     * @param thumbIds     Array of 4 FrameLayout IDs (index = theme id)
+     * @param overlayIds   Array of 4 lock-overlay IDs; 0 for slots with no overlay (Royal)
+     * @param selectedRef  Single-element int[] holding the currently selected theme index
+     */
+    private void setupThemePicker(View root,
+                                   int[] thumbIds, int[] overlayIds,
+                                   int[] selectedRef) {
+        FrameLayout[] thumbs      = new FrameLayout[thumbIds.length];
+        View[]        lockViews   = new View[overlayIds.length];
+
+        for (int i = 0; i < thumbIds.length; i++) {
+            thumbs[i] = root.findViewById(thumbIds[i]);
+        }
+        for (int i = 0; i < overlayIds.length; i++) {
+            if (overlayIds[i] != 0) {
+                lockViews[i] = root.findViewById(overlayIds[i]);
+            }
+        }
+
+        refreshThemeLocks(lockViews);
+        updateThemeSelection(thumbs, selectedRef[0]);
+
+        for (int i = 0; i < thumbs.length; i++) {
+            final int idx = i;
+            thumbs[i].setOnClickListener(v -> {
+                if (GamePreferences.isThemeUnlocked(MenuActivity.this, idx)) {
+                    selectedRef[0] = idx;
+                    updateThemeSelection(thumbs, idx);
+                } else {
+                    showThemeUnlockAd(idx, () -> {
+                        GamePreferences.unlockTheme(MenuActivity.this, idx);
+                        refreshThemeLocks(lockViews);
+                        selectedRef[0] = idx;
+                        updateThemeSelection(thumbs, idx);
+                        android.widget.Toast.makeText(this,
+                                R.string.theme_unlocked_toast,
+                                android.widget.Toast.LENGTH_SHORT).show();
+                    });
+                }
+            });
+        }
+    }
+
+    private void refreshThemeLocks(View[] lockViews) {
+        for (int i = 0; i < lockViews.length; i++) {
+            if (lockViews[i] != null) {
+                lockViews[i].setVisibility(
+                        GamePreferences.isThemeUnlocked(this, i) ? View.GONE : View.VISIBLE);
+            }
+        }
+    }
+
+    private void showThemeUnlockAd(int themeIdx, Runnable onUnlocked) {
+        if (adManager == null || !adManager.isRewardedAdReady()) {
+            if (adManager != null) {
+                adManager.preloadAds();
+            }
+            android.widget.Toast.makeText(this,
+                    R.string.ad_not_ready, android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+        adManager.showRewardedAd(this, RewardedAdPlacement.THEME_UNLOCK,
+                new games.mrlaki5.backgammon.Monetization.ads.AdCallback() {
+                    @Override public void onAdLoaded() {}
+                    @Override public void onAdFailedToLoad(String error) {
+                        runOnUiThread(() -> android.widget.Toast.makeText(MenuActivity.this,
+                                R.string.ad_not_ready, android.widget.Toast.LENGTH_SHORT).show());
+                    }
+                    @Override public void onAdShown() {}
+                    @Override public void onAdDismissed() {}
+                    @Override public void onAdClicked() {}
+                    @Override public void onRewardEarned() {
+                        runOnUiThread(onUnlocked);
+                    }
+                });
     }
 
     @Override

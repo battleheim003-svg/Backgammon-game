@@ -55,6 +55,31 @@
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     android:src="@drawable/preview_theme_pop_art" />
+
+                <LinearLayout
+                    android:id="@+id/pnpLockOverlay1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#CC000000"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔒"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/watch_ad_unlock"
+                        android:textColor="#F4B044"
+                        android:textSize="8sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+                </LinearLayout>
             </FrameLayout>
         </LinearLayout>
 
@@ -78,6 +103,31 @@
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     android:src="@drawable/preview_theme_cyberpunk" />
+
+                <LinearLayout
+                    android:id="@+id/pnpLockOverlay2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#CC000000"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔒"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/watch_ad_unlock"
+                        android:textColor="#F4B044"
+                        android:textSize="8sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+                </LinearLayout>
             </FrameLayout>
 
             <FrameLayout
@@ -94,6 +144,31 @@
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     android:src="@drawable/preview_theme_luxury" />
+
+                <LinearLayout
+                    android:id="@+id/pnpLockOverlay3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#CC000000"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔒"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/watch_ad_unlock"
+                        android:textColor="#F4B044"
+                        android:textSize="8sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+                </LinearLayout>
             </FrameLayout>
         </LinearLayout>
     </LinearLayout>

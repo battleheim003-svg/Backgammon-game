@@ -12,9 +12,6 @@ import android.widget.Toast;
 import java.util.List;
 
 import games.mrlaki5.backgammon.Database.PlayerProfileManager;
-import games.mrlaki5.backgammon.GameAudio;
-import games.mrlaki5.backgammon.GamePreferences;
-import games.mrlaki5.backgammon.GameView.themes.BoardThemeFactory;
 import games.mrlaki5.backgammon.R;
 
 /**
@@ -160,10 +157,7 @@ public class ShopAdapter extends BaseAdapter {
     private boolean isItemEquipped(ShopItem item) {
         if (item.isRental() || item.getCategory() == ShopItem.Category.RENTAL) {
             String targetId = item.getId().replace("rental_", "");
-            if (item.getId().startsWith("rental_theme_") || item.getId().equals("rental_cyberpunk") || item.getId().equals("rental_luxury")) {
-                String themeTarget = targetId.startsWith("theme_") ? targetId : "theme_" + targetId;
-                return themeTarget.equals(profileManager.getActiveTheme());
-            } else if (item.getId().startsWith("rental_frame_") || item.getId().equals("rental_diamond") || item.getId().equals("rental_sultan")) {
+            if (item.getId().startsWith("rental_frame_") || item.getId().equals("rental_diamond") || item.getId().equals("rental_sultan")) {
                 String frameTarget = targetId.startsWith("frame_") ? targetId : "frame_" + targetId;
                 return frameTarget.equals(profileManager.getActiveFrame());
             } else if (item.getId().startsWith("rental_dice_") || item.getId().equals("rental_dragon")) {
@@ -178,8 +172,6 @@ public class ShopAdapter extends BaseAdapter {
                 return item.getId().equals(profileManager.getActiveDice());
             case TITLE:
                 return item.getId().equals(profileManager.getActiveTitle());
-            case THEME:
-                return item.getId().equals(profileManager.getActiveTheme());
             default:
                 return false;
         }
@@ -188,13 +180,7 @@ public class ShopAdapter extends BaseAdapter {
     private void equipItem(ShopItem item) {
         if (item.isRental() || item.getCategory() == ShopItem.Category.RENTAL) {
             String targetId = item.getId().replace("rental_", "");
-            if (item.getId().startsWith("rental_theme_") || item.getId().equals("rental_cyberpunk") || item.getId().equals("rental_luxury")) {
-                String themeTarget = targetId.startsWith("theme_") ? targetId : "theme_" + targetId;
-                profileManager.setActiveTheme(themeTarget);
-                int themeId = BoardThemeFactory.themeIdFromString(themeTarget);
-                int difficulty = GamePreferences.getBotDifficulty(context);
-                GamePreferences.saveSelections(context, difficulty, themeId);
-            } else if (item.getId().startsWith("rental_frame_") || item.getId().equals("rental_diamond") || item.getId().equals("rental_sultan")) {
+            if (item.getId().startsWith("rental_frame_") || item.getId().equals("rental_diamond") || item.getId().equals("rental_sultan")) {
                 String frameTarget = targetId.startsWith("frame_") ? targetId : "frame_" + targetId;
                 profileManager.setActiveFrame(frameTarget);
             } else if (item.getId().startsWith("rental_dice_") || item.getId().equals("rental_dragon")) {
@@ -212,12 +198,6 @@ public class ShopAdapter extends BaseAdapter {
                 break;
             case TITLE:
                 profileManager.setActiveTitle(item.getId());
-                break;
-            case THEME:
-                profileManager.setActiveTheme(item.getId());
-                int themeId = BoardThemeFactory.themeIdFromString(item.getId());
-                int difficulty = GamePreferences.getBotDifficulty(context);
-                GamePreferences.saveSelections(context, difficulty, themeId);
                 break;
         }
     }

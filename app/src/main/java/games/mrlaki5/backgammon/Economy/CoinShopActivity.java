@@ -160,35 +160,8 @@ public class CoinShopActivity extends AppCompatActivity {
             2500, ShopItem.Category.TITLE, ShopItem.Rarity.LEGENDARY, "🏆", 250, false, null));
 
         // ═══════════════════════════════════════════
-        // THEMES — 4 items
-        // ═══════════════════════════════════════════
-        allItems.add(ShopItem.permanent(
-            "theme_royal", "تخته سلطنتی", "تخته کلاسیک — پیشفرض",
-            0, ShopItem.Category.THEME, ShopItem.Rarity.COMMON, "♟️"));
-
-        allItems.add(ShopItem.badged(
-            "theme_pop_art", "تخته پاپ آرت", "تخته کمیکبوک رنگارنگ",
-            600, ShopItem.Category.THEME, ShopItem.Rarity.RARE, "🎨", "پرطرفدار"));
-
-        allItems.add(ShopItem.permanent(
-            "theme_cyberpunk", "تخته سایبرپانک", "تخته آیندهنگر نئوندار",
-            1000, ShopItem.Category.THEME, ShopItem.Rarity.EPIC, "⚡"));
-
-        allItems.add(new ShopItem(
-            "theme_luxury", "تخته فاخر ایرانی", "عاج و طلا — بهترین تجربه",
-            2000, ShopItem.Category.THEME, ShopItem.Rarity.LEGENDARY, "🏛️", 0, false, "برتر"));
-
-        // ═══════════════════════════════════════════
         // RENTALS — 24-hour try-before-you-buy
         // ═══════════════════════════════════════════
-        allItems.add(ShopItem.rental(
-            "rental_cyberpunk", "سایبرپانک — ۲۴ ساعت", "تخته نئوندار را امتحان کنید",
-            80, ShopItem.Category.THEME, ShopItem.Rarity.EPIC, "⚡"));
-
-        allItems.add(ShopItem.rental(
-            "rental_luxury", "تخته فاخر — ۲۴ ساعت", "تجربه لوکس را امتحان کنید",
-            120, ShopItem.Category.THEME, ShopItem.Rarity.LEGENDARY, "🏛️"));
-
         allItems.add(ShopItem.rental(
             "rental_diamond", "تاج الماس — ۲۴ ساعت", "فریم افسانهای برای یک روز",
             50, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.LEGENDARY, "💎"));
@@ -212,8 +185,6 @@ public class CoinShopActivity extends AppCompatActivity {
                     filterItems(ShopItem.Category.DICE_SKIN);
                 } else if (checkedId == R.id.rbCategoryTitles) {
                     filterItems(ShopItem.Category.TITLE);
-                } else if (checkedId == R.id.rbCategoryThemes) {
-                    filterItems(ShopItem.Category.THEME);
                 } else if (checkedId == R.id.rbCategoryRental) {
                     filterItems(ShopItem.Category.RENTAL);
                 } else {

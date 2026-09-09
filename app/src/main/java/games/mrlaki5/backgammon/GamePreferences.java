@@ -56,6 +56,19 @@ public final class GamePreferences {
         saveAudioVolumes(preferences(context), musicVolume, sfxVolume);
     }
 
+    /** Returns true if the given theme is available to play. Royal (0) is always free. */
+    public static boolean isThemeUnlocked(Context context, int themeId) {
+        if (themeId == THEME_ROYAL) return true;
+        return preferences(context).getBoolean("theme_unlocked_" + themeId, false);
+    }
+
+    /** Permanently marks a theme as unlocked. */
+    public static void unlockTheme(Context context, int themeId) {
+        preferences(context).edit()
+                .putBoolean("theme_unlocked_" + themeId, true)
+                .apply();
+    }
+
     public static void toggleLanguage(Context context) {
         String nextLanguage=LANGUAGE_EN.equals(getLanguage(context)) ? LANGUAGE_FA : LANGUAGE_EN;
         preferences(context).edit()
