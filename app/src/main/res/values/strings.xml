@@ -257,4 +257,18 @@
     <string name="undo_success">Move reverted</string>
     <string name="undo_unavailable">Undo only available during your turn</string>
 
+    <!-- Settings screen section headers -->
+    <string name="settings_section_audio">Sound</string>
+    <string name="settings_section_gameplay">Gameplay</string>
+    <string name="settings_section_shake">Shake Dice</string>
+
+    <!-- Settings value labels -->
+    <string name="settings_sfx_value">SFX: %1$d%%</string>
+    <string name="settings_music_value">Music: %1$d%%</string>
+    <string name="settings_turn_value">Speed: %1$d</string>
+    <string name="settings_threshold_value">%1$d</string>
+    <string name="settings_precision_value">%1$d ms</string>
+    <string name="settings_shake_delay">Detection Delay</string>
+    <string name="settings_delay_value">%1$d</string>
+
 </resources>

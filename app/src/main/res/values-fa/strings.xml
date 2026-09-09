@@ -258,4 +258,18 @@
     <string name="undo_success">حرکت برگشت داده شد</string>
     <string name="undo_unavailable">برگشت فقط در نوبت شما امکان‌پذیر است</string>
 
+    <!-- Settings screen section headers -->
+    <string name="settings_section_audio">صدا</string>
+    <string name="settings_section_gameplay">گیم‌پلی</string>
+    <string name="settings_section_shake">تکان دادن تاس</string>
+
+    <!-- Settings value labels -->
+    <string name="settings_sfx_value">جلوه صوتی: %1$d%%</string>
+    <string name="settings_music_value">موسیقی: %1$d%%</string>
+    <string name="settings_turn_value">سرعت: %1$d</string>
+    <string name="settings_threshold_value">%1$d</string>
+    <string name="settings_precision_value">%1$d میلی‌ثانیه</string>
+    <string name="settings_shake_delay">تاخیر تشخیص</string>
+    <string name="settings_delay_value">%1$d</string>
+
 </resources>
