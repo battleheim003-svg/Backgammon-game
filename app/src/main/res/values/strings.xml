@@ -229,5 +229,24 @@
     <string name="dice_skins">Dice Skins</string>
     <string name="profile_titles">Titles</string>
     <string name="theme_rental">Rent Theme (24h)</string>
+    <string name="shop_category_all">All</string>
+    <string name="shop_item_owned">Owned</string>
+    <string name="shop_item_equip">Equip</string>
+    <string name="shop_item_equipped">Equipped</string>
+    <string name="shop_item_buy">%1$d Coins</string>
+    <string name="shop_purchase_success">Item purchased and equipped!</string>
+    <string name="elo_rating_format">ELO %1$d</string>
+    <string name="elo_delta_positive">+%1$d ELO</string>
+    <string name="elo_delta_negative">%1$d ELO</string>
+    <string name="coins_breakdown">Coins Earned</string>
+    <string name="coins_base_win">Win: +%1$d</string>
+    <string name="coins_diff_bonus">Difficulty: +%1$d</string>
+    <string name="coins_first_game">First game of day: +%1$d</string>
+    <string name="coins_streak_bonus">Streak milestone: +%1$d</string>
+    <string name="daily_login_subtitle">Log in daily to claim bigger coin rewards!</string>
+    <string name="daily_login_already_claimed">Next reward available tomorrow!</string>
+    <string name="undo_cost_format">Undo (%1$d coins)</string>
+    <string name="undo_success">Move reverted</string>
+    <string name="undo_unavailable">Undo only available during your turn</string>
 
 </resources>

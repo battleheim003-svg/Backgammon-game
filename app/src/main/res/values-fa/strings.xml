@@ -230,5 +230,24 @@
     <string name="dice_skins">طرح تاس</string>
     <string name="profile_titles">عنوانها</string>
     <string name="theme_rental">اجاره تم (۲۴ ساعت)</string>
+    <string name="shop_category_all">همه</string>
+    <string name="shop_item_owned">خریداری شده</string>
+    <string name="shop_item_equip">انتخاب</string>
+    <string name="shop_item_equipped">فعال</string>
+    <string name="shop_item_buy">%1$d سکه</string>
+    <string name="shop_purchase_success">آیتم خریداری و فعال شد!</string>
+    <string name="elo_rating_format">امتیاز: %1$d</string>
+    <string name="elo_delta_positive">+%1$d رتبه</string>
+    <string name="elo_delta_negative">%1$d رتبه</string>
+    <string name="coins_breakdown">سکه‌های کسب شده</string>
+    <string name="coins_base_win">برد: +%1$d</string>
+    <string name="coins_diff_bonus">سختی: +%1$d</string>
+    <string name="coins_first_game">اولین بازی روز: +%1$d</string>
+    <string name="coins_streak_bonus">پاداش رکورد: +%1$d</string>
+    <string name="daily_login_subtitle">هر روز وارد بازی شوید و جوایز بزرگتر بگیرید!</string>
+    <string name="daily_login_already_claimed">پاداش بعدی فردا در دسترس خواهد بود!</string>
+    <string name="undo_cost_format">برگشت (%1$d سکه)</string>
+    <string name="undo_success">حرکت برگشت داده شد</string>
+    <string name="undo_unavailable">برگشت فقط در نوبت شما امکان‌پذیر است</string>
 
 </resources>

@@ -9,7 +9,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 
 import java.io.File;
@@ -20,13 +23,17 @@ import java.util.Locale;
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
 import games.mrlaki5.backgammon.Database.DbHelper;
 import games.mrlaki5.backgammon.Database.GameResultRecorder;
+import games.mrlaki5.backgammon.Database.PlayerProfileManager;
 import games.mrlaki5.backgammon.Database.ScoresTableEntry;
 import games.mrlaki5.backgammon.Economy.CoinConfig;
 import games.mrlaki5.backgammon.Economy.CoinManager;
 import games.mrlaki5.backgammon.GameAudio;
 import games.mrlaki5.backgammon.GamePreferences;
 import games.mrlaki5.backgammon.Menus.MenuActivity;
+import games.mrlaki5.backgammon.Monetization.ads.AdCallback;
 import games.mrlaki5.backgammon.Monetization.ads.AdManager;
+import games.mrlaki5.backgammon.Monetization.ads.RewardedAdPlacement;
+import games.mrlaki5.backgammon.Monetization.ads.RewardedAdTracker;
 import games.mrlaki5.backgammon.R;
 import games.mrlaki5.backgammon.Retention.AchievementManager;
 import games.mrlaki5.backgammon.Retention.DailyChallenge;
@@ -37,7 +44,7 @@ import games.mrlaki5.backgammon.WinStreakTracker;
 
 /**
  * Handles game finish recording, coin economy rewards, win streaks, ELO updates,
- * analytics, ads, and game-over UI dialog.
+ * analytics, ads, and redesigned game-over UI dialog.
  */
 public class GameOverHandler {
 
@@ -50,6 +57,8 @@ public class GameOverHandler {
 
     private final Activity activity;
     private final CoinManager coinManager;
+    private final PlayerProfileManager profileManager;
+    private final RewardedAdTracker rewardedAdTracker;
     private AlertDialog gameOverDialog;
     private boolean gameResultRecorded = false;
     private OnGameOverActionListener listener;
@@ -57,6 +66,8 @@ public class GameOverHandler {
     public GameOverHandler(Activity activity, CoinManager coinManager) {
         this.activity = activity;
         this.coinManager = coinManager;
+        this.profileManager = new PlayerProfileManager(activity);
+        this.rewardedAdTracker = new RewardedAdTracker(activity);
     }
 
     public void setListener(OnGameOverActionListener listener) {
@@ -107,29 +118,48 @@ public class GameOverHandler {
         File saveFile = new File(activity.getFilesDir(), MenuActivity.GAME_CONTINUE_SAVE_FILE_NAME);
         saveFile.delete();
 
-        // Update win streak and coin rewards
+        // Update ELO rating & economy
         int currentStreak = 0;
+        int previousStreak = 0;
         int coinsEarned = 0;
+        int eloDelta = 0;
+        StringBuilder coinBreakdown = new StringBuilder();
+
         if (!passAndPlayMode && !tutorialMode) {
             WinStreakTracker streakTracker = new WinStreakTracker(activity);
+            previousStreak = streakTracker.getCurrentStreak();
             int difficulty = GamePreferences.getBotDifficulty(activity);
+            int botElo = PlayerProfileManager.getBotElo(difficulty);
+
+            eloDelta = profileManager.recordGameResult(winningPlayer == 1, botElo, gameMode);
+
             if (winningPlayer == 1) {
                 currentStreak = streakTracker.recordWin();
                 coinsEarned = CoinConfig.WIN_BASE;
-                if (difficulty == 1) coinsEarned += CoinConfig.WIN_BONUS_MEDIUM;
-                else if (difficulty == 2) coinsEarned += CoinConfig.WIN_BONUS_HARD;
-                else if (difficulty == 3) coinsEarned += CoinConfig.WIN_BONUS_ROYAL;
+                coinBreakdown.append(activity.getString(R.string.coins_base_win, CoinConfig.WIN_BASE));
+
+                int diffBonus = 0;
+                if (difficulty == 1) diffBonus = CoinConfig.WIN_BONUS_MEDIUM;
+                else if (difficulty == 2) diffBonus = CoinConfig.WIN_BONUS_HARD;
+                else if (difficulty == 3) diffBonus = CoinConfig.WIN_BONUS_ROYAL;
+
+                if (diffBonus > 0) {
+                    coinsEarned += diffBonus;
+                    coinBreakdown.append(" • ").append(activity.getString(R.string.coins_diff_bonus, diffBonus));
+                }
+
                 if (coinManager != null) {
                     coinManager.earn(coinsEarned, "game_win");
                 }
 
-                // Check first game of the day
+                // First game of the day
                 SharedPreferences flowPrefs = activity.getSharedPreferences("game_flow_prefs", Context.MODE_PRIVATE);
                 int today = DateUtil.getDayOfYear();
                 if (today != flowPrefs.getInt("last_game_day", -1)) {
                     if (coinManager != null) {
                         coinManager.earn(CoinConfig.FIRST_GAME_OF_DAY, "first_game_of_day");
                     }
+                    coinBreakdown.append(" • ").append(activity.getString(R.string.coins_first_game, CoinConfig.FIRST_GAME_OF_DAY));
                     flowPrefs.edit().putInt("last_game_day", today).apply();
                 }
 
@@ -138,6 +168,7 @@ public class GameOverHandler {
                     if (coinManager != null) {
                         coinManager.earn(CoinConfig.STREAK_MILESTONE_REWARD, "streak_milestone");
                     }
+                    coinBreakdown.append(" • ").append(activity.getString(R.string.coins_streak_bonus, CoinConfig.STREAK_MILESTONE_REWARD));
                 }
             } else {
                 streakTracker.recordLoss();
@@ -158,11 +189,16 @@ public class GameOverHandler {
 
         final String winnerName = (winningPlayer == 1) ? p1Name : p2Name;
         final int streak = currentStreak;
+        final int prevStreak = previousStreak;
+        final int totalEarned = coinsEarned;
+        final int delta = eloDelta;
+        final String breakdown = coinBreakdown.toString();
 
         activity.runOnUiThread(() -> {
             showInterstitialIfAllowed();
             showGameOverDialog(winnerName, winningPlayer, p1Name, p2Name, gameMode,
-                    passAndPlayMode, tutorialMode, streak, durationSeconds, sessionGameNumber, difficultyName);
+                    passAndPlayMode, tutorialMode, streak, prevStreak, totalEarned,
+                    breakdown, delta, durationSeconds, sessionGameNumber, difficultyName);
         });
     }
 
@@ -189,7 +225,7 @@ public class GameOverHandler {
             GameAnalytics.get().reportError(e, "recordGameResult_legacy");
         }
 
-        // New ELO/profile system
+        // ELO/profile system
         try {
             GameResultRecorder recorder = new GameResultRecorder(activity);
             String winnerName = (winningPlayer == 1) ? p1Name : p2Name;
@@ -203,20 +239,22 @@ public class GameOverHandler {
     private void showGameOverDialog(String winnerName, int winningPlayer,
                                     String p1Name, String p2Name, String gameMode,
                                     boolean passAndPlayMode, boolean tutorialMode,
-                                    int winStreak, long durationSec, int sessionGameNumber,
+                                    int winStreak, int prevStreak, int coinsEarned,
+                                    String coinBreakdown, int eloDelta,
+                                    long durationSec, int sessionGameNumber,
                                     String difficultyName) {
         if (activity.isFinishing() || activity.isDestroyed()) return;
         if (gameOverDialog != null && gameOverDialog.isShowing()) return;
 
         View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_game_over, null);
 
-        // Set winner text
+        // 1. Set winner text
         TextView winnerText = dialogView.findViewById(R.id.gameOverWinner);
         if (winnerText != null) {
             winnerText.setText(activity.getString(R.string.game_over_winner, winnerName));
         }
 
-        // Set game duration
+        // 2. Set game duration
         TextView durationText = dialogView.findViewById(R.id.gameOverDuration);
         if (durationText != null) {
             int minutes = (int) (durationSec / 60);
@@ -228,7 +266,39 @@ public class GameOverHandler {
             durationText.setText(durationStr);
         }
 
-        // Show win streak or daily challenge
+        // 3. ELO Rating & Delta
+        TextView eloText = dialogView.findViewById(R.id.gameOverEloDelta);
+        if (eloText != null) {
+            if (!passAndPlayMode && !tutorialMode && eloDelta != 0) {
+                eloText.setVisibility(View.VISIBLE);
+                String deltaStr = (eloDelta > 0)
+                        ? activity.getString(R.string.elo_delta_positive, eloDelta)
+                        : activity.getString(R.string.elo_delta_negative, eloDelta);
+                eloText.setText(deltaStr + " (" + profileManager.getElo() + ")");
+                eloText.setTextColor((eloDelta > 0) ? Color.parseColor("#4CAF50") : Color.parseColor("#E57373"));
+            } else {
+                eloText.setVisibility(View.GONE);
+            }
+        }
+
+        // 4. Coins Earned Breakdown
+        LinearLayout coinsContainer = dialogView.findViewById(R.id.gameOverCoinsContainer);
+        TextView tvCoinsEarned = dialogView.findViewById(R.id.gameOverCoinsEarned);
+        TextView tvCoinsDetails = dialogView.findViewById(R.id.gameOverCoinsDetails);
+        if (coinsContainer != null && tvCoinsEarned != null) {
+            if (coinsEarned > 0) {
+                coinsContainer.setVisibility(View.VISIBLE);
+                tvCoinsEarned.setText(activity.getString(R.string.coin_earned, coinsEarned));
+                if (tvCoinsDetails != null && !coinBreakdown.isEmpty()) {
+                    tvCoinsDetails.setText(coinBreakdown);
+                    tvCoinsDetails.setVisibility(View.VISIBLE);
+                }
+            } else {
+                coinsContainer.setVisibility(View.GONE);
+            }
+        }
+
+        // 5. Win streak / Daily Challenge status
         TextView streakText = dialogView.findViewById(R.id.gameOverStreak);
         if (streakText != null) {
             if (!passAndPlayMode && !tutorialMode && winningPlayer == 1 && winStreak >= 2) {
@@ -244,6 +314,115 @@ public class GameOverHandler {
                 }
             } else {
                 streakText.setVisibility(View.GONE);
+            }
+        }
+
+        // 6. Double Reward Button (watch rewarded ad to 2x earned coins)
+        Button btnDoubleReward = dialogView.findViewById(R.id.gameOverDoubleReward);
+        if (btnDoubleReward != null) {
+            if (winningPlayer == 1 && coinsEarned > 0 && !passAndPlayMode && !tutorialMode
+                    && rewardedAdTracker.canShow(RewardedAdPlacement.DOUBLE_REWARD)) {
+                btnDoubleReward.setVisibility(View.VISIBLE);
+                btnDoubleReward.setOnClickListener(v -> {
+                    AdManager adMgr = MenuActivity.getSharedAdManager();
+                    if (adMgr != null && adMgr.isRewardedAdReady()) {
+                        adMgr.showRewardedAd(activity, new AdCallback() {
+                            @Override
+                            public void onAdLoaded() {}
+
+                            @Override
+                            public void onAdFailedToLoad(String error) {
+                                activity.runOnUiThread(() -> Toast.makeText(activity,
+                                        R.string.iap_purchase_failed, Toast.LENGTH_SHORT).show());
+                            }
+
+                            @Override
+                            public void onAdShown() {}
+
+                            @Override
+                            public void onAdDismissed() {}
+
+                            @Override
+                            public void onAdClicked() {}
+
+                            @Override
+                            public void onRewardEarned() {
+                                if (coinManager != null) {
+                                    coinManager.earn(coinsEarned, "double_reward");
+                                }
+                                rewardedAdTracker.recordShow(RewardedAdPlacement.DOUBLE_REWARD);
+                                GameAnalytics.get().trackRewardedAdWatched("double_reward");
+                                activity.runOnUiThread(() -> {
+                                    btnDoubleReward.setVisibility(View.GONE);
+                                    if (tvCoinsEarned != null) {
+                                        tvCoinsEarned.setText(activity.getString(R.string.coin_earned, coinsEarned * 2));
+                                    }
+                                    Toast.makeText(activity, activity.getString(R.string.coin_earned, coinsEarned), Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                        });
+                    } else {
+                        if (adMgr != null) adMgr.preloadAds();
+                        Toast.makeText(activity, R.string.iap_purchase_failed, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                btnDoubleReward.setVisibility(View.GONE);
+            }
+        }
+
+        // 7. Save Streak Button (watch rewarded ad on loss if streak >= 3)
+        Button btnSaveStreak = dialogView.findViewById(R.id.gameOverSaveStreak);
+        if (btnSaveStreak != null) {
+            if (winningPlayer == 2 && prevStreak >= 3 && !passAndPlayMode && !tutorialMode
+                    && rewardedAdTracker.canShow(RewardedAdPlacement.SAVE_STREAK)) {
+                btnSaveStreak.setVisibility(View.VISIBLE);
+                btnSaveStreak.setText(activity.getString(R.string.save_streak_desc, prevStreak));
+                btnSaveStreak.setOnClickListener(v -> {
+                    AdManager adMgr = MenuActivity.getSharedAdManager();
+                    if (adMgr != null && adMgr.isRewardedAdReady()) {
+                        adMgr.showRewardedAd(activity, new AdCallback() {
+                            @Override
+                            public void onAdLoaded() {}
+
+                            @Override
+                            public void onAdFailedToLoad(String error) {
+                                activity.runOnUiThread(() -> Toast.makeText(activity,
+                                        R.string.iap_purchase_failed, Toast.LENGTH_SHORT).show());
+                            }
+
+                            @Override
+                            public void onAdShown() {}
+
+                            @Override
+                            public void onAdDismissed() {}
+
+                            @Override
+                            public void onAdClicked() {}
+
+                            @Override
+                            public void onRewardEarned() {
+                                WinStreakTracker streakTracker = new WinStreakTracker(activity);
+                                streakTracker.restoreStreak(prevStreak);
+                                rewardedAdTracker.recordShow(RewardedAdPlacement.SAVE_STREAK);
+                                GameAnalytics.get().trackRewardedAdWatched("save_streak");
+                                activity.runOnUiThread(() -> {
+                                    btnSaveStreak.setVisibility(View.GONE);
+                                    if (streakText != null) {
+                                        streakText.setVisibility(View.VISIBLE);
+                                        streakText.setText(activity.getString(R.string.game_over_win_streak, prevStreak));
+                                    }
+                                    Toast.makeText(activity, R.string.iap_purchase_success, Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                        });
+                    } else {
+                        if (adMgr != null) adMgr.preloadAds();
+                        Toast.makeText(activity, R.string.iap_purchase_failed, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                btnSaveStreak.setVisibility(View.GONE);
             }
         }
 
@@ -268,28 +447,6 @@ public class GameOverHandler {
                 gameOverDialog.dismiss();
                 if (listener != null) {
                     listener.onRematch();
-                }
-            });
-        }
-
-        // Change Settings button
-        View btnChangeSettings = dialogView.findViewById(R.id.gameOverChangeSettings);
-        if (btnChangeSettings != null) {
-            btnChangeSettings.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onPlayEffect(GameAudio.EFFECT_MENU_TAP);
-                }
-                gameOverDialog.dismiss();
-                if (winningPlayer == 1 && !passAndPlayMode && !tutorialMode) {
-                    showReviewIfEligible(() -> {
-                        if (listener != null) {
-                            listener.onChangeSettings(winningPlayer, p1Name, p2Name, gameMode);
-                        }
-                    });
-                } else {
-                    if (listener != null) {
-                        listener.onChangeSettings(winningPlayer, p1Name, p2Name, gameMode);
-                    }
                 }
             });
         }

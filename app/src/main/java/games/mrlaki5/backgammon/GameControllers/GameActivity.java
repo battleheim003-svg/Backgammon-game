@@ -85,6 +85,65 @@ public class GameActivity extends AppCompatActivity {
     private CoinManager coinManager;
     private RewardedAdTracker rewardedAdTracker;
 
+    // Undo move snapshot
+    private static class TurnSnapshot {
+        final games.mrlaki5.backgammon.Beans.BoardFieldState[] boardFields;
+        final games.mrlaki5.backgammon.Beans.DiceThrow[] diceThrows;
+        final java.util.List<NextJump> nextMoves;
+
+        TurnSnapshot(games.mrlaki5.backgammon.Beans.BoardFieldState[] fields,
+                     games.mrlaki5.backgammon.Beans.DiceThrow[] dice,
+                     java.util.List<NextJump> moves) {
+            this.boardFields = new games.mrlaki5.backgammon.Beans.BoardFieldState[fields.length];
+            for (int i = 0; i < fields.length; i++) {
+                this.boardFields[i] = new games.mrlaki5.backgammon.Beans.BoardFieldState(
+                        fields[i].getNumberOfChips(), fields[i].getPlayer());
+            }
+            this.diceThrows = new games.mrlaki5.backgammon.Beans.DiceThrow[dice.length];
+            for (int i = 0; i < dice.length; i++) {
+                this.diceThrows[i] = new games.mrlaki5.backgammon.Beans.DiceThrow(
+                        dice[i].getThrowNumber(), dice[i].getAlreadyUsed());
+            }
+            this.nextMoves = new java.util.ArrayList<>();
+            if (moves != null) {
+                for (NextJump j : moves) {
+                    this.nextMoves.add(new NextJump(j.getJumpNumber(), j.getSrcField(), j.getDstField()));
+                }
+            }
+        }
+
+        games.mrlaki5.backgammon.Beans.BoardFieldState[] copyBoard() {
+            games.mrlaki5.backgammon.Beans.BoardFieldState[] copy =
+                    new games.mrlaki5.backgammon.Beans.BoardFieldState[boardFields.length];
+            for (int i = 0; i < boardFields.length; i++) {
+                copy[i] = new games.mrlaki5.backgammon.Beans.BoardFieldState(
+                        boardFields[i].getNumberOfChips(), boardFields[i].getPlayer());
+            }
+            return copy;
+        }
+
+        games.mrlaki5.backgammon.Beans.DiceThrow[] copyDice() {
+            games.mrlaki5.backgammon.Beans.DiceThrow[] copy =
+                    new games.mrlaki5.backgammon.Beans.DiceThrow[diceThrows.length];
+            for (int i = 0; i < diceThrows.length; i++) {
+                copy[i] = new games.mrlaki5.backgammon.Beans.DiceThrow(
+                        diceThrows[i].getThrowNumber(), diceThrows[i].getAlreadyUsed());
+            }
+            return copy;
+        }
+
+        java.util.List<NextJump> copyMoves() {
+            java.util.List<NextJump> copy = new java.util.ArrayList<>();
+            for (NextJump j : nextMoves) {
+                copy.add(new NextJump(j.getJumpNumber(), j.getSrcField(), j.getDstField()));
+            }
+            return copy;
+        }
+    }
+
+    private TurnSnapshot turnSnapshot = null;
+    private boolean undoUsedThisTurn = false;
+
     // Game Flow State
     private int pauseDone = 0;
     private int MoveFieldSrc;
@@ -397,6 +456,9 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void activateTouchListener() {
+        if (turnSnapshot == null && !undoUsedThisTurn && model != null) {
+            turnSnapshot = new TurnSnapshot(model.getBoardFields(), model.getDiceThrows(), model.getNextMoves());
+        }
         BoardImage.setOnTouchListener(BoardListener);
         if (tutorialController.isTutorialMode()) {
             tutorialController.showTutorialText(tutorialController.getTutorialStep());
@@ -408,6 +470,8 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void activateShakeListener() {
+        turnSnapshot = null;
+        undoUsedThisTurn = false;
         waitForTutorialIntro();
         if (tutorialController.isTutorialMode() && tutorialController.getTutorialStep() == TutorialScenarios.STEP_INTRO) {
             tutorialController.setTutorialStep(TutorialScenarios.STEP_ROLL);
@@ -831,6 +895,30 @@ public class GameActivity extends AppCompatActivity {
             btnHint.setOnClickListener(v -> showHintChoiceDialog());
         }
         btnUndo = findViewById(R.id.btnUndo);
+        if (btnUndo != null) {
+            btnUndo.setOnClickListener(v -> performUndo());
+        }
+    }
+
+    private void performUndo() {
+        if (model == null || model.getState() != 2 || turnSnapshot == null || undoUsedThisTurn) {
+            android.widget.Toast.makeText(this, R.string.undo_unavailable, android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (coinManager != null && coinManager.spend(CoinConfig.UNDO_COST, "undo_move")) {
+            undoUsedThisTurn = true;
+            model.setBoardFields(turnSnapshot.copyBoard());
+            model.setDiceThrows(turnSnapshot.copyDice());
+            model.setNextMoves(turnSnapshot.copyMoves());
+            BoardImage.setChipMatrix(model.getBoardFields());
+            BoardImage.setDices(model.getDiceThrows());
+            BoardImage.setNextMoveArray(null);
+            BoardImage.postInvalidateOnAnimation();
+            android.widget.Toast.makeText(this, R.string.undo_success, android.widget.Toast.LENGTH_SHORT).show();
+        } else {
+            android.widget.Toast.makeText(this, R.string.insufficient_coins, android.widget.Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showHintChoiceDialog() {

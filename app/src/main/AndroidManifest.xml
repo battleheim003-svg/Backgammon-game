@@ -57,6 +57,10 @@
             android:name=".Menus.LegacyScoresActivity"
             android:screenOrientation="landscape" />
 
+        <activity
+            android:name=".Economy.CoinShopActivity"
+            android:screenOrientation="landscape" />
+
     </application>
 
 </manifest>

@@ -76,6 +76,7 @@ public class MenuActivity extends AppCompatActivity {
     private CoinManager coinManager;
     private RewardedAdTracker rewardedAdTracker;
     private DailyLoginManager dailyLoginManager;
+    private games.mrlaki5.backgammon.Database.PlayerProfileManager profileManager;
     private android.widget.TextView tvCoinBalance;
     private android.widget.TextView tvEloRating;
     private Button btnFreeCoins;
@@ -230,10 +231,17 @@ public class MenuActivity extends AppCompatActivity {
         coinManager = new CoinManager(this);
         rewardedAdTracker = new RewardedAdTracker(this);
         dailyLoginManager = new DailyLoginManager(this);
+        profileManager = new games.mrlaki5.backgammon.Database.PlayerProfileManager(this);
         tvCoinBalance = findViewById(R.id.tvCoinBalance);
         tvEloRating = findViewById(R.id.tvEloRating);
         btnFreeCoins = findViewById(R.id.btnFreeCoins);
         updateCoinDisplay();
+
+        // Check daily login bonus
+        if (dailyLoginManager.canClaimToday()) {
+            new games.mrlaki5.backgammon.Economy.DailyLoginDialog(this, dailyLoginManager,
+                    coinManager, this::updateCoinDisplay).show();
+        }
 
         // Start menu background music
         MenuAudioManager.get().startMenuMusic(this);
@@ -249,6 +257,9 @@ public class MenuActivity extends AppCompatActivity {
     private void updateCoinDisplay() {
         if (tvCoinBalance != null && coinManager != null) {
             tvCoinBalance.setText(String.valueOf(coinManager.getBalance()));
+        }
+        if (tvEloRating != null && profileManager != null) {
+            tvEloRating.setText(getString(R.string.elo_rating_format, profileManager.getElo()));
         }
         if (btnFreeCoins != null && rewardedAdTracker != null) {
             btnFreeCoins.setEnabled(rewardedAdTracker.canShow(RewardedAdPlacement.FREE_COINS));
@@ -301,6 +312,8 @@ public class MenuActivity extends AppCompatActivity {
 
     public void openCoinShop(View v) {
         playMenuTap();
+        Intent intent = new Intent(this, games.mrlaki5.backgammon.Economy.CoinShopActivity.class);
+        startActivity(intent);
     }
 
     @Override

@@ -18,9 +18,39 @@ public class DailyLoginManager {
     private static final String KEY_CLAIMED_TODAY = "claimed_today";
 
     private final SharedPreferences prefs;
+    private final Context context;
 
     public DailyLoginManager(Context context) {
-        this.prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        this.context = context.getApplicationContext();
+        this.prefs = this.context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
+    /**
+     * Returns true if the user can claim today's reward.
+     */
+    public boolean canClaimToday() {
+        return !isClaimedToday();
+    }
+
+    /**
+     * Returns current streak day (1..7).
+     */
+    public int getCurrentStreak() {
+        return getCurrentDay() + 1;
+    }
+
+    /**
+     * Claims today's daily reward and credits coins. Returns reward amount.
+     */
+    public int claimDailyReward() {
+        int reward = checkAndGetReward();
+        if (reward > 0) {
+            claimReward();
+            CoinManager coinManager = new CoinManager(context);
+            coinManager.earn(reward, "daily_login_reward");
+            GameAnalytics.get().trackDailyLoginClaimed(getCurrentStreak(), reward);
+        }
+        return reward;
     }
 
     /**
