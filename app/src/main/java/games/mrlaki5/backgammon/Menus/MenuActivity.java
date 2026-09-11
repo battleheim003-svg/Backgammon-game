@@ -21,13 +21,19 @@ import android.widget.RadioGroup;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
 
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import java.io.File;
 
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
 import games.mrlaki5.backgammon.Database.PlayerProfileManager;
 import games.mrlaki5.backgammon.Economy.CoinConfig;
 import games.mrlaki5.backgammon.Economy.CoinManager;
-import games.mrlaki5.backgammon.Economy.DailyLoginManager;
+import games.mrlaki5.backgammon.Retention.DailyLoginManager;
 import games.mrlaki5.backgammon.GameControllers.GameActivity;
 import games.mrlaki5.backgammon.GameAudio;
 import games.mrlaki5.backgammon.GamePreferences;
@@ -76,7 +82,6 @@ public class MenuActivity extends AppCompatActivity {
     private games.mrlaki5.backgammon.Monetization.ads.AdManager adManager;
     private CoinManager coinManager;
     private RewardedAdTracker rewardedAdTracker;
-    private DailyLoginManager dailyLoginManager;
     private games.mrlaki5.backgammon.Database.PlayerProfileManager profileManager;
     private android.widget.TextView tvCoinBalance;
     private android.widget.TextView tvEloRating;
@@ -231,18 +236,11 @@ public class MenuActivity extends AppCompatActivity {
 
         coinManager = new CoinManager(this);
         rewardedAdTracker = new RewardedAdTracker(this);
-        dailyLoginManager = new DailyLoginManager(this);
         profileManager = new games.mrlaki5.backgammon.Database.PlayerProfileManager(this);
         tvCoinBalance = findViewById(R.id.tvCoinBalance);
         tvEloRating = findViewById(R.id.tvEloRating);
         btnFreeCoins = findViewById(R.id.btnFreeCoins);
         updateCoinDisplay();
-
-        // Check daily login bonus
-        if (dailyLoginManager.canClaimToday()) {
-            new games.mrlaki5.backgammon.Economy.DailyLoginDialog(this, dailyLoginManager,
-                    coinManager, this::updateCoinDisplay).show();
-        }
 
         // Start menu background music
         MenuAudioManager.get().startMenuMusic(this);
@@ -256,8 +254,53 @@ public class MenuActivity extends AppCompatActivity {
         } else {
             new PlayerProfileManager(this).checkAndExpireRentals();
         }
+
+        DailyLoginManager.LoginResult loginResult = DailyLoginManager.checkDailyLogin(this);
+        if (loginResult.isNewDay) {
+            showDailyLoginDialog(loginResult);
+        }
+
         MenuAudioManager.get().startMenuMusic(this);
         updateCoinDisplay();
+    }
+
+    private void showDailyLoginToast(DailyLoginManager.LoginResult result) {
+        String msg = getString(R.string.daily_login_reward,
+                result.streak, result.coinsEarned);
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    private void showDailyLoginDialog(DailyLoginManager.LoginResult result) {
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_daily_login, null);
+        TextView tvCoins = view.findViewById(R.id.dlgCoins);
+        if (tvCoins != null) {
+            tvCoins.setText("+" + result.coinsEarned + " 🪙");
+        }
+        LinearLayout dayRow = view.findViewById(R.id.dlgDayRow);
+        if (dayRow != null) {
+            for (int i = 0; i < dayRow.getChildCount(); i++) {
+                View dayCard = dayRow.getChildAt(i);
+                if (dayCard instanceof ViewGroup) {
+                    View dayCircle = ((ViewGroup) dayCard).getChildAt(0);
+                    if (dayCircle != null) {
+                        int color = (i < result.streak) ? 0xFF4CAF50 : 0xFF616161;
+                        dayCircle.setBackgroundTintList(android.content.res.ColorStateList.valueOf(color));
+                    }
+                }
+            }
+        }
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.CustomBottomSheetDialogTheme)
+                .setView(view)
+                .setCancelable(false)
+                .create();
+        View btnOk = view.findViewById(R.id.dlgOk);
+        if (btnOk != null) {
+            btnOk.setOnClickListener(v -> {
+                dialog.dismiss();
+                updateCoinDisplay();
+            });
+        }
+        dialog.show();
     }
 
     private void updateCoinDisplay() {

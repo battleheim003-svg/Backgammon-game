@@ -11,14 +11,30 @@ public final class CoinConfig {
     public static final int WIN_BONUS_MEDIUM = 5;
     public static final int WIN_BONUS_HARD = 10;
     public static final int WIN_BONUS_ROYAL = 20;
-    public static final int DAILY_CHALLENGE_COMPLETE = 25;
-    public static final int STREAK_MILESTONE_EVERY = 5;    // every N consecutive wins
-    public static final int STREAK_MILESTONE_REWARD = 15;
-    public static final int ACHIEVEMENT_UNLOCK = 50;
-    public static final int ACHIEVEMENT_UNLOCK_MAJOR = 100; // games_100, beat_royal
+
+    // Daily login bonus (day 1 → day 7+)
+    public static final int[] DAILY_LOGIN_BONUS = {5, 10, 15, 20, 30, 40, 50};
+    public static final int[] DAILY_LOGIN_REWARDS = DAILY_LOGIN_BONUS;
+
+    // Achievement rewards
+    public static final int ACHIEVEMENT_REWARD_COMMON    = 30;
+    public static final int ACHIEVEMENT_REWARD_RARE      = 75;
+    public static final int ACHIEVEMENT_REWARD_EPIC      = 150;
+    public static final int ACHIEVEMENT_REWARD_LEGENDARY = 300;
+    public static final int ACHIEVEMENT_UNLOCK = ACHIEVEMENT_REWARD_COMMON;
+    public static final int ACHIEVEMENT_UNLOCK_MAJOR = ACHIEVEMENT_REWARD_EPIC;
+
+    // Daily challenge completion
+    public static final int DAILY_CHALLENGE_REWARD = 30;
+    public static final int DAILY_CHALLENGE_COMPLETE = DAILY_CHALLENGE_REWARD;
+
+    // Win streak milestones
+    public static final int STREAK_MILESTONE_EVERY  = 5;   // every 5 wins
+    public static final int STREAK_MILESTONE_REWARD = 75;  // coins per milestone
+
     public static final int FIRST_GAME_OF_DAY = 5;
     public static final int REWARDED_AD_WATCH = 15;
-    public static final int DAILY_CHALLENGE_BONUS_CHEST = 25;  // on top of base 25
+    public static final int DAILY_CHALLENGE_BONUS_CHEST = 25;  // on top of base
     public static final int DOUBLE_REWARD_MULTIPLIER = 2;
     public static final int WEEKLY_CHALLENGE_1_REWARD = 100;
     public static final int WEEKLY_CHALLENGE_2_REWARD = 75;
@@ -70,7 +86,4 @@ public final class CoinConfig {
     public static final int AVATAR_FRAME_COST = FRAME_BRONZE_PRICE;
     public static final int DICE_SKIN_COST = DICE_WALNUT_PRICE;
     public static final int PROFILE_TITLE_COST = TITLE_SHARP_PRICE;
-
-    // === Daily Login Bonus (7-day cycle) ===
-    public static final int[] DAILY_LOGIN_REWARDS = {5, 10, 15, 20, 25, 30, 50};
 }

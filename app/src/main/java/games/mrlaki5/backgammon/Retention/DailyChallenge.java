@@ -156,7 +156,7 @@ public class DailyChallenge {
                 editor.putInt(KEY_TOTAL_COMPLETED, getTotalCompleted() + 1);
                 GameAnalytics.get().trackMissionCompleted(challenge.id);
                 if (coinManager != null) {
-                    coinManager.earn(CoinConfig.DAILY_CHALLENGE_COMPLETE, "daily_challenge");
+                    coinManager.earn(CoinConfig.DAILY_CHALLENGE_REWARD, "daily_challenge_complete");
                 }
                 if (context != null) {
                     WeeklyChallenge weeklyChallenge = new WeeklyChallenge(context);

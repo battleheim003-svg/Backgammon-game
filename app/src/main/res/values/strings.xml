@@ -296,4 +296,10 @@
     <string name="shop_undo_charges">%d برگشت</string>
     <string name="not_enough_coins">سکه کافی نیست</string>
     <string name="purchase_successful">خرید موفق</string>
+
+    <!-- Retention & Rewards -->
+    <string name="daily_login_reward">روز %1$d ورود — %2$d سکه دریافت کردی! 🎉</string>
+    <string name="achievement_unlocked">دستاورد جدید: %1$s (%2$d سکه)</string>
+    <string name="daily_challenge_complete">چالش روزانه تکمیل شد! +%1$d سکه</string>
+    <string name="streak_milestone">رکورد %1$d برد متوالی! +%2$d سکه 🔥</string>
 </resources>

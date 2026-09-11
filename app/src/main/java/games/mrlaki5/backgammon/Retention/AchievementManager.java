@@ -160,13 +160,24 @@ public class AchievementManager {
         return prefs.getInt(KEY_TOTAL_WINS, 0);
     }
 
+    private int getAchievementReward(String achievementId) {
+        if ("games_100".equals(achievementId)) {
+            return CoinConfig.ACHIEVEMENT_REWARD_LEGENDARY;
+        } else if ("beat_royal".equals(achievementId) || "streak_5".equals(achievementId)) {
+            return CoinConfig.ACHIEVEMENT_REWARD_EPIC;
+        } else if ("beat_hard".equals(achievementId) || "games_50".equals(achievementId) || "no_quit_10".equals(achievementId)) {
+            return CoinConfig.ACHIEVEMENT_REWARD_RARE;
+        } else {
+            return CoinConfig.ACHIEVEMENT_REWARD_COMMON;
+        }
+    }
+
     private void unlock(String achievementId) {
         if (!isUnlocked(achievementId)) {
             prefs.edit().putBoolean("unlocked_" + achievementId, true).apply();
             GameAnalytics.get().trackAchievementUnlocked(achievementId);
             if (coinManager != null) {
-                boolean isMajor = "games_100".equals(achievementId) || "beat_royal".equals(achievementId);
-                int reward = isMajor ? CoinConfig.ACHIEVEMENT_UNLOCK_MAJOR : CoinConfig.ACHIEVEMENT_UNLOCK;
+                int reward = getAchievementReward(achievementId);
                 coinManager.earn(reward, "achievement_" + achievementId);
             }
         }
