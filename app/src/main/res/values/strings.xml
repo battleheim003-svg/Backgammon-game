@@ -276,5 +276,11 @@
     <string name="theme_unlocked_toast">Theme unlocked!</string>
     <string name="ad_not_ready">Ad not ready — try again shortly</string>
     <string name="theme_woodland_name">Woodland</string>
-
+    <string name="theme_galaxy">Galaxy</string>
+    <string name="theme_ancient_egypt">Ancient Egypt</string>
+    <string name="theme_neon_retro">Neon Retro</string>
+    <string name="theme_buy_button">Buy — %1$d Coins</string>
+    <string name="theme_discount_button">50%% Off with Ad (1 Hour)</string>
+    <string name="theme_not_enough_coins">Not enough coins!</string>
+    <string name="theme_discount_activated">50%% discount activated for 1 hour!</string>
 </resources>

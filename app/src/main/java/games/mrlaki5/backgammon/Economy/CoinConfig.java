@@ -59,6 +59,12 @@ public final class CoinConfig {
     public static final int RENTAL_SULTAN_PRICE    = 80;
     public static final int RENTAL_DRAGON_PRICE    = 60;
 
+    // Theme unlock prices
+    public static final int THEME_LUXURY_PRICE = 600;
+    public static final int THEME_GALAXY_PRICE = 700;
+    public static final int THEME_EGYPT_PRICE = 650;
+    public static final int THEME_NEON_PRICE = 500;
+
     // Legacy spending aliases
     public static final int THEME_RENTAL_COST = RENTAL_DIAMOND_PRICE;
     public static final int AVATAR_FRAME_COST = FRAME_BRONZE_PRICE;

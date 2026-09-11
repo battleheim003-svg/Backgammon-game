@@ -3,12 +3,14 @@ package games.mrlaki5.backgammon.Menus;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.graphics.TypefaceCompat;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -28,8 +31,11 @@ import com.google.android.material.button.MaterialButton;
 
 import java.io.File;
 
+import games.mrlaki5.backgammon.Database.PlayerProfileManager;
+import games.mrlaki5.backgammon.Economy.CoinManager;
 import games.mrlaki5.backgammon.GameControllers.GameActivity;
 import games.mrlaki5.backgammon.GamePreferences;
+import games.mrlaki5.backgammon.GameView.themes.ThemeRegistry;
 import games.mrlaki5.backgammon.R;
 
 public class NewGameDialogFragment extends BottomSheetDialogFragment {
@@ -193,7 +199,7 @@ public class NewGameDialogFragment extends BottomSheetDialogFragment {
         };
         int[] overlayIds = {
                 0, R.id.lockOverlay1, R.id.lockOverlay2, R.id.lockOverlay3,
-                R.id.lockOverlay4, 0, 0, 0
+                R.id.lockOverlay4, R.id.lockOverlay5, R.id.lockOverlay6, R.id.lockOverlay7
         };
 
         FrameLayout[] thumbs = new FrameLayout[thumbIds.length];
@@ -215,28 +221,78 @@ public class NewGameDialogFragment extends BottomSheetDialogFragment {
             final int idx = i;
             if (thumbs[i] == null) continue;
             thumbs[i].setOnClickListener(v -> {
-                if (idx >= 5) {
-                    Toast.makeText(requireContext(), "این تم به‌زودی اضافه می‌شود!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 if (GamePreferences.isThemeUnlocked(requireContext(), idx)) {
                     selectedRef[0] = idx;
                     updateThemeSelection(thumbs, idx);
                 } else {
-                    if (getActivity() instanceof MenuActivity) {
-                        ((MenuActivity) getActivity()).showThemeUnlockAd(idx, () -> {
-                            GamePreferences.unlockTheme(requireContext(), idx);
-                            refreshThemeLocks(lockViews);
-                            selectedRef[0] = idx;
-                            updateThemeSelection(thumbs, idx);
-                            Toast.makeText(requireContext(),
-                                    R.string.theme_unlocked_toast,
-                                    Toast.LENGTH_SHORT).show();
-                        });
-                    }
+                    showThemeUnlockPrompt(idx, lockViews, thumbs, selectedRef);
                 }
             });
         }
+    }
+
+    private void showThemeUnlockPrompt(int idx, View[] lockViews, FrameLayout[] thumbs, int[] selectedRef) {
+        if (getContext() == null) return;
+        PlayerProfileManager profileMgr = PlayerProfileManager.getInstance(requireContext());
+        int currentPrice = profileMgr.getThemePrice(idx);
+        CoinManager coinManager = new CoinManager(requireContext());
+        int userCoins = coinManager.getBalance();
+
+        ThemeRegistry.ThemeInfo themeInfo = ThemeRegistry.getThemeInfo(idx);
+        String themeName = (themeInfo != null) ? themeInfo.getNameFa() : ("تم " + idx);
+
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_theme_unlock, null);
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        }
+
+        TextView tvTitle = dialogView.findViewById(R.id.dialogThemeTitle);
+        TextView tvCoins = dialogView.findViewById(R.id.dialogThemeCoins);
+        MaterialButton btnBuy = dialogView.findViewById(R.id.btnBuyTheme);
+        MaterialButton btnAd = dialogView.findViewById(R.id.btnDiscountAd);
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelThemeUnlock);
+
+        if (tvTitle != null) {
+            tvTitle.setText(themeName);
+        }
+        if (tvCoins != null) {
+            tvCoins.setText(getString(R.string.coin_balance, userCoins));
+        }
+        if (btnBuy != null) {
+            btnBuy.setText(getString(R.string.theme_buy_button, currentPrice));
+            btnBuy.setOnClickListener(v -> {
+                dialog.dismiss();
+                if (profileMgr.purchaseTheme(idx, currentPrice)) {
+                    refreshThemeLocks(lockViews);
+                    selectedRef[0] = idx;
+                    updateThemeSelection(thumbs, idx);
+                    Toast.makeText(requireContext(), R.string.theme_unlocked_toast, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(requireContext(), R.string.theme_not_enough_coins, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        if (btnAd != null) {
+            btnAd.setOnClickListener(v -> {
+                dialog.dismiss();
+                if (getActivity() instanceof MenuActivity) {
+                    ((MenuActivity) getActivity()).showThemeDiscountAd(idx, () -> {
+                        profileMgr.applyThemeDiscount(idx, 0.5f, 3600_000L);
+                        Toast.makeText(requireContext(), R.string.theme_discount_activated, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            });
+        }
+        if (btnCancel != null) {
+            btnCancel.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
     }
 
     private void refreshThemeLocks(View[] lockViews) {

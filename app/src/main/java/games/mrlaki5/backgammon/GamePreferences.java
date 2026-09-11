@@ -3,6 +3,8 @@ package games.mrlaki5.backgammon;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import games.mrlaki5.backgammon.Database.PlayerProfileManager;
+
 /** Central preferences for bot strength and visual board theme. */
 public final class GamePreferences {
     public static final String FILE_NAME = "Settings";
@@ -60,9 +62,36 @@ public final class GamePreferences {
         saveAudioVolumes(preferences(context), musicVolume, sfxVolume);
     }
 
-    /** Returns true if the given theme is available to play. Royal (0) is always free. */
+    /**
+     * Returns true if the given theme is available to play.
+     * Themes 0 (Royal), 1 (Pop Art), 2 (Cyberpunk), 4 (Woodland) are free.
+     * Themes 3 (Luxury), 5 (Galaxy), 6 (Ancient Egypt), 7 (Neon Retro) are coin-locked.
+     */
+    public static boolean isThemeUnlocked(int themeId) {
+        if (themeId == THEME_ROYAL ||
+                themeId == THEME_POP_ART ||
+                themeId == THEME_CYBERPUNK ||
+                themeId == THEME_WOODLAND) {
+            return true;
+        }
+        PlayerProfileManager ppm = PlayerProfileManager.getInstance();
+        if (ppm != null) {
+            return ppm.hasPurchasedTheme(themeId);
+        }
+        return false;
+    }
+
     public static boolean isThemeUnlocked(Context context, int themeId) {
-        if (themeId == THEME_ROYAL) return true;
+        if (themeId == THEME_ROYAL ||
+                themeId == THEME_POP_ART ||
+                themeId == THEME_CYBERPUNK ||
+                themeId == THEME_WOODLAND) {
+            return true;
+        }
+        PlayerProfileManager ppm = PlayerProfileManager.getInstance(context);
+        if (ppm != null) {
+            return ppm.hasPurchasedTheme(themeId);
+        }
         return preferences(context).getBoolean("theme_unlocked_" + themeId, false);
     }
 

@@ -645,6 +645,31 @@ public class MenuActivity extends AppCompatActivity {
                 });
     }
 
+    public void showThemeDiscountAd(int themeIdx, Runnable onRewarded) {
+        if (adManager == null || !adManager.isRewardedAdReady()) {
+            if (adManager != null) {
+                adManager.preloadAds();
+            }
+            android.widget.Toast.makeText(this,
+                    R.string.ad_not_ready, android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+        adManager.showRewardedAd(this, RewardedAdPlacement.THEME_DISCOUNT,
+                new games.mrlaki5.backgammon.Monetization.ads.AdCallback() {
+                    @Override public void onAdLoaded() {}
+                    @Override public void onAdFailedToLoad(String error) {
+                        runOnUiThread(() -> android.widget.Toast.makeText(MenuActivity.this,
+                                R.string.ad_not_ready, android.widget.Toast.LENGTH_SHORT).show());
+                    }
+                    @Override public void onAdShown() {}
+                    @Override public void onAdDismissed() {}
+                    @Override public void onAdClicked() {}
+                    @Override public void onRewardEarned() {
+                        runOnUiThread(onRewarded);
+                    }
+                });
+    }
+
     @Override
     protected void onDestroy() {
         if(gameAudio!=null){

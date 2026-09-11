@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/pnpSheetRoot"
@@ -304,7 +304,7 @@
                     android:textSize="11sp" />
             </LinearLayout>
 
-            <!-- Theme 5 -->
+            <!-- Theme 5: Galaxy -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -322,13 +322,28 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/preview_theme_royal"
-                        android:alpha="0.25" />
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_lock_theme" />
+                        android:src="@drawable/preview_theme_galaxy" />
+                    <LinearLayout
+                        android:id="@+id/pnpLockOverlay5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/color_lock_overlay"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_lock_theme" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:gravity="center"
+                            android:text="@string/watch_ad_unlock"
+                            android:textColor="@color/color_gold_primary"
+                            android:textSize="7sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
                 </FrameLayout>
 
                 <TextView
@@ -337,12 +352,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:fontFamily="sans-serif-medium"
-                    android:text="به‌زودی"
-                    android:textColor="@color/text_muted"
+                    android:text="@string/theme_galaxy"
+                    android:textColor="@color/color_player_name_text"
                     android:textSize="11sp" />
             </LinearLayout>
 
-            <!-- Theme 6 -->
+            <!-- Theme 6: Ancient Egypt -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -360,13 +375,28 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/preview_theme_royal"
-                        android:alpha="0.25" />
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_lock_theme" />
+                        android:src="@drawable/preview_theme_egypt" />
+                    <LinearLayout
+                        android:id="@+id/pnpLockOverlay6"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/color_lock_overlay"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_lock_theme" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:gravity="center"
+                            android:text="@string/watch_ad_unlock"
+                            android:textColor="@color/color_gold_primary"
+                            android:textSize="7sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
                 </FrameLayout>
 
                 <TextView
@@ -375,12 +405,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:fontFamily="sans-serif-medium"
-                    android:text="به‌زودی"
-                    android:textColor="@color/text_muted"
+                    android:text="@string/theme_ancient_egypt"
+                    android:textColor="@color/color_player_name_text"
                     android:textSize="11sp" />
             </LinearLayout>
 
-            <!-- Theme 7 -->
+            <!-- Theme 7: Neon Retro -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -398,13 +428,28 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/preview_theme_royal"
-                        android:alpha="0.25" />
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_lock_theme" />
+                        android:src="@drawable/preview_theme_neon" />
+                    <LinearLayout
+                        android:id="@+id/pnpLockOverlay7"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/color_lock_overlay"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_lock_theme" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:gravity="center"
+                            android:text="@string/watch_ad_unlock"
+                            android:textColor="@color/color_gold_primary"
+                            android:textSize="7sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
                 </FrameLayout>
 
                 <TextView
@@ -413,8 +458,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:fontFamily="sans-serif-medium"
-                    android:text="به‌زودی"
-                    android:textColor="@color/text_muted"
+                    android:text="@string/theme_neon_retro"
+                    android:textColor="@color/color_player_name_text"
                     android:textSize="11sp" />
             </LinearLayout>
         </LinearLayout>

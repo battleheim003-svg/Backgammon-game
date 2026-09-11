@@ -6,10 +6,16 @@ import android.content.SharedPreferences;
 import java.util.HashSet;
 import java.util.Set;
 
+import games.mrlaki5.backgammon.Economy.CoinConfig;
+import games.mrlaki5.backgammon.Economy.CoinManager;
+import games.mrlaki5.backgammon.GamePreferences;
+
 /**
  * Manages player profile data, ELO ratings, match history, and cosmetic inventory.
  */
 public class PlayerProfileManager {
+
+    private static volatile PlayerProfileManager sInstance;
 
     private static final String PREFS_NAME = "player_profile_prefs";
     private static final String KEY_DISPLAY_NAME = "display_name";
@@ -32,10 +38,22 @@ public class PlayerProfileManager {
     private final SharedPreferences prefs;
     private final DbHelper dbHelper;
 
+    public static synchronized PlayerProfileManager getInstance(Context context) {
+        if (sInstance == null && context != null) {
+            sInstance = new PlayerProfileManager(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
+    public static PlayerProfileManager getInstance() {
+        return sInstance;
+    }
+
     public PlayerProfileManager(Context context) {
         this.context = context.getApplicationContext();
         this.prefs = this.context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         this.dbHelper = new DbHelper(this.context);
+        sInstance = this;
         initDefaults();
     }
 
@@ -249,5 +267,61 @@ public class PlayerProfileManager {
         } catch (Exception ignored) {}
 
         return delta;
+    }
+
+    // ── Theme Economy Methods ──────────────────────────────────────────────────
+
+    public boolean hasPurchasedTheme(int id) {
+        // Theme IDs 0, 1, 2, 4 are free by default
+        if (id == GamePreferences.THEME_ROYAL ||
+                id == GamePreferences.THEME_POP_ART ||
+                id == GamePreferences.THEME_CYBERPUNK ||
+                id == GamePreferences.THEME_WOODLAND) {
+            return true;
+        }
+        return prefs.getBoolean("theme_purchased_" + id, false);
+    }
+
+    public boolean purchaseTheme(int id, int coinCost) {
+        CoinManager coinManager = new CoinManager(context);
+        if (!coinManager.spend(coinCost, "theme_" + id)) {
+            return false;
+        }
+        prefs.edit().putBoolean("theme_purchased_" + id, true).apply();
+        GamePreferences.unlockTheme(context, id);
+        return true;
+    }
+
+    public void applyThemeDiscount(int id, float discountFraction, long durationMs) {
+        int basePrice = getBaseThemePrice(id);
+        int discountedPrice = Math.max(0, Math.round(basePrice * (1f - discountFraction)));
+        long expiry = System.currentTimeMillis() + durationMs;
+        prefs.edit()
+                .putInt("theme_discount_" + id + "_price", discountedPrice)
+                .putLong("theme_discount_" + id + "_expiry", expiry)
+                .apply();
+    }
+
+    public int getThemePrice(int id) {
+        long expiry = prefs.getLong("theme_discount_" + id + "_expiry", 0);
+        if (System.currentTimeMillis() < expiry) {
+            return prefs.getInt("theme_discount_" + id + "_price", getBaseThemePrice(id));
+        }
+        return getBaseThemePrice(id);
+    }
+
+    public static int getBaseThemePrice(int id) {
+        switch (id) {
+            case GamePreferences.THEME_LUXURY:
+                return CoinConfig.THEME_LUXURY_PRICE;
+            case GamePreferences.THEME_GALAXY:
+                return CoinConfig.THEME_GALAXY_PRICE;
+            case GamePreferences.THEME_ANCIENT_EGYPT:
+                return CoinConfig.THEME_EGYPT_PRICE;
+            case GamePreferences.THEME_NEON_RETRO:
+                return CoinConfig.THEME_NEON_PRICE;
+            default:
+                return 0;
+        }
     }
 }

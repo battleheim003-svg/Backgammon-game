@@ -3,12 +3,14 @@ package games.mrlaki5.backgammon.Menus;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.graphics.TypefaceCompat;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -27,8 +30,11 @@ import com.google.android.material.button.MaterialButton;
 
 import java.io.File;
 
+import games.mrlaki5.backgammon.Database.PlayerProfileManager;
+import games.mrlaki5.backgammon.Economy.CoinManager;
 import games.mrlaki5.backgammon.GameControllers.GameActivity;
 import games.mrlaki5.backgammon.GamePreferences;
+import games.mrlaki5.backgammon.GameView.themes.ThemeRegistry;
 import games.mrlaki5.backgammon.R;
 
 public class PassAndPlayDialogFragment extends BottomSheetDialogFragment {
@@ -94,14 +100,15 @@ public class PassAndPlayDialogFragment extends BottomSheetDialogFragment {
         selectedTheme[0] = GamePreferences.getBoardTheme(requireContext());
         setupThemePicker(view, selectedTheme);
 
-        // Player Names
-        EditText name1 = view.findViewById(R.id.pnpName1);
-        EditText name2 = view.findViewById(R.id.pnpName2);
-        if (name1 != null) {
-            MenuActivity.setupInlineEditText(name1, getString(R.string.pass_and_play_player1_default));
+        // Player Name Fields
+        EditText nameField1 = view.findViewById(R.id.pnpName1);
+        if (nameField1 != null) {
+            MenuActivity.setupInlineEditText(nameField1, getString(R.string.player_one));
         }
-        if (name2 != null) {
-            MenuActivity.setupInlineEditText(name2, getString(R.string.pass_and_play_player2_default));
+
+        EditText nameField2 = view.findViewById(R.id.pnpName2);
+        if (nameField2 != null) {
+            MenuActivity.setupInlineEditText(nameField2, getString(R.string.player_two));
         }
 
         // Action buttons
@@ -122,14 +129,16 @@ public class PassAndPlayDialogFragment extends BottomSheetDialogFragment {
                 if (getActivity() instanceof MenuActivity) {
                     ((MenuActivity) getActivity()).playMenuTap();
                 }
-                String playerName1 = name1 != null ? name1.getText().toString().trim() : "";
-                String playerName2 = name2 != null ? name2.getText().toString().trim() : "";
-                if (playerName1.isEmpty()) playerName1 = getString(R.string.pass_and_play_player1_default);
-                if (playerName2.isEmpty()) playerName2 = getString(R.string.pass_and_play_player2_default);
+                String p1Name = nameField1 != null ? nameField1.getText().toString().trim() : "";
+                if (p1Name.isEmpty() || p1Name.equals(getString(R.string.player_name))) {
+                    p1Name = getString(R.string.player_one);
+                }
+                String p2Name = nameField2 != null ? nameField2.getText().toString().trim() : "";
+                if (p2Name.isEmpty() || p2Name.equals(getString(R.string.player_name))) {
+                    p2Name = getString(R.string.player_two);
+                }
 
-                GamePreferences.saveSelections(requireContext(),
-                        GamePreferences.getBotDifficulty(requireContext()),
-                        selectedTheme[0]);
+                GamePreferences.saveSelections(requireContext(), 0, selectedTheme[0]);
                 dismiss();
 
                 File file = new File(requireActivity().getFilesDir().getAbsolutePath(),
@@ -137,11 +146,10 @@ public class PassAndPlayDialogFragment extends BottomSheetDialogFragment {
                 file.delete();
 
                 Intent intent = new Intent(requireContext(), GameActivity.class);
-                intent.putExtra(MenuActivity.EXTRA_PLAYER1_NAME, playerName1);
-                intent.putExtra(MenuActivity.EXTRA_PLAYER2_NAME, playerName2);
+                intent.putExtra(MenuActivity.EXTRA_PLAYER1_NAME, p1Name);
+                intent.putExtra(MenuActivity.EXTRA_PLAYER2_NAME, p2Name);
                 intent.putExtra(MenuActivity.EXTRA_PLAYER1_KIND, "Player");
                 intent.putExtra(MenuActivity.EXTRA_PLAYER2_KIND, "Player");
-                intent.putExtra(MenuActivity.EXTRA_GAME_MODE, MenuActivity.GAME_MODE_PASS_AND_PLAY);
                 requireActivity().startActivityForResult(intent, MenuActivity.REQUEST_CODE_GAME);
             });
         }
@@ -179,7 +187,7 @@ public class PassAndPlayDialogFragment extends BottomSheetDialogFragment {
         };
         int[] overlayIds = {
                 0, R.id.pnpLockOverlay1, R.id.pnpLockOverlay2, R.id.pnpLockOverlay3,
-                R.id.pnpLockOverlay4, 0, 0, 0
+                R.id.pnpLockOverlay4, R.id.pnpLockOverlay5, R.id.pnpLockOverlay6, R.id.pnpLockOverlay7
         };
 
         FrameLayout[] thumbs = new FrameLayout[thumbIds.length];
@@ -201,28 +209,78 @@ public class PassAndPlayDialogFragment extends BottomSheetDialogFragment {
             final int idx = i;
             if (thumbs[i] == null) continue;
             thumbs[i].setOnClickListener(v -> {
-                if (idx >= 5) {
-                    Toast.makeText(requireContext(), "این تم به‌زودی اضافه می‌شود!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 if (GamePreferences.isThemeUnlocked(requireContext(), idx)) {
                     selectedRef[0] = idx;
                     updateThemeSelection(thumbs, idx);
                 } else {
-                    if (getActivity() instanceof MenuActivity) {
-                        ((MenuActivity) getActivity()).showThemeUnlockAd(idx, () -> {
-                            GamePreferences.unlockTheme(requireContext(), idx);
-                            refreshThemeLocks(lockViews);
-                            selectedRef[0] = idx;
-                            updateThemeSelection(thumbs, idx);
-                            Toast.makeText(requireContext(),
-                                    R.string.theme_unlocked_toast,
-                                    Toast.LENGTH_SHORT).show();
-                        });
-                    }
+                    showThemeUnlockPrompt(idx, lockViews, thumbs, selectedRef);
                 }
             });
         }
+    }
+
+    private void showThemeUnlockPrompt(int idx, View[] lockViews, FrameLayout[] thumbs, int[] selectedRef) {
+        if (getContext() == null) return;
+        PlayerProfileManager profileMgr = PlayerProfileManager.getInstance(requireContext());
+        int currentPrice = profileMgr.getThemePrice(idx);
+        CoinManager coinManager = new CoinManager(requireContext());
+        int userCoins = coinManager.getBalance();
+
+        ThemeRegistry.ThemeInfo themeInfo = ThemeRegistry.getThemeInfo(idx);
+        String themeName = (themeInfo != null) ? themeInfo.getNameFa() : ("تم " + idx);
+
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_theme_unlock, null);
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        }
+
+        TextView tvTitle = dialogView.findViewById(R.id.dialogThemeTitle);
+        TextView tvCoins = dialogView.findViewById(R.id.dialogThemeCoins);
+        MaterialButton btnBuy = dialogView.findViewById(R.id.btnBuyTheme);
+        MaterialButton btnAd = dialogView.findViewById(R.id.btnDiscountAd);
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelThemeUnlock);
+
+        if (tvTitle != null) {
+            tvTitle.setText(themeName);
+        }
+        if (tvCoins != null) {
+            tvCoins.setText(getString(R.string.coin_balance, userCoins));
+        }
+        if (btnBuy != null) {
+            btnBuy.setText(getString(R.string.theme_buy_button, currentPrice));
+            btnBuy.setOnClickListener(v -> {
+                dialog.dismiss();
+                if (profileMgr.purchaseTheme(idx, currentPrice)) {
+                    refreshThemeLocks(lockViews);
+                    selectedRef[0] = idx;
+                    updateThemeSelection(thumbs, idx);
+                    Toast.makeText(requireContext(), R.string.theme_unlocked_toast, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(requireContext(), R.string.theme_not_enough_coins, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        if (btnAd != null) {
+            btnAd.setOnClickListener(v -> {
+                dialog.dismiss();
+                if (getActivity() instanceof MenuActivity) {
+                    ((MenuActivity) getActivity()).showThemeDiscountAd(idx, () -> {
+                        profileMgr.applyThemeDiscount(idx, 0.5f, 3600_000L);
+                        Toast.makeText(requireContext(), R.string.theme_discount_activated, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            });
+        }
+        if (btnCancel != null) {
+            btnCancel.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
     }
 
     private void refreshThemeLocks(View[] lockViews) {

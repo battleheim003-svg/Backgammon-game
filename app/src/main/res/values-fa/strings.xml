@@ -277,5 +277,11 @@
     <string name="theme_unlocked_toast">طرح باز شد!</string>
     <string name="ad_not_ready">تبلیغ آماده نیست — کمی بعد تلاش کنید</string>
     <string name="theme_woodland_name">جنگل</string>
-
+    <string name="theme_galaxy">کهکشان</string>
+    <string name="theme_ancient_egypt">مصر باستان</string>
+    <string name="theme_neon_retro">نئون رترو</string>
+    <string name="theme_buy_button">خرید — %1$d سکه</string>
+    <string name="theme_discount_button">تخفیف ۵۰٪ با تبلیغ (۱ ساعت)</string>
+    <string name="theme_not_enough_coins">سکه کافی ندارید!</string>
+    <string name="theme_discount_activated">تخفیف ۵۰٪ برای ۱ ساعت فعال شد!</string>
 </resources>
