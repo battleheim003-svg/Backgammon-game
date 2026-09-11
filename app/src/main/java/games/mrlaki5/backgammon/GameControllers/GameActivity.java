@@ -920,17 +920,30 @@ public class GameActivity extends AppCompatActivity {
             return;
         }
 
-        int cost;
-        if (undoCountThisGame == 0) {
-            cost = CoinConfig.UNDO_COST_1;
-        } else if (undoCountThisGame == 1) {
-            cost = CoinConfig.UNDO_COST_2;
+        PlayerProfileManager pm = PlayerProfileManager.getInstance(this);
+        boolean charged = false;
+        if (pm.useUndoCharge()) {
+            undoCountThisGame++; // still counts for escalation tracking but no coin cost
+            charged = true;
         } else {
-            cost = CoinConfig.UNDO_COST_3;
+            int cost;
+            if (undoCountThisGame == 0) {
+                cost = CoinConfig.UNDO_COST_1;
+            } else if (undoCountThisGame == 1) {
+                cost = CoinConfig.UNDO_COST_2;
+            } else {
+                cost = CoinConfig.UNDO_COST_3;
+            }
+
+            if (coinManager != null && coinManager.spend(cost, "undo_move")) {
+                undoCountThisGame++;
+                charged = true;
+            } else {
+                android.widget.Toast.makeText(this, R.string.insufficient_coins, android.widget.Toast.LENGTH_SHORT).show();
+            }
         }
 
-        if (coinManager != null && coinManager.spend(cost, "undo_move")) {
-            undoCountThisGame++;
+        if (charged) {
             undoUsedThisTurn = true;
             model.setBoardFields(turnSnapshot.copyBoard());
             model.setDiceThrows(turnSnapshot.copyDice());
@@ -940,8 +953,6 @@ public class GameActivity extends AppCompatActivity {
             BoardImage.setNextMoveArray(null);
             BoardImage.postInvalidateOnAnimation();
             android.widget.Toast.makeText(this, R.string.undo_success, android.widget.Toast.LENGTH_SHORT).show();
-        } else {
-            android.widget.Toast.makeText(this, R.string.insufficient_coins, android.widget.Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -957,7 +968,10 @@ public class GameActivity extends AppCompatActivity {
         };
         builder.setItems(options, (dialog, which) -> {
             if (which == 0) {
-                if (coinManager != null && coinManager.spend(CoinConfig.HINT_COST, "hint")) {
+                PlayerProfileManager pm = PlayerProfileManager.getInstance(this);
+                if (pm.useHintCharge()) {
+                    revealBestMove();
+                } else if (coinManager != null && coinManager.spend(CoinConfig.HINT_COST, "hint")) {
                     revealBestMove();
                 } else {
                     android.widget.Toast.makeText(this, R.string.insufficient_coins, android.widget.Toast.LENGTH_SHORT).show();

@@ -134,6 +134,7 @@ public class GameOverHandler {
             eloDelta = profileManager.recordGameResult(winningPlayer == 1, botElo, gameMode);
 
             if (winningPlayer == 1) {
+                profileManager.incrementWinCount();
                 currentStreak = streakTracker.recordWin();
                 coinsEarned = CoinConfig.WIN_BASE;
                 coinBreakdown.append(activity.getString(R.string.coins_base_win, CoinConfig.WIN_BASE));

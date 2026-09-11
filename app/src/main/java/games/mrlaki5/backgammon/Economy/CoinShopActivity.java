@@ -2,14 +2,17 @@ package games.mrlaki5.backgammon.Economy;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.GridView;
+import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +22,8 @@ import games.mrlaki5.backgammon.LocaleHelper;
 import games.mrlaki5.backgammon.R;
 
 /**
- * Activity for the in-game Coin Shop offering Avatar Frames, Dice Skins, Titles, and Themes.
+ * Activity for the in-game Coin Shop offering Avatar Frames, Dice Skins, Titles, Themes,
+ * Consumables, and Bundles using a 2-column RecyclerView with category tabs.
  */
 public class CoinShopActivity extends AppCompatActivity {
 
@@ -31,11 +35,11 @@ public class CoinShopActivity extends AppCompatActivity {
     private CoinManager coinManager;
     private PlayerProfileManager profileManager;
     private TextView tvCoinBalance;
-    private GridView gvItems;
-    private ShopAdapter adapter;
+    private RecyclerView rvShopItems;
+    private ShopAdapter shopAdapter;
+    private ShopItem.Category selectedCategory = ShopItem.Category.ALL;
 
     private final List<ShopItem> allItems = new ArrayList<>();
-    private final List<ShopItem> displayedItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +49,10 @@ public class CoinShopActivity extends AppCompatActivity {
         setContentView(R.layout.activity_coin_shop);
 
         coinManager = new CoinManager(this);
-        profileManager = new PlayerProfileManager(this);
+        profileManager = PlayerProfileManager.getInstance(this);
 
         tvCoinBalance = findViewById(R.id.tvShopCoinBalance);
-        gvItems = findViewById(R.id.gvShopItems);
+        rvShopItems = findViewById(R.id.shopRecyclerView);
 
         ImageButton btnBack = findViewById(R.id.btnShopBack);
         if (btnBack != null) {
@@ -56,19 +60,107 @@ public class CoinShopActivity extends AppCompatActivity {
         }
 
         buildShopCatalog();
+        setupRecyclerView();
         setupCategoryTabs();
-        updateBalance();
-        filterItems(null);
+        refreshCoinBalance();
     }
 
-    private void updateBalance() {
-        if (tvCoinBalance != null && coinManager != null) {
-            tvCoinBalance.setText(String.valueOf(coinManager.getBalance()));
+    private void refreshCoinBalance() {
+        if (tvCoinBalance != null && profileManager != null) {
+            tvCoinBalance.setText(String.valueOf(profileManager.getBalance()));
+        }
+    }
+
+    private void setupRecyclerView() {
+        GridLayoutManager glm = new GridLayoutManager(this, 2);
+        glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (shopAdapter != null) {
+                    ShopItem item = shopAdapter.getItem(position);
+                    if (item != null && item.getCategory() == ShopItem.Category.BUNDLE) {
+                        return 2; // BUNDLE spans full 2 columns
+                    }
+                }
+                return 1;
+            }
+        });
+        rvShopItems.setLayoutManager(glm);
+
+        shopAdapter = new ShopAdapter(this, allItems, profileManager, coinManager, this::refreshCoinBalance);
+        rvShopItems.setAdapter(shopAdapter);
+    }
+
+    private void setupCategoryTabs() {
+        LinearLayout tabs = findViewById(R.id.shopCategoryTabs);
+        if (tabs == null) return;
+        tabs.removeAllViews();
+
+        ShopItem.Category[] cats = {
+                ShopItem.Category.ALL,
+                ShopItem.Category.COSMETIC,
+                ShopItem.Category.CONSUMABLE,
+                ShopItem.Category.BUNDLE
+        };
+        int[] labelRes = {
+                R.string.shop_category_all,
+                R.string.shop_category_cosmetic,
+                R.string.shop_category_consumable,
+                R.string.shop_category_bundle
+        };
+
+        for (int i = 0; i < cats.length; i++) {
+            final ShopItem.Category cat = cats[i];
+            Button btn = new Button(new ContextThemeWrapper(this, R.style.ShopCategoryTabButton), null, 0);
+            btn.setText(labelRes[i]);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lp.setMarginEnd(16);
+            btn.setLayoutParams(lp);
+
+            if (i == 0) {
+                btn.setSelected(true);
+                btn.setBackgroundColor(0x33F4B044);
+            }
+
+            btn.setOnClickListener(v -> {
+                selectedCategory = cat;
+                if (shopAdapter != null) {
+                    shopAdapter.filter(cat);
+                }
+                updateTabSelection(tabs, btn);
+            });
+            tabs.addView(btn);
+        }
+    }
+
+    private void updateTabSelection(LinearLayout tabs, Button selected) {
+        for (int i = 0; i < tabs.getChildCount(); i++) {
+            View v = tabs.getChildAt(i);
+            boolean isSel = (v == selected);
+            v.setSelected(isSel);
+            if (isSel) {
+                v.setBackgroundColor(0x33F4B044);
+            } else {
+                v.setBackgroundColor(0x00000000);
+            }
         }
     }
 
     private void buildShopCatalog() {
         allItems.clear();
+
+        // ═══════════════════════════════════════════
+        // BUNDLE — Starter Bundle (Spans 2 columns)
+        // ═══════════════════════════════════════════
+        allItems.add(ShopItem.starterBundle());
+
+        // ═══════════════════════════════════════════
+        // CONSUMABLES — Hints & Undos
+        // ═══════════════════════════════════════════
+        allItems.add(ShopItem.hintPack3());
+        allItems.add(ShopItem.hintPack10());
+        allItems.add(ShopItem.undoPack3());
 
         // ═══════════════════════════════════════════
         // AVATAR FRAMES — 8 items
@@ -173,40 +265,5 @@ public class CoinShopActivity extends AppCompatActivity {
         allItems.add(ShopItem.rental(
             "rental_dragon", "تاس اژدها — ۲۴ ساعت", "تاس افسانهای برای یک روز",
             60, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.LEGENDARY, "🐉"));
-    }
-
-    private void setupCategoryTabs() {
-        RadioGroup rgCategories = findViewById(R.id.rgShopCategories);
-        if (rgCategories != null) {
-            rgCategories.setOnCheckedChangeListener((group, checkedId) -> {
-                if (checkedId == R.id.rbCategoryFrames) {
-                    filterItems(ShopItem.Category.AVATAR_FRAME);
-                } else if (checkedId == R.id.rbCategoryDice) {
-                    filterItems(ShopItem.Category.DICE_SKIN);
-                } else if (checkedId == R.id.rbCategoryTitles) {
-                    filterItems(ShopItem.Category.TITLE);
-                } else if (checkedId == R.id.rbCategoryRental) {
-                    filterItems(ShopItem.Category.RENTAL);
-                } else {
-                    filterItems(null);
-                }
-            });
-        }
-    }
-
-    private void filterItems(ShopItem.Category category) {
-        displayedItems.clear();
-        for (ShopItem item : allItems) {
-            if (category == null || item.getCategory() == category) {
-                displayedItems.add(item);
-            }
-        }
-
-        if (adapter == null) {
-            adapter = new ShopAdapter(this, displayedItems, profileManager, coinManager, this::updateBalance);
-            gvItems.setAdapter(adapter);
-        } else {
-            adapter.notifyDataSetChanged();
-        }
     }
 }

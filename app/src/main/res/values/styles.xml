@@ -14,4 +14,12 @@
     <style name="CustomBottomSheetModalStyle" parent="Widget.MaterialComponents.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
     </style>
+
+    <style name="ShopCategoryTabButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textSize">13sp</item>
+        <item name="android:paddingHorizontal">14dp</item>
+        <item name="strokeColor">@color/color_gold_primary</item>
+        <item name="android:textColor">@color/color_gold_primary</item>
+        <item name="backgroundTint">@android:color/transparent</item>
+    </style>
 </resources>

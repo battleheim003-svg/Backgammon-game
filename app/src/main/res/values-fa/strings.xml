@@ -284,4 +284,17 @@
     <string name="theme_discount_button">تخفیف ۵۰٪ با تبلیغ (۱ ساعت)</string>
     <string name="theme_not_enough_coins">سکه کافی ندارید!</string>
     <string name="theme_discount_activated">تخفیف ۵۰٪ برای ۱ ساعت فعال شد!</string>
+
+    <!-- Shop Deepening: Consumables & Bundles -->
+    <string name="shop_hint_pack_3">۳ راهنما</string>
+    <string name="shop_hint_pack_10">۱۰ راهنما</string>
+    <string name="shop_undo_pack_3">۳ برگشت</string>
+    <string name="shop_starter_bundle">باندل شروع</string>
+    <string name="shop_category_cosmetic">زیبایی</string>
+    <string name="shop_category_consumable">مصرفی</string>
+    <string name="shop_category_bundle">باندل</string>
+    <string name="shop_hint_charges">%d راهنما</string>
+    <string name="shop_undo_charges">%d برگشت</string>
+    <string name="not_enough_coins">سکه کافی نیست</string>
+    <string name="purchase_successful">خرید موفق</string>
 </resources>

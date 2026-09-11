@@ -324,4 +324,87 @@ public class PlayerProfileManager {
                 return 0;
         }
     }
+
+    // ── Consumable Charges & Bundles ──────────────────────────────────────────
+
+    private static final String KEY_HINT_CHARGES = "hint_charges";
+    private static final String KEY_UNDO_CHARGES = "undo_charges";
+
+    public int getBalance() {
+        return new CoinManager(context).getBalance();
+    }
+
+    public boolean deductCoins(int amount) {
+        return new CoinManager(context).spend(amount, "shop_purchase");
+    }
+
+    public int getWinCount() {
+        return getTotalWins();
+    }
+
+    public void incrementWinCount() {
+        int wins = getWinCount() + 1;
+        prefs.edit().putInt("total_wins", wins).apply();
+    }
+
+    public int getHintCharges() {
+        return prefs.getInt(KEY_HINT_CHARGES, 0);
+    }
+
+    public void addHintCharges(int n) {
+        prefs.edit().putInt(KEY_HINT_CHARGES, getHintCharges() + n).apply();
+    }
+
+    public boolean useHintCharge() {
+        int c = getHintCharges();
+        if (c <= 0) return false;
+        prefs.edit().putInt(KEY_HINT_CHARGES, c - 1).apply();
+        return true;
+    }
+
+    public int getUndoCharges() {
+        return prefs.getInt(KEY_UNDO_CHARGES, 0);
+    }
+
+    public void addUndoCharges(int n) {
+        prefs.edit().putInt(KEY_UNDO_CHARGES, getUndoCharges() + n).apply();
+    }
+
+    public boolean useUndoCharge() {
+        int c = getUndoCharges();
+        if (c <= 0) return false;
+        prefs.edit().putInt(KEY_UNDO_CHARGES, c - 1).apply();
+        return true;
+    }
+
+    /** Call this when a consumable pack is purchased from the shop. */
+    public boolean purchaseConsumable(String itemId, int coinCost, int quantity) {
+        if (getBalance() < coinCost) return false;
+        deductCoins(coinCost);
+        if (itemId.startsWith("hint_pack")) addHintCharges(quantity);
+        else if (itemId.startsWith("undo_pack")) addUndoCharges(quantity);
+        return true;
+    }
+
+    public boolean purchaseStarterBundle(int coinCost) {
+        if (getBalance() < coinCost) return false;
+        deductCoins(coinCost);
+        // grant frame_silver and dice_elegant (or walnut/steel) as purchases
+        addPurchasedItem("frame_silver");
+        addPurchasedItem("dice_elegant");
+        addPurchasedItem("dice_walnut");
+        // 50 coins bonus
+        new CoinManager(context).earn(50, "starter_bundle_bonus");
+        addHintCharges(2); // bonus charges
+        prefs.edit()
+                .putBoolean("item_purchased_frame_silver", true)
+                .putBoolean("item_purchased_dice_elegant", true)
+                .putBoolean("item_purchased_starter_bundle", true)
+                .apply();
+        return true;
+    }
+
+    public boolean hasStarterBundle() {
+        return prefs.getBoolean("item_purchased_starter_bundle", false);
+    }
 }

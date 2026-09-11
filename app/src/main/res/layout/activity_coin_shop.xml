@@ -68,113 +68,30 @@
 
     </LinearLayout>
 
-    <!-- Category Tabs -->
+    <!-- Category Tab Bar -->
     <HorizontalScrollView
+        android:id="@+id/shopCategoryScroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="6dp"
         android:scrollbars="none">
-
-        <RadioGroup
-            android:id="@+id/rgShopCategories"
+        <LinearLayout
+            android:id="@+id/shopCategoryTabs"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/rbCategoryAll"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_marginEnd="6dp"
-                android:background="@drawable/bg_pause_button"
-                android:button="@null"
-                android:checked="true"
-                android:gravity="center"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:text="@string/shop_category_all"
-                android:textColor="@color/accent_gold"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <RadioButton
-                android:id="@+id/rbCategoryFrames"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_marginEnd="6dp"
-                android:background="@drawable/bg_pause_button"
-                android:button="@null"
-                android:gravity="center"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:text="@string/avatar_frames"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <RadioButton
-                android:id="@+id/rbCategoryDice"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_marginEnd="6dp"
-                android:background="@drawable/bg_pause_button"
-                android:button="@null"
-                android:gravity="center"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:text="@string/dice_skins"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <RadioButton
-                android:id="@+id/rbCategoryTitles"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_marginEnd="6dp"
-                android:background="@drawable/bg_pause_button"
-                android:button="@null"
-                android:gravity="center"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:text="@string/profile_titles"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <RadioButton
-                android:id="@+id/rbCategoryRental"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:background="@drawable/bg_pause_button"
-                android:button="@null"
-                android:gravity="center"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:text="@string/shop_category_rental"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-        </RadioGroup>
-
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:gravity="center_vertical" />
     </HorizontalScrollView>
 
-    <!-- Grid of Items -->
-    <GridView
-        android:id="@+id/gvShopItems"
+    <!-- Grid / List of Items via RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/shopRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:numColumns="2"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:paddingBottom="12dp"
-        android:verticalSpacing="4dp"
-        android:horizontalSpacing="4dp"
-        android:stretchMode="columnWidth"
         android:clipToPadding="false" />
 
 </LinearLayout>
