@@ -59,6 +59,7 @@ public class GameOverHandler {
     private final CoinManager coinManager;
     private final PlayerProfileManager profileManager;
     private final RewardedAdTracker rewardedAdTracker;
+    private final GameResultHandler gameResultHandler;
     private AlertDialog gameOverDialog;
     private boolean gameResultRecorded = false;
     private OnGameOverActionListener listener;
@@ -68,6 +69,7 @@ public class GameOverHandler {
         this.coinManager = coinManager;
         this.profileManager = new PlayerProfileManager(activity);
         this.rewardedAdTracker = new RewardedAdTracker(activity);
+        this.gameResultHandler = new GameResultHandler(activity, this.profileManager, coinManager);
     }
 
     public void setListener(OnGameOverActionListener listener) {
@@ -76,6 +78,10 @@ public class GameOverHandler {
 
     public boolean isResultRecorded() {
         return gameResultRecorded;
+    }
+
+    public GameResultHandler getGameResultHandler() {
+        return gameResultHandler;
     }
 
     /**
@@ -118,82 +124,16 @@ public class GameOverHandler {
         File saveFile = new File(activity.getFilesDir(), MenuActivity.GAME_CONTINUE_SAVE_FILE_NAME);
         saveFile.delete();
 
-        // Update ELO rating & economy
-        int currentStreak = 0;
-        int previousStreak = 0;
-        int coinsEarned = 0;
-        int eloDelta = 0;
-        StringBuilder coinBreakdown = new StringBuilder();
-
-        if (!passAndPlayMode && !tutorialMode) {
-            WinStreakTracker streakTracker = new WinStreakTracker(activity);
-            previousStreak = streakTracker.getCurrentStreak();
-            int difficulty = GamePreferences.getBotDifficulty(activity);
-            int botElo = PlayerProfileManager.getBotElo(difficulty);
-
-            eloDelta = profileManager.recordGameResult(winningPlayer == 1, botElo, gameMode);
-
-            if (winningPlayer == 1) {
-                profileManager.incrementWinCount();
-                currentStreak = streakTracker.recordWin();
-                coinsEarned = CoinConfig.WIN_BASE;
-                coinBreakdown.append(activity.getString(R.string.coins_base_win, CoinConfig.WIN_BASE));
-
-                int diffBonus = 0;
-                if (difficulty == 1) diffBonus = CoinConfig.WIN_BONUS_MEDIUM;
-                else if (difficulty == 2) diffBonus = CoinConfig.WIN_BONUS_HARD;
-                else if (difficulty == 3) diffBonus = CoinConfig.WIN_BONUS_ROYAL;
-
-                if (diffBonus > 0) {
-                    coinsEarned += diffBonus;
-                    coinBreakdown.append(" • ").append(activity.getString(R.string.coins_diff_bonus, diffBonus));
-                }
-
-                if (coinManager != null) {
-                    coinManager.earn(coinsEarned, "game_win");
-                }
-
-                // First game of the day
-                SharedPreferences flowPrefs = activity.getSharedPreferences("game_flow_prefs", Context.MODE_PRIVATE);
-                int today = DateUtil.getDayOfYear();
-                if (today != flowPrefs.getInt("last_game_day", -1)) {
-                    if (coinManager != null) {
-                        coinManager.earn(CoinConfig.FIRST_GAME_OF_DAY, "first_game_of_day");
-                    }
-                    coinBreakdown.append(" • ").append(activity.getString(R.string.coins_first_game, CoinConfig.FIRST_GAME_OF_DAY));
-                    flowPrefs.edit().putInt("last_game_day", today).apply();
-                }
-
-                // Streak milestone check
-                if (currentStreak > 0 && currentStreak % CoinConfig.STREAK_MILESTONE_EVERY == 0) {
-                    if (coinManager != null) {
-                        coinManager.earn(CoinConfig.STREAK_MILESTONE_REWARD, "streak_milestone");
-                    }
-                    coinBreakdown.append(" • ").append(activity.getString(R.string.coins_streak_bonus, CoinConfig.STREAK_MILESTONE_REWARD));
-                }
-            } else {
-                streakTracker.recordLoss();
-            }
-
-            // Update achievements
-            AchievementManager achievements = new AchievementManager(activity, coinManager);
-            achievements.onGameCompleted(winningPlayer == 1, difficulty, currentStreak);
-
-            // Update daily challenge
-            DailyChallenge dailyChallenge = new DailyChallenge(activity, coinManager);
-            dailyChallenge.onGameCompleted(winningPlayer == 1, difficulty, false, currentStreak);
-
-            // Update weekly challenge
-            WeeklyChallenge weeklyChallenge = new WeeklyChallenge(activity);
-            weeklyChallenge.onGameCompleted(winningPlayer == 1);
-        }
+        // Update ELO rating & economy via GameResultHandler
+        GameResultHandler.ProcessedResult result = gameResultHandler.processResult(
+                winningPlayer == 1, gameMode, passAndPlayMode, tutorialMode);
 
         final String winnerName = (winningPlayer == 1) ? p1Name : p2Name;
-        final int streak = currentStreak;
-        final int prevStreak = previousStreak;
-        final int totalEarned = coinsEarned;
-        final int delta = eloDelta;
-        final String breakdown = coinBreakdown.toString();
+        final int streak = result.currentStreak;
+        final int prevStreak = result.previousStreak;
+        final int totalEarned = result.coinsEarned;
+        final int delta = result.eloDelta;
+        final String breakdown = result.coinBreakdown;
 
         activity.runOnUiThread(() -> {
             showInterstitialIfAllowed();

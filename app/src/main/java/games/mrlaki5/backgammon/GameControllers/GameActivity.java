@@ -81,10 +81,13 @@ public class GameActivity extends AppCompatActivity {
     private GameOverHandler gameOverHandler;
     private PauseMenuHandler pauseMenuHandler;
     private PassAndPlayManager passAndPlayManager;
+    private HintManager hintManager;
+    private UndoManager undoManager;
 
     // Economy & Ads
     private CoinManager coinManager;
     private RewardedAdTracker rewardedAdTracker;
+    private PlayerProfileManager profileManager;
 
     // Undo move snapshot
     private static class TurnSnapshot {
@@ -144,7 +147,6 @@ public class GameActivity extends AppCompatActivity {
 
     private TurnSnapshot turnSnapshot = null;
     private boolean undoUsedThisTurn = false;
-    private int undoCountThisGame = 0;
 
     // Game Flow State
     private int pauseDone = 0;
@@ -282,8 +284,11 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new PlayerProfileManager(this).checkAndExpireRentals();
-        undoCountThisGame = 0;
+        profileManager = PlayerProfileManager.getInstance(this);
+        profileManager.checkAndExpireRentals();
+        undoManager = new UndoManager(profileManager);
+        undoManager.reset();
+        hintManager = new HintManager(this, profileManager);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_game);
@@ -920,40 +925,29 @@ public class GameActivity extends AppCompatActivity {
             return;
         }
 
-        PlayerProfileManager pm = PlayerProfileManager.getInstance(this);
-        boolean charged = false;
-        if (pm.useUndoCharge()) {
-            undoCountThisGame++; // still counts for escalation tracking but no coin cost
-            charged = true;
-        } else {
-            int cost;
-            if (undoCountThisGame == 0) {
-                cost = CoinConfig.UNDO_COST_1;
-            } else if (undoCountThisGame == 1) {
-                cost = CoinConfig.UNDO_COST_2;
-            } else {
-                cost = CoinConfig.UNDO_COST_3;
-            }
-
-            if (coinManager != null && coinManager.spend(cost, "undo_move")) {
-                undoCountThisGame++;
-                charged = true;
-            } else {
-                android.widget.Toast.makeText(this, R.string.insufficient_coins, android.widget.Toast.LENGTH_SHORT).show();
-            }
+        if (undoManager == null) {
+            undoManager = new UndoManager(PlayerProfileManager.getInstance(this));
         }
 
-        if (charged) {
-            undoUsedThisTurn = true;
-            model.setBoardFields(turnSnapshot.copyBoard());
-            model.setDiceThrows(turnSnapshot.copyDice());
-            model.setNextMoves(turnSnapshot.copyMoves());
-            BoardImage.setChipMatrix(model.getBoardFields());
-            BoardImage.setDices(model.getDiceThrows());
-            BoardImage.setNextMoveArray(null);
-            BoardImage.postInvalidateOnAnimation();
-            android.widget.Toast.makeText(this, R.string.undo_success, android.widget.Toast.LENGTH_SHORT).show();
-        }
+        undoManager.requestUndo(new UndoManager.UndoCallback() {
+            @Override
+            public void onUndoGranted() {
+                undoUsedThisTurn = true;
+                model.setBoardFields(turnSnapshot.copyBoard());
+                model.setDiceThrows(turnSnapshot.copyDice());
+                model.setNextMoves(turnSnapshot.copyMoves());
+                BoardImage.setChipMatrix(model.getBoardFields());
+                BoardImage.setDices(model.getDiceThrows());
+                BoardImage.setNextMoveArray(null);
+                BoardImage.postInvalidateOnAnimation();
+                android.widget.Toast.makeText(GameActivity.this, R.string.undo_success, android.widget.Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onUndoDenied(String reason) {
+                android.widget.Toast.makeText(GameActivity.this, R.string.insufficient_coins, android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void showHintChoiceDialog() {
@@ -968,14 +962,20 @@ public class GameActivity extends AppCompatActivity {
         };
         builder.setItems(options, (dialog, which) -> {
             if (which == 0) {
-                PlayerProfileManager pm = PlayerProfileManager.getInstance(this);
-                if (pm.useHintCharge()) {
-                    revealBestMove();
-                } else if (coinManager != null && coinManager.spend(CoinConfig.HINT_COST, "hint")) {
-                    revealBestMove();
-                } else {
-                    android.widget.Toast.makeText(this, R.string.insufficient_coins, android.widget.Toast.LENGTH_SHORT).show();
+                if (hintManager == null) {
+                    hintManager = new HintManager(this, PlayerProfileManager.getInstance(this));
                 }
+                hintManager.requestHint(new HintManager.HintCallback() {
+                    @Override
+                    public void onHintGranted() {
+                        revealBestMove();
+                    }
+
+                    @Override
+                    public void onHintDenied(String reason) {
+                        android.widget.Toast.makeText(GameActivity.this, R.string.insufficient_coins, android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                });
             } else if (which == 1) {
                 if (rewardedAdTracker != null && rewardedAdTracker.canShow(RewardedAdPlacement.HINT)) {
                     AdManager adMgr = MenuActivity.getSharedAdManager();
