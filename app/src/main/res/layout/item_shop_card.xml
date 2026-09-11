@@ -125,4 +125,22 @@
         android:textStyle="bold"
         android:visibility="gone" />
 
+    <!-- Rental expiry overlay (top-left / top-start corner) -->
+    <TextView
+        android:id="@+id/tvShopItemRentalExpiry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="3dp"
+        android:background="#2E7D32"
+        android:fontFamily="sans-serif-medium"
+        android:paddingStart="5dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="2dp"
+        android:textColor="#FFFFFF"
+        android:textSize="8sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
 </FrameLayout>

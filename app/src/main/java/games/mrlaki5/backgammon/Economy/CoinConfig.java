@@ -25,8 +25,11 @@ public final class CoinConfig {
     public static final int WEEKLY_CHALLENGE_3_REWARD = 75;
 
     // === Spending ===
-    public static final int HINT_COST         = 20;
-    public static final int UNDO_COST         = 30;
+    public static final int HINT_COST         = 25;
+    public static final int UNDO_COST_1       = 40;
+    public static final int UNDO_COST_2       = 60;
+    public static final int UNDO_COST_3       = 90;
+    public static final int UNDO_COST         = UNDO_COST_1;
 
     // Shop item prices — must match CoinShopActivity catalog
     // Avatar Frames
@@ -49,10 +52,6 @@ public final class CoinConfig {
     public static final int TITLE_MASTER_PRICE     = 600;
     public static final int TITLE_KING_PRICE       = 1200;
     public static final int TITLE_SULTAN_PRICE     = 2500;
-    // Themes
-    public static final int THEME_POP_ART_PRICE  = 600;
-    public static final int THEME_CYBERPUNK_PRICE = 1000;
-    public static final int THEME_LUXURY_PRICE   = 2000;
     // Rentals (24h)
     public static final int RENTAL_CYBERPUNK_PRICE = 80;
     public static final int RENTAL_LUXURY_PRICE    = 120;

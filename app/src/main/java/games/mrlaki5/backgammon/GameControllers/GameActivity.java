@@ -19,6 +19,7 @@ import java.io.File;
 
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
 import games.mrlaki5.backgammon.Beans.NextJump;
+import games.mrlaki5.backgammon.Database.PlayerProfileManager;
 import games.mrlaki5.backgammon.Economy.CoinConfig;
 import games.mrlaki5.backgammon.Economy.CoinManager;
 import games.mrlaki5.backgammon.GameAudio;
@@ -143,6 +144,7 @@ public class GameActivity extends AppCompatActivity {
 
     private TurnSnapshot turnSnapshot = null;
     private boolean undoUsedThisTurn = false;
+    private int undoCountThisGame = 0;
 
     // Game Flow State
     private int pauseDone = 0;
@@ -280,6 +282,8 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        new PlayerProfileManager(this).checkAndExpireRentals();
+        undoCountThisGame = 0;
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_game);
@@ -913,7 +917,17 @@ public class GameActivity extends AppCompatActivity {
             return;
         }
 
-        if (coinManager != null && coinManager.spend(CoinConfig.UNDO_COST, "undo_move")) {
+        int cost;
+        if (undoCountThisGame == 0) {
+            cost = CoinConfig.UNDO_COST_1;
+        } else if (undoCountThisGame == 1) {
+            cost = CoinConfig.UNDO_COST_2;
+        } else {
+            cost = CoinConfig.UNDO_COST_3;
+        }
+
+        if (coinManager != null && coinManager.spend(cost, "undo_move")) {
+            undoCountThisGame++;
             undoUsedThisTurn = true;
             model.setBoardFields(turnSnapshot.copyBoard());
             model.setDiceThrows(turnSnapshot.copyDice());

@@ -153,6 +153,61 @@ public class PlayerProfileManager {
         prefs.edit().putStringSet(KEY_PURCHASED_ITEMS, items).apply();
     }
 
+    public void removePurchasedItem(String itemId) {
+        Set<String> items = new HashSet<>(getPurchasedItems());
+        if (items.remove(itemId)) {
+            prefs.edit().putStringSet(KEY_PURCHASED_ITEMS, items).apply();
+        }
+    }
+
+    public static final String RENTAL_DIAMOND = "rental_diamond";
+    public static final String RENTAL_SULTAN = "rental_sultan";
+    public static final String RENTAL_DRAGON = "rental_dragon";
+
+    private static final String[] KNOWN_RENTAL_IDS = {
+            RENTAL_DIAMOND,
+            RENTAL_SULTAN,
+            RENTAL_DRAGON
+    };
+
+    public void purchaseRental(String itemId, int durationHours) {
+        long expiry = System.currentTimeMillis() + durationHours * 3600_000L;
+        prefs.edit().putLong("rental_expiry_" + itemId, expiry).apply();
+    }
+
+    public boolean isRentalActive(String itemId) {
+        return System.currentTimeMillis() < prefs.getLong("rental_expiry_" + itemId, 0);
+    }
+
+    public long getRentalExpiry(String itemId) {
+        return prefs.getLong("rental_expiry_" + itemId, 0);
+    }
+
+    public void checkAndExpireRentals() {
+        for (String id : KNOWN_RENTAL_IDS) {
+            if (!isRentalActive(id)) {
+                removePurchasedItem(id);
+                switch (id) {
+                    case RENTAL_DIAMOND:
+                        if ("frame_diamond".equals(getActiveFrame()) && !isItemPurchased("frame_diamond")) {
+                            setActiveFrame("frame_default");
+                        }
+                        break;
+                    case RENTAL_SULTAN:
+                        if ("frame_sultan".equals(getActiveFrame()) && !isItemPurchased("frame_sultan")) {
+                            setActiveFrame("frame_default");
+                        }
+                        break;
+                    case RENTAL_DRAGON:
+                        if ("dice_dragon".equals(getActiveDice()) && !isItemPurchased("dice_dragon")) {
+                            setActiveDice("dice_default");
+                        }
+                        break;
+                }
+            }
+        }
+    }
+
     /**
      * Records match result, computes new ELO rating via EloCalculator, and saves to database.
      *

@@ -24,6 +24,7 @@ import android.widget.Spinner;
 import java.io.File;
 
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
+import games.mrlaki5.backgammon.Database.PlayerProfileManager;
 import games.mrlaki5.backgammon.Economy.CoinConfig;
 import games.mrlaki5.backgammon.Economy.CoinManager;
 import games.mrlaki5.backgammon.Economy.DailyLoginManager;
@@ -250,6 +251,11 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (profileManager != null) {
+            profileManager.checkAndExpireRentals();
+        } else {
+            new PlayerProfileManager(this).checkAndExpireRentals();
+        }
         MenuAudioManager.get().startMenuMusic(this);
         updateCoinDisplay();
     }

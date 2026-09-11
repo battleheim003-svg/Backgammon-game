@@ -70,6 +70,7 @@ public class ShopAdapter extends BaseAdapter {
         TextView tvRarity    = convertView.findViewById(R.id.tvShopItemRarity);
         TextView tvBadge     = convertView.findViewById(R.id.tvShopItemBadge);
         TextView tvUnlock    = convertView.findViewById(R.id.tvShopItemUnlock);
+        TextView tvRentalExpiry = convertView.findViewById(R.id.tvShopItemRentalExpiry);
         View     rarityBar   = convertView.findViewById(R.id.viewRarityBar);
         Button   btnAction   = convertView.findViewById(R.id.btnShopItemAction);
 
@@ -94,6 +95,25 @@ public class ShopAdapter extends BaseAdapter {
             }
         }
 
+        boolean isRental = item.isRental() || item.getCategory() == ShopItem.Category.RENTAL;
+
+        // Rental remaining time overlay
+        if (tvRentalExpiry != null) {
+            if (isRental && profileManager.isRentalActive(item.getId())) {
+                long remainingMs = profileManager.getRentalExpiry(item.getId()) - System.currentTimeMillis();
+                if (remainingMs > 0) {
+                    long hours = java.util.concurrent.TimeUnit.MILLISECONDS.toHours(remainingMs);
+                    long minutes = java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(remainingMs) % 60;
+                    tvRentalExpiry.setVisibility(View.VISIBLE);
+                    tvRentalExpiry.setText("⏳ " + hours + "h " + minutes + "m");
+                } else {
+                    tvRentalExpiry.setVisibility(View.GONE);
+                }
+            } else {
+                tvRentalExpiry.setVisibility(View.GONE);
+            }
+        }
+
         // Unlock requirement
         int playerWins = profileManager.getTotalWins();
         boolean isLocked = item.hasUnlockReq() && playerWins < item.getUnlockRequirement();
@@ -107,7 +127,9 @@ public class ShopAdapter extends BaseAdapter {
         }
 
         // Owned / equip state
-        boolean isOwned   = item.isFree() || profileManager.isItemPurchased(item.getId());
+        boolean isOwned = isRental
+                ? profileManager.isRentalActive(item.getId())
+                : (item.isFree() || profileManager.isItemPurchased(item.getId()));
         boolean isEquipped = !isLocked && isItemEquipped(item);
 
         if (isLocked) {
@@ -140,7 +162,11 @@ public class ShopAdapter extends BaseAdapter {
             btnAction.setAlpha(1f);
             btnAction.setOnClickListener(v -> {
                 if (coinManager.spend(item.getPrice(), "shop_" + item.getId())) {
-                    profileManager.addPurchasedItem(item.getId());
+                    if (isRental) {
+                        profileManager.purchaseRental(item.getId(), 24);
+                    } else {
+                        profileManager.addPurchasedItem(item.getId());
+                    }
                     equipItem(item);
                     Toast.makeText(context, R.string.shop_purchase_success, Toast.LENGTH_SHORT).show();
                     notifyDataSetChanged();
@@ -156,6 +182,9 @@ public class ShopAdapter extends BaseAdapter {
 
     private boolean isItemEquipped(ShopItem item) {
         if (item.isRental() || item.getCategory() == ShopItem.Category.RENTAL) {
+            if (!profileManager.isRentalActive(item.getId())) {
+                return false;
+            }
             String targetId = item.getId().replace("rental_", "");
             if (item.getId().startsWith("rental_frame_") || item.getId().equals("rental_diamond") || item.getId().equals("rental_sultan")) {
                 String frameTarget = targetId.startsWith("frame_") ? targetId : "frame_" + targetId;
