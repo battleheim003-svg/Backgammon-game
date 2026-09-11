@@ -1,16 +1,14 @@
 package games.mrlaki5.backgammon.GameControllers;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import games.mrlaki5.backgammon.Menus.MenuActivity;
 import games.mrlaki5.backgammon.GameModel.Model;
 import games.mrlaki5.backgammon.GameView.OnBoardImage;
+import games.mrlaki5.backgammon.Menus.MenuActivity;
 import games.mrlaki5.backgammon.R;
 
 /**
- * Game execution thread using ExecutorService for thread-safe turn handling.
+ * Game execution thread using GameTaskExecutor for thread-safe turn handling.
  */
 public class GameTask {
 
@@ -23,8 +21,8 @@ public class GameTask {
     // Flag for synchronization of end routines
     private final AtomicInteger endRoutineStarted = new AtomicInteger(0);
 
-    // Single-thread executor for game loop
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    // Executor replacing AsyncTask
+    private final GameTaskExecutor executor = new GameTaskExecutor();
 
     // Game activity context
     private final GameActivity gameActivity;
@@ -59,19 +57,62 @@ public class GameTask {
     /**
      * Starts execution of the game loop on a background thread.
      */
+    public void execute() {
+        executor.execute(new GameTaskExecutor.GameTaskCallback() {
+            @Override
+            public void onPreExecute() {
+                // UI preparation if needed
+            }
+
+            @Override
+            public Object doInBackground() {
+                runGameLoop();
+                return null;
+            }
+
+            @Override
+            public void onPostExecute(Object result) {
+            }
+
+            @Override
+            public void onCancelled() {
+                finishedFlag.set(1);
+                synchronized (GameTask.this) {
+                    GameTask.this.notifyAll();
+                }
+            }
+        });
+    }
+
     public void execute(Void... voids) {
-        executor.execute(this::runGameLoop);
+        execute();
+    }
+
+    public void cancel() {
+        workFlag.set(0);
+        executor.cancel();
+    }
+
+    public boolean isCancelled() {
+        return executor.isCancelled();
+    }
+
+    /**
+     * Shuts down or cancels the background execution.
+     */
+    public void shutdown() {
+        cancel();
     }
 
     private void runGameLoop() {
         try {
-            while (workFlag.get() == 1 && !Thread.currentThread().isInterrupted()) {
+            while (workFlag.get() == 1 && !Thread.currentThread().isInterrupted() && !executor.isCancelled()) {
                 switch (model.getState()) {
                     // State 0: Player 1 rolls one die for opening
                     case 0:
                         writeMessage(gameActivity.getString(R.string.roll_dice), true);
                         model.getCurrentObjectPlayer().actionRoll();
-                        if (workFlag.get() == 0) break;
+                        if (workFlag.get() == 0 || executor.isCancelled()) break;
 
                         model.setState(1);
                         model.changeCurrentPlayer();
@@ -81,7 +122,7 @@ public class GameTask {
                             gameActivity.showTurnSwitchAndWait(
                                     model.getCurrentObjectPlayer().getPlayerName(),
                                     model.getCurrentPlayer());
-                            if (workFlag.get() == 0) break;
+                            if (workFlag.get() == 0 || executor.isCancelled()) break;
                         }
 
                         try {
@@ -96,7 +137,7 @@ public class GameTask {
                     case 1:
                         writeMessage(gameActivity.getString(R.string.roll_dice), true);
                         model.getCurrentObjectPlayer().actionRoll();
-                        if (workFlag.get() == 0) break;
+                        if (workFlag.get() == 0 || executor.isCancelled()) break;
 
                         // Check which player got higher number, that one plays first
                         if (model.getDiceThrows()[0].getThrowNumber() >=
@@ -124,7 +165,7 @@ public class GameTask {
                         if (!model.getNextMoves().isEmpty()) {
                             writeMessage(gameActivity.getString(R.string.move_checkers));
                             model.getCurrentObjectPlayer().actionMove();
-                            if (workFlag.get() == 0) break;
+                            if (workFlag.get() == 0 || executor.isCancelled()) break;
                         }
 
                         // Check if current player finished game
@@ -166,7 +207,7 @@ public class GameTask {
                             gameActivity.showTurnSwitchAndWait(
                                     model.getCurrentObjectPlayer().getPlayerName(),
                                     model.getCurrentPlayer());
-                            if (workFlag.get() == 0) break;
+                            if (workFlag.get() == 0 || executor.isCancelled()) break;
                         }
 
                         try {
@@ -181,7 +222,7 @@ public class GameTask {
                     case 3:
                         writeMessage(gameActivity.getString(R.string.roll_dice), true);
                         model.getCurrentObjectPlayer().actionRoll();
-                        if (workFlag.get() == 0) break;
+                        if (workFlag.get() == 0 || executor.isCancelled()) break;
 
                         model.setState(2);
                         break;
@@ -192,16 +233,7 @@ public class GameTask {
             synchronized (this) {
                 this.notifyAll();
             }
-            executor.shutdown();
         }
-    }
-
-    /**
-     * Shuts down the background executor immediately.
-     */
-    public void shutdown() {
-        workFlag.set(0);
-        executor.shutdownNow();
     }
 
     // Getters and setters for compatibility

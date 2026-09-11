@@ -682,7 +682,7 @@ public class GameActivity extends AppCompatActivity {
             gameAudio = null;
         }
         if (gameTask != null) {
-            gameTask.shutdown();
+            gameTask.cancel();
         }
         super.onDestroy();
     }
