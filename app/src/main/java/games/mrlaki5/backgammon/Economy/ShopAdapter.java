@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,9 +71,15 @@ public class ShopAdapter extends BaseAdapter {
         TextView tvRarity    = convertView.findViewById(R.id.tvShopItemRarity);
         TextView tvBadge     = convertView.findViewById(R.id.tvShopItemBadge);
         TextView tvUnlock    = convertView.findViewById(R.id.tvShopItemUnlock);
+        View     layoutUnlock = convertView.findViewById(R.id.layoutShopItemUnlock);
+        ImageView ivLock     = convertView.findViewById(R.id.ivShopItemLock);
         TextView tvRentalExpiry = convertView.findViewById(R.id.tvShopItemRentalExpiry);
         View     rarityBar   = convertView.findViewById(R.id.viewRarityBar);
         Button   btnAction   = convertView.findViewById(R.id.btnShopItemAction);
+
+        if (ivLock != null) {
+            ivLock.setImageResource(R.drawable.ic_lock_theme);
+        }
 
         // Content
         tvIcon.setText(item.getIconEmoji());
@@ -117,10 +124,21 @@ public class ShopAdapter extends BaseAdapter {
         // Unlock requirement
         int playerWins = profileManager.getTotalWins();
         boolean isLocked = item.hasUnlockReq() && playerWins < item.getUnlockRequirement();
-        if (tvUnlock != null) {
+        if (layoutUnlock != null) {
+            if (isLocked) {
+                layoutUnlock.setVisibility(View.VISIBLE);
+                if (tvUnlock != null) {
+                    tvUnlock.setVisibility(View.VISIBLE);
+                    tvUnlock.setText("نیاز به " + item.getUnlockRequirement() + " برد");
+                }
+            } else {
+                layoutUnlock.setVisibility(View.GONE);
+            }
+        } else if (tvUnlock != null) {
             if (isLocked) {
                 tvUnlock.setVisibility(View.VISIBLE);
-                tvUnlock.setText("🔒 نیاز به " + item.getUnlockRequirement() + " برد");
+                tvUnlock.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_lock_theme, 0, 0, 0);
+                tvUnlock.setText(" نیاز به " + item.getUnlockRequirement() + " برد");
             } else {
                 tvUnlock.setVisibility(View.GONE);
             }

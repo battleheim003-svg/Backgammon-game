@@ -17,4 +17,17 @@
     <color name="colorPrimary">#112532</color>
     <color name="colorPrimaryDark">#0B1A24</color>
     <color name="colorAccent">#F4B044</color>
+
+    <!-- Dialog & Theme Picker Colors -->
+    <color name="color_dialog_bg">#112532</color>
+    <color name="color_gold_primary">#F4B044</color>
+    <color name="color_lock_overlay">#CC000000</color>
+    <color name="color_player_name_text">#E0E0E0</color>
+    <color name="color_player_name_hint">#555555</color>
+    <color name="color_difficulty_text_normal">#AAAAAA</color>
+    <color name="color_difficulty_text_selected">#E6A100</color>
+    <color name="color_cancel_button_text">#BBBBBB</color>
+    <color name="color_play_button_text">#0E1721</color>
+    <color name="color_play_button_text_dark">#1A1A1A</color>
+    <color name="color_drag_handle">#55FFFFFF</color>
 </resources>

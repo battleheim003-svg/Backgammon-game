@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,7 +10,7 @@
     android:paddingEnd="20dp"
     android:paddingBottom="16dp">
 
-    <!-- ===== LEFT COLUMN: Theme Thumbnails (2×4) ===== -->
+    <!-- ===== LEFT COLUMN: Theme Thumbnails (2Ã—4) ===== -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -19,7 +19,7 @@
         android:orientation="vertical"
         android:padding="6dp">
 
-        <!-- Row 1: themes 0–3 (original) -->
+        <!-- Row 1: themes 0â€“3 (original) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,12 +41,12 @@
                     android:scaleType="centerCrop" android:src="@drawable/preview_theme_pop_art"/>
                 <LinearLayout android:id="@+id/lockOverlay1"
                     android:layout_width="match_parent" android:layout_height="match_parent"
-                    android:background="#CC000000" android:gravity="center"
+                    android:background="@color/color_lock_overlay" android:gravity="center"
                     android:orientation="vertical" android:visibility="gone">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="🔒" android:textSize="13sp"/>
+                        android:text="ðŸ”’" android:textSize="13sp"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="@string/watch_ad_unlock" android:textColor="#F4B044"
+                        android:text="@string/watch_ad_unlock" android:textColor="@color/color_gold_primary"
                         android:textSize="6sp" android:textStyle="bold" android:gravity="center"/>
                 </LinearLayout>
             </FrameLayout>
@@ -59,12 +59,12 @@
                     android:scaleType="centerCrop" android:src="@drawable/preview_theme_cyberpunk"/>
                 <LinearLayout android:id="@+id/lockOverlay2"
                     android:layout_width="match_parent" android:layout_height="match_parent"
-                    android:background="#CC000000" android:gravity="center"
+                    android:background="@color/color_lock_overlay" android:gravity="center"
                     android:orientation="vertical" android:visibility="gone">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="🔒" android:textSize="13sp"/>
+                        android:text="ðŸ”’" android:textSize="13sp"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="@string/watch_ad_unlock" android:textColor="#F4B044"
+                        android:text="@string/watch_ad_unlock" android:textColor="@color/color_gold_primary"
                         android:textSize="6sp" android:textStyle="bold" android:gravity="center"/>
                 </LinearLayout>
             </FrameLayout>
@@ -77,19 +77,19 @@
                     android:scaleType="centerCrop" android:src="@drawable/preview_theme_luxury"/>
                 <LinearLayout android:id="@+id/lockOverlay3"
                     android:layout_width="match_parent" android:layout_height="match_parent"
-                    android:background="#CC000000" android:gravity="center"
+                    android:background="@color/color_lock_overlay" android:gravity="center"
                     android:orientation="vertical" android:visibility="gone">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="🔒" android:textSize="13sp"/>
+                        android:text="ðŸ”’" android:textSize="13sp"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="@string/watch_ad_unlock" android:textColor="#F4B044"
+                        android:text="@string/watch_ad_unlock" android:textColor="@color/color_gold_primary"
                         android:textSize="6sp" android:textStyle="bold" android:gravity="center"/>
                 </LinearLayout>
             </FrameLayout>
 
         </LinearLayout>
 
-        <!-- Row 2: themes 4–7 (new; 5/6/7 hidden until added) -->
+        <!-- Row 2: themes 4â€“7 (new; 5/6/7 hidden until added) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -103,12 +103,12 @@
                     android:scaleType="centerCrop" android:src="@drawable/preview_theme_woodland"/>
                 <LinearLayout android:id="@+id/lockOverlay4"
                     android:layout_width="match_parent" android:layout_height="match_parent"
-                    android:background="#CC000000" android:gravity="center"
+                    android:background="@color/color_lock_overlay" android:gravity="center"
                     android:orientation="vertical" android:visibility="gone">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="🔒" android:textSize="13sp"/>
+                        android:text="ðŸ”’" android:textSize="13sp"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="@string/watch_ad_unlock" android:textColor="#F4B044"
+                        android:text="@string/watch_ad_unlock" android:textColor="@color/color_gold_primary"
                         android:textSize="6sp" android:textStyle="bold" android:gravity="center"/>
                 </LinearLayout>
             </FrameLayout>
@@ -160,8 +160,8 @@
             android:paddingEnd="12dp"
             android:singleLine="true"
             android:text="@string/player_one"
-            android:textColor="#E0E0E0"
-            android:textColorHint="#555555"
+            android:textColor="@color/color_player_name_text"
+            android:textColorHint="@color/color_player_name_hint"
             android:textDirection="rtl"
             android:textSize="14sp" />
 
@@ -186,7 +186,7 @@
                 android:minWidth="0dp"
                 android:text="@string/difficulty_easy"
                 android:textAllCaps="false"
-                android:textColor="#AAAAAA"
+                android:textColor="@color/color_difficulty_text_normal"
                 android:textSize="13sp" />
 
             <Button
@@ -202,7 +202,7 @@
                 android:minWidth="0dp"
                 android:text="@string/difficulty_medium"
                 android:textAllCaps="false"
-                android:textColor="#E6A100"
+                android:textColor="@color/color_difficulty_text_selected"
                 android:textSize="13sp" />
 
             <Button
@@ -217,7 +217,7 @@
                 android:minWidth="0dp"
                 android:text="@string/difficulty_hard"
                 android:textAllCaps="false"
-                android:textColor="#AAAAAA"
+                android:textColor="@color/color_difficulty_text_normal"
                 android:textSize="13sp" />
 
             <Button
@@ -232,7 +232,7 @@
                 android:minWidth="0dp"
                 android:text="@string/difficulty_royal"
                 android:textAllCaps="false"
-                android:textColor="#AAAAAA"
+                android:textColor="@color/color_difficulty_text_normal"
                 android:textSize="13sp" />
         </GridLayout>
 
@@ -254,7 +254,7 @@
                 android:minWidth="0dp"
                 android:text="@string/cancel"
                 android:textAllCaps="false"
-                android:textColor="#BBBBBB"
+                android:textColor="@color/color_cancel_button_text"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -270,10 +270,11 @@
                 android:minWidth="0dp"
                 android:text="@string/play"
                 android:textAllCaps="false"
-                android:textColor="#0E1721"
+                android:textColor="@color/color_play_button_text"
                 android:textSize="15sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
+

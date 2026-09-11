@@ -76,15 +76,30 @@
                 android:textSize="10sp" />
 
             <!-- Unlock requirement (hidden when not needed) -->
-            <TextView
-                android:id="@+id/tvShopItemUnlock"
+            <LinearLayout
+                android:id="@+id/layoutShopItemUnlock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:gravity="center"
-                android:textColor="#FF7043"
-                android:textSize="10sp"
-                android:visibility="gone" />
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/ivShopItemLock"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_lock_theme" />
+
+                <TextView
+                    android:id="@+id/tvShopItemUnlock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:gravity="center"
+                    android:textColor="#FF7043"
+                    android:textSize="10sp" />
+            </LinearLayout>
 
             <!-- Buy / Equip button -->
             <Button

@@ -425,81 +425,8 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void showNewGameDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_single_player, null);
-        builder.setView(dialogView);
-
-        AlertDialog dialog = builder.create();
-
-        // --- Theme selection (thumbnails with ad-gate for locked themes) ---
-        final int[] selectedTheme = {GamePreferences.getBoardTheme(this)};
-        setupThemePicker(dialogView,
-                new int[]{R.id.themeThumb0, R.id.themeThumb1, R.id.themeThumb2,
-                          R.id.themeThumb3, R.id.themeThumb4},
-                new int[]{0, R.id.lockOverlay1, R.id.lockOverlay2,
-                          R.id.lockOverlay3, R.id.lockOverlay4},
-                selectedTheme);
-
-        // --- Difficulty selection (4 buttons) ---
-        final int[] selectedDiff = {GamePreferences.getBotDifficulty(this)};
-        final Button[] diffBtns = {
-                dialogView.findViewById(R.id.diffEasy),
-                dialogView.findViewById(R.id.diffMedium),
-                dialogView.findViewById(R.id.diffHard),
-                dialogView.findViewById(R.id.diffRoyal)
-        };
-        updateDifficultySelection(diffBtns, selectedDiff[0]);
-        for (int i = 0; i < diffBtns.length; i++) {
-            final int idx = i;
-            diffBtns[i].setOnClickListener(v -> {
-                selectedDiff[0] = idx;
-                updateDifficultySelection(diffBtns, idx);
-            });
-        }
-
-        // --- Cancel ---
-        dialogView.findViewById(R.id.singleCancel).setOnClickListener(v -> {
-            playMenuTap();
-            dialog.dismiss();
-        });
-
-        // --- Play ---
-        dialogView.findViewById(R.id.singlePlay).setOnClickListener(v -> {
-            playMenuTap();
-            String playerName = ((EditText) dialogView.findViewById(R.id.singlePlayerName))
-                    .getText().toString().trim();
-            if (playerName.isEmpty() || playerName.equals(getString(R.string.player_name))) {
-                playerName = getString(R.string.player_one);
-            }
-            GamePreferences.saveSelections(MenuActivity.this, selectedDiff[0], selectedTheme[0]);
-            dialog.dismiss();
-            File file = new File(getFilesDir().getAbsolutePath(), GAME_CONTINUE_SAVE_FILE_NAME);
-            file.delete();
-            Intent intent = new Intent(MenuActivity.this, GameActivity.class);
-            intent.putExtra(EXTRA_PLAYER1_NAME, playerName);
-            intent.putExtra(EXTRA_PLAYER2_NAME, getString(R.string.bot_player));
-            intent.putExtra(EXTRA_PLAYER1_KIND, "Player");
-            intent.putExtra(EXTRA_PLAYER2_KIND, "Bot");
-            startActivityForResult(intent, REQUEST_CODE_GAME);
-        });
-
-        // --- Player name: inline editable behavior ---
-        EditText nameField = dialogView.findViewById(R.id.singlePlayerName);
-        setupInlineEditText(nameField, getString(R.string.player_one));
-        // Clear focus when clicking elsewhere
-        dialogView.setOnTouchListener((v, event) -> {
-            nameField.clearFocus();
-            return false;
-        });
-
-        dialog.show();
-        Window dialogWindow = dialog.getWindow();
-        if (dialogWindow != null) {
-            dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-            int dialogWidth = (int) (displayMetrics.widthPixels * 0.88F);
-            dialogWindow.setLayout(dialogWidth, WindowManager.LayoutParams.WRAP_CONTENT);
-        }
+        NewGameDialogFragment fragment = new NewGameDialogFragment();
+        fragment.show(getSupportFragmentManager(), "new_game");
     }
 
     private void updateThemeSelection(FrameLayout[] thumbs, int selected) {
@@ -508,6 +435,13 @@ public class MenuActivity extends AppCompatActivity {
                     ? R.drawable.bg_theme_thumb_selected
                     : R.drawable.bg_theme_thumb_normal);
             thumbs[i].setAlpha(i == selected ? 1.0f : 0.6f);
+        }
+        if (selected >= 0 && selected < thumbs.length && thumbs[selected] != null) {
+            View selectedThumbView = thumbs[selected];
+            selectedThumbView.animate().scaleX(1.12f).scaleY(1.12f).setDuration(100)
+                    .withEndAction(() -> selectedThumbView.animate().scaleX(1f).scaleY(1f)
+                            .setInterpolator(new OvershootInterpolator(3f)).setDuration(150).start())
+                    .start();
         }
     }
 
@@ -555,67 +489,11 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void showPassAndPlayDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View dialogView = getLayoutInflater().inflate(R.layout.pass_and_play_dialog, null);
-        builder.setView(dialogView);
-
-        AlertDialog dialog = builder.create();
-
-        // --- Theme selection (thumbnails with ad-gate for locked themes) ---
-        final int[] selectedTheme = {GamePreferences.getBoardTheme(this)};
-        setupThemePicker(dialogView,
-                new int[]{R.id.pnpThemeThumb0, R.id.pnpThemeThumb1, R.id.pnpThemeThumb2,
-                          R.id.pnpThemeThumb3, R.id.pnpThemeThumb4},
-                new int[]{0, R.id.pnpLockOverlay1, R.id.pnpLockOverlay2,
-                          R.id.pnpLockOverlay3, R.id.pnpLockOverlay4},
-                selectedTheme);
-
-        // --- Player names: inline edit ---
-        EditText name1 = dialogView.findViewById(R.id.pnpName1);
-        EditText name2 = dialogView.findViewById(R.id.pnpName2);
-        setupInlineEditText(name1, getString(R.string.pass_and_play_player1_default));
-        setupInlineEditText(name2, getString(R.string.pass_and_play_player2_default));
-
-        // --- Cancel ---
-        dialogView.findViewById(R.id.pnpCancel).setOnClickListener(v -> {
-            playMenuTap();
-            dialog.dismiss();
-        });
-
-        // --- Play ---
-        dialogView.findViewById(R.id.pnpPlay).setOnClickListener(v -> {
-            playMenuTap();
-            String playerName1 = name1.getText().toString().trim();
-            String playerName2 = name2.getText().toString().trim();
-            if (playerName1.isEmpty()) playerName1 = getString(R.string.pass_and_play_player1_default);
-            if (playerName2.isEmpty()) playerName2 = getString(R.string.pass_and_play_player2_default);
-
-            GamePreferences.saveSelections(MenuActivity.this,
-                    GamePreferences.getBotDifficulty(MenuActivity.this),
-                    selectedTheme[0]);
-            dialog.dismiss();
-            File file = new File(getFilesDir().getAbsolutePath(), GAME_CONTINUE_SAVE_FILE_NAME);
-            file.delete();
-            Intent intent = new Intent(MenuActivity.this, GameActivity.class);
-            intent.putExtra(EXTRA_PLAYER1_NAME, playerName1);
-            intent.putExtra(EXTRA_PLAYER2_NAME, playerName2);
-            intent.putExtra(EXTRA_PLAYER1_KIND, "Player");
-            intent.putExtra(EXTRA_PLAYER2_KIND, "Player");
-            intent.putExtra(EXTRA_GAME_MODE, GAME_MODE_PASS_AND_PLAY);
-            startActivityForResult(intent, REQUEST_CODE_GAME);
-        });
-
-        dialog.show();
-        Window dialogWindow = dialog.getWindow();
-        if (dialogWindow != null) {
-            dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-            int dialogWidth = (int) (displayMetrics.widthPixels * 0.88F);
-            dialogWindow.setLayout(dialogWidth, WindowManager.LayoutParams.WRAP_CONTENT);
-        }
+        PassAndPlayDialogFragment fragment = new PassAndPlayDialogFragment();
+        fragment.show(getSupportFragmentManager(), "pass_and_play");
     }
 
-    private void setupInlineEditText(EditText field, String defaultText) {
+    public static void setupInlineEditText(EditText field, String defaultText) {
         field.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 String text = field.getText().toString();
@@ -680,7 +558,7 @@ public class MenuActivity extends AppCompatActivity {
         //The main Play button now routes to continue/new-game choices when a save exists.
     }
 
-    private void playMenuTap() {
+    public void playMenuTap() {
         MenuAudioManager.get().playClick();
     }
 
@@ -742,7 +620,7 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
-    private void showThemeUnlockAd(int themeIdx, Runnable onUnlocked) {
+    public void showThemeUnlockAd(int themeIdx, Runnable onUnlocked) {
         if (adManager == null || !adManager.isRewardedAdReady()) {
             if (adManager != null) {
                 adManager.preloadAds();
