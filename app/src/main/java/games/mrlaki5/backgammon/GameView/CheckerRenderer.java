@@ -151,6 +151,12 @@ public class CheckerRenderer {
 
     public void setTheme(BoardTheme theme) {
         if (theme != null) {
+            if (this.activeTheme != theme) {
+                for (int d = 0; d <= 6; d++) {
+                    DiceBitmapCache[d][0] = null;
+                    DiceBitmapCache[d][1] = null;
+                }
+            }
             this.activeTheme = theme;
         }
     }
@@ -400,6 +406,13 @@ public class CheckerRenderer {
         if (diceNumber < 1 || diceNumber > 6) return null;
         int usedIdx = used ? 1 : 0;
         if (DiceBitmapCache[diceNumber][usedIdx] == null) {
+            if (activeTheme != null) {
+                Bitmap customDice = activeTheme.createDiceBitmap(diceNumber, used, 128);
+                if (customDice != null) {
+                    DiceBitmapCache[diceNumber][usedIdx] = customDice;
+                    return customDice;
+                }
+            }
             DiceBitmapCache[diceNumber][usedIdx] = BitmapFactory.decodeResource(res,
                     diceResourceId(diceNumber, used));
         }

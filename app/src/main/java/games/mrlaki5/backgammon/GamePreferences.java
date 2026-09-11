@@ -24,6 +24,9 @@ public final class GamePreferences {
     public static final int THEME_CYBERPUNK = 2;
     public static final int THEME_LUXURY = 3;
     public static final int THEME_WOODLAND = 4;
+    public static final int THEME_GALAXY = 5;
+    public static final int THEME_ANCIENT_EGYPT = 6;
+    public static final int THEME_NEON_RETRO = 7;
     public static final int DEFAULT_MUSIC_VOLUME = 55;
     public static final int DEFAULT_SFX_VOLUME = 80;
 

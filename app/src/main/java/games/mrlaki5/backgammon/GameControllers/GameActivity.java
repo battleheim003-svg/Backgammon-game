@@ -862,6 +862,9 @@ public class GameActivity extends AppCompatActivity {
             case GamePreferences.THEME_CYBERPUNK: return "cyberpunk";
             case GamePreferences.THEME_LUXURY: return "luxury";
             case GamePreferences.THEME_WOODLAND: return "woodland";
+            case GamePreferences.THEME_GALAXY: return "galaxy";
+            case GamePreferences.THEME_ANCIENT_EGYPT: return "ancient_egypt";
+            case GamePreferences.THEME_NEON_RETRO: return "neon_retro";
             default: return "royal";
         }
     }

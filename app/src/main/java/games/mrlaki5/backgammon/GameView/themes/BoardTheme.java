@@ -29,4 +29,12 @@ public interface BoardTheme {
     default android.graphics.drawable.Drawable createBackgroundDrawable() {
         return null;
     }
+
+    /**
+     * Returns a programmatically-drawn dice bitmap for this theme, or null to fall back
+     * to default resource-based dice.
+     */
+    default android.graphics.Bitmap createDiceBitmap(int diceNumber, boolean used, int size) {
+        return null;
+    }
 }
