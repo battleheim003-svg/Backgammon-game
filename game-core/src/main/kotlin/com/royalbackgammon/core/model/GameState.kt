@@ -3,6 +3,8 @@ package com.royalbackgammon.core.model
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import com.royalbackgammon.core.logic.BackgammonRules
+import com.royalbackgammon.core.variant.RuleFamily
 import com.royalbackgammon.core.variant.Variant
 
 /**
@@ -21,6 +23,8 @@ import com.royalbackgammon.core.variant.Variant
  * @property turnState FSM state: 0=P1 initial roll, 1=P2 initial roll, 2=move, 3=roll.
  * @property winner 0 if game is ongoing, otherwise the winning player number.
  * @property variant Rule variant this game is played under.
+ * @property turnsPlayed Completed turns in this game (both players).
+ * @property headMovesThisTurn Checkers moved off the head in the current turn (running family).
  */
 @Serializable
 data class GameState(
@@ -29,7 +33,9 @@ data class GameState(
     var currentPlayer: Int = Player.WHITE,
     var turnState: Int = STATE_INITIAL_ROLL_P1,
     var winner: Int = Player.NONE,
-    val variant: Variant = Variant.STANDARD
+    val variant: Variant = Variant.STANDARD,
+    var turnsPlayed: Int = 0,
+    var headMovesThisTurn: Int = 0
 ) {
     companion object {
         const val STATE_INITIAL_ROLL_P1 = 0
@@ -47,23 +53,29 @@ data class GameState(
         fun bearOffIndex(player: Int): Int = if (player == Player.WHITE) WHITE_BEAR_OFF else RED_BEAR_OFF
 
         /**
-         * Creates a new game with the standard backgammon starting position
-         * (shared by all hitting-family variants).
+         * Creates a new game with [variant]'s starting position: the standard layout for the
+         * hitting family, all 15 checkers on each head for the running family.
          */
         @JvmStatic
         @JvmOverloads
         fun newGame(variant: Variant = Variant.STANDARD): GameState {
             val state = GameState(variant = variant)
+            val b = state.board
+            if (variant.family == RuleFamily.RUNNING) {
+                b[BackgammonRules.headIndex(Player.WHITE, variant)].let { it.chipCount = 15; it.owner = Player.WHITE }
+                b[BackgammonRules.headIndex(Player.RED, variant)].let { it.chipCount = 15; it.owner = Player.RED }
+                return state
+            }
             // White pieces
-            state.board[0].chipCount = 5; state.board[0].owner = Player.WHITE
-            state.board[11].chipCount = 2; state.board[11].owner = Player.WHITE
-            state.board[16].chipCount = 3; state.board[16].owner = Player.WHITE
-            state.board[18].chipCount = 5; state.board[18].owner = Player.WHITE
+            b[0].chipCount = 5; b[0].owner = Player.WHITE
+            b[11].chipCount = 2; b[11].owner = Player.WHITE
+            b[16].chipCount = 3; b[16].owner = Player.WHITE
+            b[18].chipCount = 5; b[18].owner = Player.WHITE
             // Red pieces
-            state.board[4].chipCount = 3; state.board[4].owner = Player.RED
-            state.board[6].chipCount = 5; state.board[6].owner = Player.RED
-            state.board[12].chipCount = 5; state.board[12].owner = Player.RED
-            state.board[23].chipCount = 2; state.board[23].owner = Player.RED
+            b[4].chipCount = 3; b[4].owner = Player.RED
+            b[6].chipCount = 5; b[6].owner = Player.RED
+            b[12].chipCount = 5; b[12].owner = Player.RED
+            b[23].chipCount = 2; b[23].owner = Player.RED
             return state
         }
 
@@ -89,8 +101,20 @@ data class GameState(
         currentPlayer = currentPlayer,
         turnState = turnState,
         winner = winner,
-        variant = variant
+        variant = variant,
+        turnsPlayed = turnsPlayed,
+        headMovesThisTurn = headMovesThisTurn
     )
+
+    /** Head-rule context for the current player's turn. */
+    fun turnContext(): TurnContext = TurnContext(headMovesThisTurn, firstTurn = turnsPlayed < 2)
+
+    /** Ends the current turn: counts it, clears the head counter and switches player. */
+    fun passTurn() {
+        turnsPlayed++
+        headMovesThisTurn = 0
+        switchPlayer()
+    }
 
     /**
      * Switches the current player to the opponent.
@@ -107,7 +131,9 @@ data class GameState(
                 currentPlayer == other.currentPlayer &&
                 turnState == other.turnState &&
                 winner == other.winner &&
-                variant == other.variant
+                variant == other.variant &&
+                turnsPlayed == other.turnsPlayed &&
+                headMovesThisTurn == other.headMovesThisTurn
     }
 
     override fun hashCode(): Int {
@@ -117,6 +143,8 @@ data class GameState(
         result = 31 * result + turnState
         result = 31 * result + winner
         result = 31 * result + variant.hashCode()
+        result = 31 * result + turnsPlayed
+        result = 31 * result + headMovesThisTurn
         return result
     }
 }

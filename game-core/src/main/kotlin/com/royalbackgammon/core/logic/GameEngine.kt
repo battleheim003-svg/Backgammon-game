@@ -97,9 +97,9 @@ class GameEngine(
      * If no more moves are available, ends the turn automatically.
      */
     fun makeMove(from: Int, to: Int): MoveResult {
-        val moveResult = MoveExecutor.tryApplyMove(state, from, to, legalMoves)
-        if (moveResult.applied && !finishIfWon()) recalculateLegalMoves()
-        return moveResult
+        val move = BackgammonRules.isLegalMove(from, to, legalMoves)
+            ?: return MoveResult(applied = false, from = from, to = to)
+        return applyMove(move)
     }
 
     /**
@@ -117,7 +117,7 @@ class GameEngine(
      * Should be called when [legalMoves] is empty after dice have been rolled.
      */
     fun endTurn() {
-        state.switchPlayer()
+        state.passTurn()
         state.turnState = GameState.STATE_ROLL
         legalMoves = emptyList()
     }
@@ -143,7 +143,7 @@ class GameEngine(
 
     private fun recalculateLegalMoves() {
         legalMoves = BackgammonRules.calculateLegalMoves(
-            state.board, state.currentPlayer, state.dice
+            state.board, state.currentPlayer, state.dice, state.variant, state.turnContext()
         )
     }
 }

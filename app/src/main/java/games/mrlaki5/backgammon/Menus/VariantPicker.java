@@ -14,8 +14,8 @@ import games.mrlaki5.backgammon.R;
 /** Binds include_variant_picker: variant buttons, match-length cycler and rule hint. */
 public final class VariantPicker {
 
-    private static final Variant[] VARIANTS = {Variant.STANDARD, Variant.TAVLA, Variant.PORTES};
-    private static final int[] BUTTON_IDS = {R.id.variantStandard, R.id.variantTavla, R.id.variantPortes};
+    private static final Variant[] VARIANTS = {Variant.STANDARD, Variant.TAVLA, Variant.PORTES, Variant.NARDY};
+    private static final int[] BUTTON_IDS = {R.id.variantStandard, R.id.variantTavla, R.id.variantPortes, R.id.variantNardy};
     private static final int[] MATCH_LENGTHS = {1, 3, 5, 7};
 
     private final Context context;
@@ -87,6 +87,7 @@ public final class VariantPicker {
         switch (variant) {
             case TAVLA: return R.string.variant_tavla;
             case PORTES: return R.string.variant_portes;
+            case NARDY: return R.string.variant_nardy;
             default: return R.string.variant_standard;
         }
     }
@@ -95,6 +96,7 @@ public final class VariantPicker {
         switch (variant) {
             case TAVLA: return R.string.variant_tavla_rules;
             case PORTES: return R.string.variant_portes_rules;
+            case NARDY: return R.string.variant_nardy_rules;
             default: return R.string.variant_standard_rules;
         }
     }

@@ -10,6 +10,8 @@ import com.royalbackgammon.core.model.Die;
 import com.royalbackgammon.core.model.GamePhase;
 import com.royalbackgammon.core.model.GameResult;
 import com.royalbackgammon.core.model.Move;
+import com.royalbackgammon.core.model.TurnContext;
+import com.royalbackgammon.core.variant.Variant;
 
 import games.mrlaki5.backgammon.Beans.BoardFieldState;
 import games.mrlaki5.backgammon.Beans.DiceThrow;
@@ -34,12 +36,12 @@ public class GameLogic {
 
     //Method for calculating real position from matrix position depending on which player
     public int calculateRealPosition(int ChipMatrixPos, int PlayerNum){
-        return PositionMapper.toReal(ChipMatrixPos, PlayerNum);
+        return PositionMapper.toReal(ChipMatrixPos, PlayerNum, variant());
     }
 
     //Method for calculating matrix position from real position depending on which player
     public int calculateMatrixPosition(int ChipRealPos, int PlayerNum){
-        return PositionMapper.toMatrix(ChipRealPos, PlayerNum);
+        return PositionMapper.toMatrix(ChipRealPos, PlayerNum, variant());
     }
 
     //Method called to calculate next moves for specific chip from list of all next moves
@@ -68,11 +70,13 @@ public class GameLogic {
                                          DiceThrow[] Throws){
         BoardField[] board = toCoreBoard(ChipMatrix);
         ArrayList<NextJump> jumps=new ArrayList<>();
-        if (BackgammonRules.gamePhase(board, PlayerNum) == GamePhase.FINISHED) {
+        if (BackgammonRules.gamePhase(board, PlayerNum, variant()) == GamePhase.FINISHED) {
             CurrPlayerFinished=PlayerNum;
             return jumps;
         }
-        for (Move move : BackgammonRules.calculateLegalMoves(board, PlayerNum, toCoreDice(Throws))) {
+        TurnContext turn = model != null ? model.getTurnContext() : TurnContext.NONE;
+        for (Move move : BackgammonRules.calculateLegalMoves(board, PlayerNum, toCoreDice(Throws),
+                variant(), turn)) {
             jumps.add(new NextJump(move.getDieValue(), move.getFrom(), move.getTo()));
         }
         return jumps;
@@ -81,7 +85,7 @@ public class GameLogic {
     //Method for checking in what part game is
     //return value 0-game goes, 1-last phase, 2-game done
     public int whatPartOfGame(BoardFieldState[] ChipMatrix, int PlayerNum){
-        switch (BackgammonRules.gamePhase(toCoreBoard(ChipMatrix), PlayerNum)) {
+        switch (BackgammonRules.gamePhase(toCoreBoard(ChipMatrix), PlayerNum, variant())) {
             case FINISHED:
                 return 2;
             case BEARING_OFF:
@@ -94,6 +98,10 @@ public class GameLogic {
     //Scored result of the finished game under the model's variant, null while ongoing
     public GameResult calculateResult(){
         return BackgammonRules.gameResult(toCoreBoard(model.getBoardFields()), model.getVariant());
+    }
+
+    private Variant variant(){
+        return model != null ? model.getVariant() : Variant.STANDARD;
     }
 
     private static BoardField[] toCoreBoard(BoardFieldState[] chipMatrix){

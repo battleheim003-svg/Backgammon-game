@@ -386,6 +386,8 @@
     <string name="variant_standard_rules">قوانین بین‌المللی: شروع‌کننده با تاس‌های اولیه بازی می‌کند. مارس ۲ و بک‌گمون ۳ امتیاز.</string>
     <string name="variant_tavla_rules">سبک ترکی: برندهٔ تاس اول دوباره تاس می‌ریزد (جفت هم ممکن است). مارس ۲ امتیاز، بدون برد سه‌برابر.</string>
     <string name="variant_portes_rules">سبک یونانی (دست اول تاولی): برندهٔ تاس اول دوباره تاس می‌ریزد. مارس ۲ امتیاز، بدون برد سه‌برابر.</string>
+    <string name="variant_nardy">نرد بلند</string>
+    <string name="variant_nardy_rules">هر دو هم‌جهت از خانهٔ سرِ مقابل حرکت می‌کنند. زدن نداریم؛ یک مهره خانه را می‌گیرد. در هر نوبت فقط یک مهره از سر. مارس ۲ امتیاز.</string>
     <string name="match_single">تک دست</string>
     <string name="match_to_points">مسابقه تا %1$d</string>
     <string name="game_over_result_line">%1$s — %2$s (%3$d امتیاز)</string>

@@ -51,7 +51,7 @@ class BotStrategy(
         if (!budget.tryVisit()) return evaluateBoard(state, rootPlayer)
 
         val moves = BackgammonRules.calculateLegalMoves(
-            state.board, state.currentPlayer, state.dice
+            state.board, state.currentPlayer, state.dice, state.variant, state.turnContext()
         )
 
         if (moves.isNotEmpty()) {
@@ -76,7 +76,7 @@ class BotStrategy(
 
         // Simulate opponent's turn
         val nextTurn = state.deepCopy()
-        nextTurn.switchPlayer()
+        nextTurn.passTurn()
         return expectedRollValue(nextTurn, rootPlayer, rollsRemaining - 1, budget)
     }
 

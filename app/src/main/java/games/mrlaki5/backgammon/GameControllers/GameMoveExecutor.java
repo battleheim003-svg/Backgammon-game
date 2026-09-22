@@ -1,5 +1,9 @@
 package games.mrlaki5.backgammon.GameControllers;
 
+import com.royalbackgammon.core.logic.BackgammonRules;
+import com.royalbackgammon.core.variant.RuleFamily;
+import com.royalbackgammon.core.variant.Variant;
+
 import java.util.List;
 
 import games.mrlaki5.backgammon.Beans.BoardFieldState;
@@ -57,6 +61,7 @@ public class GameMoveExecutor {
             return new MoveResult(false, srcField, dstField, false);
         }
 
+        countHeadMove(srcField);
         consumeDice(jump.getJumpNumber());
         boolean hit = placeChecker(dstField);
         return new MoveResult(true, srcField, dstField, hit);
@@ -71,6 +76,7 @@ public class GameMoveExecutor {
             board[src].setPlayer(0);
         }
 
+        countHeadMove(src);
         consumeDice(jump.getJumpNumber());
         boolean hit = placeChecker(jump.getDstField());
         return new MoveResult(true, src, jump.getDstField(), hit);
@@ -90,6 +96,15 @@ public class GameMoveExecutor {
         board[srcField].setNumberOfChips(board[srcField].getNumberOfChips() + 1);
         if (board[srcField].getNumberOfChips() == 1) {
             board[srcField].setPlayer(model.getCurrentPlayer());
+        }
+    }
+
+    // Running family: track checkers leaving the head for the one-per-turn rule
+    private void countHeadMove(int srcField) {
+        Variant variant = model.getVariant();
+        if (variant.getFamily() == RuleFamily.RUNNING
+                && srcField == BackgammonRules.headIndex(model.getCurrentPlayer(), variant)) {
+            model.setHeadMovesThisTurn(model.getHeadMovesThisTurn() + 1);
         }
     }
 

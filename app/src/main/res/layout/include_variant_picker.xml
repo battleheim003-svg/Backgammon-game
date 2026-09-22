@@ -67,6 +67,24 @@
             android:textSize="12sp" />
 
         <Button
+            android:id="@+id/variantNardy"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/bg_difficulty_normal"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:text="@string/variant_nardy"
+            android:textAllCaps="false"
+            android:textColor="@color/color_difficulty_text_normal"
+            android:textSize="12sp" />
+
+        <Button
             android:id="@+id/matchLength"
             android:layout_width="0dp"
             android:layout_height="32dp"

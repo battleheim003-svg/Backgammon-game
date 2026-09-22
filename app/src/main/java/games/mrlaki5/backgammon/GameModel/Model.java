@@ -4,6 +4,9 @@ import android.os.Bundle;
 
 import java.util.List;
 
+import com.royalbackgammon.core.model.BoardField;
+import com.royalbackgammon.core.model.GameState;
+import com.royalbackgammon.core.model.TurnContext;
 import com.royalbackgammon.core.scoring.MatchState;
 import com.royalbackgammon.core.variant.Variant;
 
@@ -40,6 +43,9 @@ public class Model {
     private int State;
     //Rule variant of this game
     private Variant variant = Variant.STANDARD;
+    //Completed turns this game and checkers moved off the head this turn (running family)
+    private int turnsPlayed = 0;
+    private int headMovesThisTurn = 0;
     //Running score of the match this game belongs to (target 1 = single game)
     private MatchState match = new MatchState(Variant.STANDARD, 1, 0, 0, 0);
 
@@ -80,29 +86,11 @@ public class Model {
                 Players[1]=new Bot(activity, p2Name, this);
             }
         }
-        //Create board fields
+        //Create board fields with the variant's starting position
+        BoardField[] start=GameState.newGame(variant).getBoard();
         for(int i=0; i<BoardFields.length; i++){
-            BoardFields[i]=new BoardFieldState();
+            BoardFields[i]=new BoardFieldState(start[i].getChipCount(), start[i].getOwner());
         }
-        //Initialize board fields with starting chip positions
-        //White player
-        BoardFields[0].setNumberOfChips(5);
-        BoardFields[0].setPlayer(1);
-        BoardFields[11].setNumberOfChips(2);
-        BoardFields[11].setPlayer(1);
-        BoardFields[16].setNumberOfChips(3);
-        BoardFields[16].setPlayer(1);
-        BoardFields[18].setNumberOfChips(5);
-        BoardFields[18].setPlayer(1);
-        //Red player
-        BoardFields[4].setNumberOfChips(3);
-        BoardFields[4].setPlayer(2);
-        BoardFields[6].setNumberOfChips(5);
-        BoardFields[6].setPlayer(2);
-        BoardFields[12].setNumberOfChips(5);
-        BoardFields[12].setPlayer(2);
-        BoardFields[23].setNumberOfChips(2);
-        BoardFields[23].setPlayer(2);
     }
 
     //Method used to change current player to other one
@@ -170,6 +158,32 @@ public class Model {
 
     public void setVariant(Variant variant) {
         this.variant = variant;
+    }
+
+    //Called when the current player's turn ends, before switching player
+    public void onTurnEnded(){
+        turnsPlayed++;
+        headMovesThisTurn=0;
+    }
+
+    public TurnContext getTurnContext(){
+        return new TurnContext(headMovesThisTurn, turnsPlayed < 2);
+    }
+
+    public int getTurnsPlayed() {
+        return turnsPlayed;
+    }
+
+    public void setTurnsPlayed(int turnsPlayed) {
+        this.turnsPlayed = turnsPlayed;
+    }
+
+    public int getHeadMovesThisTurn() {
+        return headMovesThisTurn;
+    }
+
+    public void setHeadMovesThisTurn(int headMovesThisTurn) {
+        this.headMovesThisTurn = headMovesThisTurn;
     }
 
     public MatchState getMatch() {

@@ -1,5 +1,10 @@
 package games.mrlaki5.backgammon.Players;
 
+import com.royalbackgammon.core.logic.BackgammonRules;
+import com.royalbackgammon.core.logic.PositionMapper;
+import com.royalbackgammon.core.variant.RuleFamily;
+import com.royalbackgammon.core.variant.Variant;
+
 import java.util.List;
 import java.util.Random;
 
@@ -66,6 +71,7 @@ public class BotMoveStrategy {
         }
 
         Model nextTurn = copyModel(model);
+        nextTurn.onTurnEnded();
         nextTurn.changeCurrentPlayer();
         return expectedRollValue(nextTurn, rootPlayer, rollsRemaining - 1, profile, random,
                 budget);
@@ -114,6 +120,10 @@ public class BotMoveStrategy {
     }
 
     private double evaluateBoard(Model model, int player, SearchProfile profile) {
+        if (model.getVariant().getFamily() == RuleFamily.RUNNING) {
+            return evaluateRunning(model, player, profile)
+                    - evaluateRunning(model, opponentOf(player), profile) * 0.9;
+        }
         BoardFieldState[] board = model.getBoardFields();
         int opponent = player == 1 ? 2 : 1;
         GameLogic logic = new GameLogic(model);
@@ -146,6 +156,53 @@ public class BotMoveStrategy {
 
         score += madePointRun(board, player, logic) * profile.primeWeight;
         score -= madePointRun(board, opponent, logic) * profile.opponentPrimeWeight;
+        return score;
+    }
+
+    /**
+     * Running-family score for [side]: race progress, borne-off and home checkers, points held in
+     * front of the opponent's rearmost checker (longest run weighted most), and a late-head penalty.
+     */
+    private double evaluateRunning(Model model, int side, SearchProfile profile) {
+        BoardFieldState[] board = model.getBoardFields();
+        Variant variant = model.getVariant();
+        int opponent = opponentOf(side);
+        int borneOffIndex = side == 1 ? 27 : 26;
+        double score = board[borneOffIndex].getNumberOfChips() * profile.borneOffWeight;
+
+        int opponentRearmost = 25;
+        for (int i = 0; i < 24; i++) {
+            int chips = board[i].getNumberOfChips();
+            if (chips <= 0) continue;
+            if (board[i].getPlayer() == side) {
+                int real = PositionMapper.toReal(i, side, variant);
+                score += chips * real * profile.progressWeight;
+                if (real >= 19) score += chips * profile.homeWeight;
+            } else if (board[i].getPlayer() == opponent) {
+                opponentRearmost = Math.min(opponentRearmost,
+                        PositionMapper.toReal(i, opponent, variant));
+            }
+        }
+
+        int held = 0;
+        int run = 0;
+        int longestRun = 0;
+        for (int oppReal = opponentRearmost + 1; oppReal <= 24; oppReal++) {
+            int field = PositionMapper.toMatrix(oppReal, opponent, variant);
+            if (board[field].getPlayer() == side && board[field].getNumberOfChips() > 0) {
+                held++;
+                run++;
+                longestRun = Math.max(longestRun, run);
+            } else {
+                run = 0;
+            }
+        }
+        score += held * profile.pointWeight * 0.35 + longestRun * longestRun * profile.primeWeight * 0.6;
+
+        int head = BackgammonRules.headIndex(side, variant);
+        if (board[head].getPlayer() == side && model.getTurnsPlayed() > 12) {
+            score -= board[head].getNumberOfChips() * profile.pointWeight * 0.25;
+        }
         return score;
     }
 
@@ -203,6 +260,9 @@ public class BotMoveStrategy {
         copy.setCurrentPlayer(source.getCurrentPlayer());
         copy.setState(source.getState());
         copy.setDiceThrows(copyDice(source.getDiceThrows()));
+        copy.setVariant(source.getVariant());
+        copy.setTurnsPlayed(source.getTurnsPlayed());
+        copy.setHeadMovesThisTurn(source.getHeadMovesThisTurn());
         return copy;
     }
 

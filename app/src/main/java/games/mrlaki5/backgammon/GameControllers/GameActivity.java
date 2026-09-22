@@ -972,6 +972,7 @@ public class GameActivity extends AppCompatActivity {
                 model.setBoardFields(turnSnapshot.copyBoard());
                 model.setDiceThrows(turnSnapshot.copyDice());
                 model.setNextMoves(turnSnapshot.copyMoves());
+                model.setHeadMovesThisTurn(0);
                 BoardImage.setChipMatrix(model.getBoardFields());
                 BoardImage.setDices(model.getDiceThrows());
                 BoardImage.setNextMoveArray(null);

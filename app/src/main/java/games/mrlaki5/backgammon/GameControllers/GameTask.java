@@ -187,6 +187,7 @@ public class GameTask {
                             break;
                         }
 
+                        model.onTurnEnded();
                         model.changeCurrentPlayer();
                         model.setState(3);
 

@@ -1,6 +1,7 @@
 package com.royalbackgammon.core.logic
 
 import com.royalbackgammon.core.model.*
+import com.royalbackgammon.core.variant.RuleFamily
 
 /**
  * Applies moves to a [GameState]. Mutates the state in place.
@@ -19,6 +20,12 @@ object MoveExecutor {
         val player = state.currentPlayer
         val src = move.from
         val dst = move.to
+
+        if (state.variant.family == RuleFamily.RUNNING &&
+            src == BackgammonRules.headIndex(player, state.variant)
+        ) {
+            state.headMovesThisTurn++
+        }
 
         // Remove checker from source
         board[src].chipCount--

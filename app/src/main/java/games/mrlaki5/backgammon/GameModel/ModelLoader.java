@@ -110,6 +110,14 @@ public class ModelLoader {
                         case 6:
                             model.setVariant(Model.parseVariant(line.trim()));
                             break;
+                        //Line 8: load turn counters=turnsPlayed headMovesThisTurn
+                        case 8:
+                            data=line.trim().split(" ");
+                            if(data.length==2){
+                                model.setTurnsPlayed(Integer.parseInt(data[0]));
+                                model.setHeadMovesThisTurn(Integer.parseInt(data[1]));
+                            }
+                            break;
                         //Line 7: load match=target whiteScore redScore gamesPlayed
                         case 7:
                             data=line.trim().split(" ");
@@ -198,6 +206,8 @@ public class ModelLoader {
             MatchState match=model.getMatch();
             out.append(match.getTargetPoints()+" "+match.getWhiteScore()+" "
                     +match.getRedScore()+" "+match.getGamesPlayed()+"\n");
+            //Line 8: save turn counters=turnsPlayed headMovesThisTurn
+            out.append(model.getTurnsPlayed()+" "+model.getHeadMovesThisTurn()+"\n");
             //Flush writer
             out.flush();
         } catch (FileNotFoundException e) {

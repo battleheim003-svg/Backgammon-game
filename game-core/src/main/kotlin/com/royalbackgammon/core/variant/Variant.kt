@@ -11,6 +11,17 @@ enum class OpeningRoll {
     STARTER_REROLLS
 }
 
+/** Movement family: decides direction, contact and blocking rules. */
+enum class RuleFamily {
+    /** Opposite directions, a lone checker can be hit to the bar. */
+    HITTING,
+    /**
+     * Same rotational direction from diagonally opposite heads, no hitting, one checker owns a
+     * point, one checker leaves the head per turn, no prime that traps all opponent checkers.
+     */
+    RUNNING
+}
+
 /** Points awarded per [WinType]. */
 @Serializable
 data class WinScoring(val single: Int, val gammon: Int, val backgammon: Int) {
@@ -21,16 +32,16 @@ data class WinScoring(val single: Int, val gammon: Int, val backgammon: Int) {
     }
 }
 
-/**
- * Rule variants sharing the hitting-family movement (opposite directions, hit to bar, bear off).
- * Pinning (Plakoto) and running (Nardy, Fevga) families are added in later phases.
- */
+/** Playable rule variants. */
 enum class Variant(
+    val family: RuleFamily,
     val openingRoll: OpeningRoll,
     val scoring: WinScoring,
     val cubeAllowed: Boolean
 ) {
-    STANDARD(OpeningRoll.PLAY_OPENING_DICE, WinScoring(1, 2, 3), cubeAllowed = true),
-    TAVLA(OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false),
-    PORTES(OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false);
+    STANDARD(RuleFamily.HITTING, OpeningRoll.PLAY_OPENING_DICE, WinScoring(1, 2, 3), cubeAllowed = true),
+    TAVLA(RuleFamily.HITTING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false),
+    PORTES(RuleFamily.HITTING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false),
+    /** Long Nardy: oyn 1, mars 2. */
+    NARDY(RuleFamily.RUNNING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false);
 }
