@@ -388,6 +388,11 @@
     <string name="variant_portes_rules">سبک یونانی (دست اول تاولی): برندهٔ تاس اول دوباره تاس می‌ریزد. مارس ۲ امتیاز، بدون برد سه‌برابر.</string>
     <string name="variant_plakoto">پلاکوتو</string>
     <string name="variant_plakoto_rules">سبک یونانی: ۱۵ مهره در گوشهٔ مقابل شروع می‌کنند. نشستن روی مهرهٔ تک حریف آن را حبس می‌کند تا وقتی بروی. حبس آخرین مهرهٔ خانهٔ شروع (مادر) یعنی برد دوبل.</string>
+    <string name="variant_fevga">فِوگا</string>
+    <string name="variant_fevga_rules">بازی یونانی: هر دو هم‌جهت از دو گوشهٔ مقابل حرکت می‌کنند، زدن نداریم و یک مهره خانه را می‌گیرد. تا وقتی مهرهٔ جلودار از خانهٔ شروع حریف رد نشده، فقط همان حرکت می‌کند.</string>
+    <string name="variant_tavli">تاولی</string>
+    <string name="variant_tavli_rules">مسابقهٔ یونانی: اول پورتس، بعد پلاکوتو، بعد فِوگا؛ تا رسیدن به امتیاز هدف تکرار می‌شود.</string>
+    <string name="next_variant">بعدی: %1$s</string>
     <string name="variant_nardy">نرد بلند</string>
     <string name="variant_nardy_rules">هر دو هم‌جهت از خانهٔ سرِ مقابل حرکت می‌کنند. زدن نداریم؛ یک مهره خانه را می‌گیرد. در هر نوبت فقط یک مهره از سر. مارس ۲ امتیاز.</string>
     <string name="match_single">تک دست</string>

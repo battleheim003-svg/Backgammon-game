@@ -931,6 +931,7 @@ public class GameActivity extends AppCompatActivity {
         MatchState match = model.getMatch();
         boolean matchOngoing = !match.isOver();
         intent.putExtra(MenuActivity.EXTRA_VARIANT, model.getVariant().name());
+        intent.putExtra(MenuActivity.EXTRA_TAVLI, !match.getRotation().isEmpty());
         intent.putExtra(MenuActivity.EXTRA_MATCH_TARGET, match.getTargetPoints());
         intent.putExtra(MenuActivity.EXTRA_MATCH_WHITE_SCORE, matchOngoing ? match.getWhiteScore() : 0);
         intent.putExtra(MenuActivity.EXTRA_MATCH_RED_SCORE, matchOngoing ? match.getRedScore() : 0);

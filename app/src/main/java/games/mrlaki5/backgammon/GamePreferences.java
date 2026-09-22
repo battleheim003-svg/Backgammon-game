@@ -19,6 +19,7 @@ public final class GamePreferences {
     public static final String KEY_SFX_VOLUME = "sfxVolume";
     public static final String KEY_VARIANT = "variant";
     public static final String KEY_MATCH_LENGTH = "matchLength";
+    public static final String KEY_TAVLI_MATCH = "tavliMatch";
     public static final String LANGUAGE_EN = "en";
     public static final String LANGUAGE_FA = "fa";
 
@@ -124,10 +125,17 @@ public final class GamePreferences {
         return preferences(context).getInt(KEY_MATCH_LENGTH, 1);
     }
 
-    public static void saveVariantSelection(Context context, Variant variant, int matchLength) {
+    /** True when the player picked the Tavli rotation instead of a single variant. */
+    public static boolean isTavliMatch(Context context) {
+        return preferences(context).getBoolean(KEY_TAVLI_MATCH, false);
+    }
+
+    public static void saveVariantSelection(Context context, Variant variant, int matchLength,
+                                            boolean tavliMatch) {
         preferences(context).edit()
                 .putString(KEY_VARIANT, variant.name())
                 .putInt(KEY_MATCH_LENGTH, matchLength)
+                .putBoolean(KEY_TAVLI_MATCH, tavliMatch)
                 .apply();
     }
 

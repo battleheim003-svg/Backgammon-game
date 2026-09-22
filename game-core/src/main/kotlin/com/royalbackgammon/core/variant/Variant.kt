@@ -27,6 +27,16 @@ enum class RuleFamily {
     PINNING
 }
 
+/** How the running family restricts checkers leaving the starting point. */
+enum class HeadRule {
+    /** Not a running variant. */
+    NONE,
+    /** Long Nardy: one checker per turn, two on a first-turn 6-6, 4-4 or 3-3. */
+    ONE_PER_TURN,
+    /** Fevga: only the leading checker moves until it passes the opponent's starting point. */
+    LEAD_MUST_PASS
+}
+
 /** Points awarded per [WinType]. */
 @Serializable
 data class WinScoring(val single: Int, val gammon: Int, val backgammon: Int) {
@@ -44,7 +54,8 @@ enum class Variant(
     val family: RuleFamily,
     val openingRoll: OpeningRoll,
     val scoring: WinScoring,
-    val cubeAllowed: Boolean
+    val cubeAllowed: Boolean,
+    val headRule: HeadRule = HeadRule.NONE
 ) {
     STANDARD(RuleFamily.HITTING, OpeningRoll.PLAY_OPENING_DICE, WinScoring(1, 2, 3), cubeAllowed = true),
     TAVLA(RuleFamily.HITTING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false),
@@ -52,5 +63,15 @@ enum class Variant(
     /** Greek pinning game, second game of Tavli. */
     PLAKOTO(RuleFamily.PINNING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false),
     /** Long Nardy: oyn 1, mars 2. */
-    NARDY(RuleFamily.RUNNING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false);
+    NARDY(RuleFamily.RUNNING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false,
+        headRule = HeadRule.ONE_PER_TURN),
+    /** Fevga, third game of Tavli: the lead checker must pass the opponent's start first. */
+    FEVGA(RuleFamily.RUNNING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false,
+        headRule = HeadRule.LEAD_MUST_PASS);
+
+    companion object {
+        /** The three games of a Tavli match, in playing order. */
+        @JvmField
+        val TAVLI_ROTATION: List<Variant> = listOf(PORTES, PLAKOTO, FEVGA)
+    }
 }

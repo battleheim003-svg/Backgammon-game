@@ -122,6 +122,11 @@
     <string name="variant_portes_rules">Greek style (first game of Tavli): the opening winner rolls again. Gammon 2 points, no triple win.</string>
     <string name="variant_plakoto">Plakoto</string>
     <string name="variant_plakoto_rules">Greek style: all 15 start on the opposite corner. Landing on a lone checker pins it until you leave. Pin the last checker on its start (the mother) to win double.</string>
+    <string name="variant_fevga">Fevga</string>
+    <string name="variant_fevga_rules">Greek running game: both run the same way from opposite corners, no hitting, one checker holds a point. Your lead checker must pass the opponent\'s start before any other moves.</string>
+    <string name="variant_tavli">Tavli</string>
+    <string name="variant_tavli_rules">Greek match: Portes, then Plakoto, then Fevga, repeating until someone reaches the target score.</string>
+    <string name="next_variant">Next: %1$s</string>
     <string name="variant_nardy">Long Nardy</string>
     <string name="variant_nardy_rules">Both sides run the same way from opposite heads. No hitting: one checker holds a point. One checker leaves the head per turn. Mars 2 points.</string>
     <string name="match_single">Single game</string>

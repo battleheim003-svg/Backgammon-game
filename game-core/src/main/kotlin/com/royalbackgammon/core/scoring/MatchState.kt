@@ -9,6 +9,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MatchState(
     val variant: Variant = Variant.STANDARD,
+    /** Variants played in turn (Tavli); empty means every game uses [variant]. */
+    val rotation: List<Variant> = emptyList(),
     val targetPoints: Int = 1,
     var whiteScore: Int = 0,
     var redScore: Int = 0,
@@ -27,6 +29,10 @@ data class MatchState(
         }
         gamesPlayed++
     }
+
+    /** Variant of the game about to be played. */
+    fun currentVariant(): Variant =
+        if (rotation.isEmpty()) variant else rotation[gamesPlayed % rotation.size]
 
     fun scoreOf(player: Int): Int = if (player == Player.WHITE) whiteScore else redScore
 

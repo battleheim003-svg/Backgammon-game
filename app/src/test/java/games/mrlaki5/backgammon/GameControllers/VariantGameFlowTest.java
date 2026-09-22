@@ -66,6 +66,13 @@ public class VariantGameFlowTest {
     }
 
     @Test
+    public void botGamesFinishUnderFevgaRules() {
+        for (int seed = 0; seed < 3; seed++) {
+            playBotGame(Variant.FEVGA, seed);
+        }
+    }
+
+    @Test
     public void botGameStillFinishesUnderStandardRules() {
         playBotGame(Variant.STANDARD, 11);
     }
@@ -104,11 +111,11 @@ public class VariantGameFlowTest {
                         model.getDiceThrows());
                 if (logic.isGameOver() || moves.isEmpty()) break;
                 NextJump move = bot.chooseMove(model, moves, GamePreferences.BOT_MEDIUM, random);
-                if (variant == Variant.NARDY) {
+                if (variant == Variant.NARDY || variant == Variant.FEVGA) {
                     BoardFieldState dst = model.getBoardFields()[move.getDstField()];
                     assertTrue(move.getDstField() >= 24 || dst.getNumberOfChips() == 0
                             || dst.getPlayer() == player);
-                    if (move.getSrcField() == (player == 1 ? head1 : head2)) headMoves++;
+                    if (variant == Variant.NARDY && move.getSrcField() == (player == 1 ? head1 : head2)) headMoves++;
                 }
                 executor.applyMove(move);
                 assertEquals(30, totalCheckers(model));

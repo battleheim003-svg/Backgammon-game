@@ -63,6 +63,7 @@ public class MenuActivity extends AppCompatActivity {
     public static String EXTRA_PLAYER2_KIND="p2kind";
     public static final String EXTRA_VARIANT="variant";
     public static final String EXTRA_MATCH_TARGET="matchTarget";
+    public static final String EXTRA_TAVLI="tavliRotation";
     public static final String EXTRA_MATCH_WHITE_SCORE="matchWhiteScore";
     public static final String EXTRA_MATCH_RED_SCORE="matchRedScore";
     public static final String EXTRA_MATCH_GAMES="matchGames";

@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import com.royalbackgammon.core.scoring.MatchState;
+import com.royalbackgammon.core.variant.Variant;
+
+import java.util.Collections;
 
 import games.mrlaki5.backgammon.Beans.BoardFieldState;
 import games.mrlaki5.backgammon.Beans.DiceThrow;
@@ -119,11 +122,13 @@ public class ModelLoader {
                                 model.setHeadMovesThisTurn(Integer.parseInt(data[1]));
                             }
                             break;
-                        //Line 7: load match=target whiteScore redScore gamesPlayed
+                        //Line 7: load match=target whiteScore redScore gamesPlayed [tavliFlag]
                         case 7:
                             data=line.trim().split(" ");
-                            if(data.length==4){
+                            if(data.length>=4){
+                                boolean tavli=data.length>4 && "1".equals(data[4]);
                                 model.setMatch(new MatchState(model.getVariant(),
+                                        tavli ? Variant.TAVLI_ROTATION : Collections.<Variant>emptyList(),
                                         Math.max(1, Integer.parseInt(data[0])),
                                         Integer.parseInt(data[1]), Integer.parseInt(data[2]),
                                         Integer.parseInt(data[3])));
@@ -204,10 +209,11 @@ public class ModelLoader {
             out.append(tempOut);
             //Line 6: save variant name
             out.append(model.getVariant().name()).append("\n");
-            //Line 7: save match=target whiteScore redScore gamesPlayed
+            //Line 7: save match=target whiteScore redScore gamesPlayed tavliFlag
             MatchState match=model.getMatch();
             out.append(match.getTargetPoints()+" "+match.getWhiteScore()+" "
-                    +match.getRedScore()+" "+match.getGamesPlayed()+"\n");
+                    +match.getRedScore()+" "+match.getGamesPlayed()+" "
+                    +(match.getRotation().isEmpty() ? "0" : "1")+"\n");
             //Line 8: save turn counters=turnsPlayed headMovesThisTurn
             out.append(model.getTurnsPlayed()+" "+model.getHeadMovesThisTurn()+"\n");
             //Flush writer

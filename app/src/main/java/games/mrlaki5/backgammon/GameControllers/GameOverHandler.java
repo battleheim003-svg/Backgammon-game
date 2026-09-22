@@ -236,6 +236,9 @@ public class GameOverHandler {
             if (match.isOver()) {
                 String matchWinner = match.winner() == 1 ? p1Name : p2Name;
                 score += "\n" + activity.getString(R.string.game_over_match_winner, matchWinner);
+            } else if (!match.getRotation().isEmpty()) {
+                score += "  •  " + activity.getString(R.string.next_variant,
+                        activity.getString(VariantPicker.nameRes(match.currentVariant())));
             }
             matchText.setText(score);
         }

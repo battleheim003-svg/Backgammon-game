@@ -2,6 +2,7 @@ package games.mrlaki5.backgammon.GameModel;
 
 import android.os.Bundle;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.royalbackgammon.core.model.BoardField;
@@ -47,7 +48,7 @@ public class Model {
     private int turnsPlayed = 0;
     private int headMovesThisTurn = 0;
     //Running score of the match this game belongs to (target 1 = single game)
-    private MatchState match = new MatchState(Variant.STANDARD, 1, 0, 0, 0);
+    private MatchState match = new MatchState(Variant.STANDARD, Collections.emptyList(), 1, 0, 0, 0);
 
     //Constructor used when loading model from save file
     public Model(){}
@@ -66,11 +67,15 @@ public class Model {
         //Load from extras player names and player kinds and create players
         if(extras!=null){
             variant=parseVariant(extras.getString(MenuActivity.EXTRA_VARIANT));
-            match=new MatchState(variant,
+            List<Variant> rotation = extras.getBoolean(MenuActivity.EXTRA_TAVLI, false)
+                    ? Variant.TAVLI_ROTATION : Collections.<Variant>emptyList();
+            match=new MatchState(variant, rotation,
                     Math.max(1, extras.getInt(MenuActivity.EXTRA_MATCH_TARGET, 1)),
                     extras.getInt(MenuActivity.EXTRA_MATCH_WHITE_SCORE, 0),
                     extras.getInt(MenuActivity.EXTRA_MATCH_RED_SCORE, 0),
                     extras.getInt(MenuActivity.EXTRA_MATCH_GAMES, 0));
+            //In a Tavli match the rotation decides which game is being played
+            variant=match.currentVariant();
             String p1Name=extras.getString(MenuActivity.EXTRA_PLAYER1_NAME);
             String p2Name=extras.getString(MenuActivity.EXTRA_PLAYER2_NAME);
             if("Player".equals(extras.getString(MenuActivity.EXTRA_PLAYER1_KIND))){
