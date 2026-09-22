@@ -2,6 +2,9 @@ package games.mrlaki5.backgammon.GameModel;
 
 import android.os.Bundle;
 
+import games.mrlaki5.backgammon.Analysis.TurnRecord;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +25,9 @@ import games.mrlaki5.backgammon.Players.Player;
 
 //Model class
 public class Model {
+
+    //Keeps the review bounded on very long games
+    private static final int MAX_RECORDED_TURNS = 300;
 
     //Array that represents all fields on board, side board and end board
     //24-white, 25-red side board
@@ -47,6 +53,9 @@ public class Model {
     //Completed turns this game and checkers moved off the head this turn (running family)
     private int turnsPlayed = 0;
     private int headMovesThisTurn = 0;
+    //Turn-by-turn history for the post-game review (human turns are the ones analysed)
+    private final List<TurnRecord> turnHistory = new ArrayList<>();
+    private TurnRecord currentTurnRecord;
     //Running score of the match this game belongs to (target 1 = single game)
     private MatchState match = new MatchState(Variant.STANDARD, Collections.emptyList(), 1, 0, 0, 0);
 
@@ -167,8 +176,33 @@ public class Model {
 
     //Called when the current player's turn ends, before switching player
     public void onTurnEnded(){
+        flushTurnRecord();
         turnsPlayed++;
         headMovesThisTurn=0;
+    }
+
+    //Called when the current player is about to move, and again after an undo
+    public void beginTurnRecord(){
+        currentTurnRecord=new TurnRecord(variant, CurrentPlayer, BoardFields, DiceThrows);
+    }
+
+    public void recordMove(NextJump move){
+        if(currentTurnRecord!=null){
+            currentTurnRecord.addMove(move);
+        }
+    }
+
+    //Stores the turn that was just played; also called when the game ends mid-turn
+    public void flushTurnRecord(){
+        if(currentTurnRecord!=null && !currentTurnRecord.getMoves().isEmpty()
+                && turnHistory.size()<MAX_RECORDED_TURNS){
+            turnHistory.add(currentTurnRecord);
+        }
+        currentTurnRecord=null;
+    }
+
+    public List<TurnRecord> getTurnHistory() {
+        return turnHistory;
     }
 
     public TurnContext getTurnContext(){

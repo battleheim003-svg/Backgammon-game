@@ -407,4 +407,16 @@
     <string name="game_over_match_score">Match to %1$d: %2$s %3$d – %4$d %5$s</string>
     <string name="game_over_match_winner">Match winner: %1$s</string>
     <string name="next_game">Next game</string>
+    <string name="game_review_title">Game review</string>
+    <string name="review_back">Back</string>
+    <string name="review_button">Review game</string>
+    <string name="review_accuracy">Accuracy %1$d%% over %2$d graded turns</string>
+    <string name="review_empty">No turns to grade in this game.</string>
+    <string name="review_turn_header">Turn %1$d · dice %2$s · you played %3$s</string>
+    <string name="review_better_move">%1$s — better: %2$s</string>
+    <string name="review_grade_excellent">Excellent</string>
+    <string name="review_grade_good">Good</string>
+    <string name="review_grade_mistake">Mistake</string>
+    <string name="review_grade_blunder">Blunder</string>
+    <string name="review_working">Analysing the game…</string>
 </resources>

@@ -467,6 +467,22 @@ public class GameActivity extends AppCompatActivity {
             }
 
             @Override
+            public java.util.List<games.mrlaki5.backgammon.Analysis.TurnRecord> onRequestTurnHistory() {
+                return model != null ? model.getTurnHistory() : null;
+            }
+
+            @Override
+            public int onRequestHumanPlayer() {
+                if (model == null || model.getPlayers() == null) return 0;
+                for (int i = 0; i < model.getPlayers().length; i++) {
+                    if (model.getPlayers()[i] instanceof games.mrlaki5.backgammon.Players.Human) {
+                        return i + 1;
+                    }
+                }
+                return 0;
+            }
+
+            @Override
             public void onMainMenu(int winningPlayer, String p1Name, String p2Name, String gameMode) {
                 finishWithResult(winningPlayer, p1Name, p2Name, gameMode);
             }
@@ -972,6 +988,7 @@ public class GameActivity extends AppCompatActivity {
                 model.setDiceThrows(turnSnapshot.copyDice());
                 model.setNextMoves(turnSnapshot.copyMoves());
                 model.setHeadMovesThisTurn(0);
+                model.beginTurnRecord();
                 BoardImage.setChipMatrix(model.getBoardFields());
                 BoardImage.setDices(model.getDiceThrows());
                 BoardImage.setNextMoveArray(null);

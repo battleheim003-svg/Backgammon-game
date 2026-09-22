@@ -63,6 +63,7 @@ public class GameMoveExecutor {
 
         countHeadMove(srcField);
         releasePinnedIfUncovered(srcField);
+        model.recordMove(jump);
         consumeDice(jump.getJumpNumber());
         boolean hit = placeChecker(dstField);
         return new MoveResult(true, srcField, dstField, hit);
@@ -79,6 +80,7 @@ public class GameMoveExecutor {
         releasePinnedIfUncovered(src);
 
         countHeadMove(src);
+        model.recordMove(jump);
         consumeDice(jump.getJumpNumber());
         boolean hit = placeChecker(jump.getDstField());
         return new MoveResult(true, src, jump.getDstField(), hit);

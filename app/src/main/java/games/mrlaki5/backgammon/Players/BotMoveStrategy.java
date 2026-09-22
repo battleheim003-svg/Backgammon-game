@@ -121,6 +121,11 @@ public class BotMoveStrategy {
         return bonus;
     }
 
+    /** Position score for [player] at [difficulty]; used by the post-game analyzer. */
+    public double evaluatePosition(Model model, int player, int difficulty) {
+        return evaluateBoard(model, player, profileFor(difficulty));
+    }
+
     private double evaluateBoard(Model model, int player, SearchProfile profile) {
         if (model.getVariant().getFamily() == RuleFamily.RUNNING) {
             return evaluateRunning(model, player, profile)

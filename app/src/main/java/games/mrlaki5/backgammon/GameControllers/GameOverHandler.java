@@ -1,6 +1,14 @@
 package games.mrlaki5.backgammon.GameControllers;
 
+import android.content.Intent;
+
 import androidx.annotation.Nullable;
+
+import games.mrlaki5.backgammon.Analysis.GameAnalyzer;
+import games.mrlaki5.backgammon.Analysis.GameReviewActivity;
+import games.mrlaki5.backgammon.Analysis.GameReviewData;
+import games.mrlaki5.backgammon.Analysis.TurnAnalysis;
+import games.mrlaki5.backgammon.Analysis.TurnRecord;
 
 import com.royalbackgammon.core.model.GameResult;
 import com.royalbackgammon.core.model.WinType;
@@ -57,6 +65,9 @@ import games.mrlaki5.backgammon.WinStreakTracker;
 public class GameOverHandler {
 
     public interface OnGameOverActionListener {
+        /** Turn history of the finished game, for the post-game review. */
+        java.util.List<TurnRecord> onRequestTurnHistory();
+        int onRequestHumanPlayer();
         void onPlayEffect(int effectId);
         void onRematch();
         void onChangeSettings(int winningPlayer, String p1Name, String p2Name, String gameMode);
@@ -241,6 +252,17 @@ public class GameOverHandler {
                         activity.getString(VariantPicker.nameRes(match.currentVariant())));
             }
             matchText.setText(score);
+        }
+
+        // 1c. Post-game review (only meaningful when a human actually played turns)
+        Button btnReview = dialogView.findViewById(R.id.gameOverReview);
+        if (btnReview != null && listener != null && !tutorialMode) {
+            java.util.List<TurnRecord> history = listener.onRequestTurnHistory();
+            int humanPlayer = listener.onRequestHumanPlayer();
+            if (history != null && !history.isEmpty() && humanPlayer != 0) {
+                btnReview.setVisibility(View.VISIBLE);
+                btnReview.setOnClickListener(v -> startReview(btnReview, history, humanPlayer));
+            }
         }
 
         // 2. Set game duration
@@ -466,6 +488,21 @@ public class GameOverHandler {
         }
 
         gameOverDialog.show();
+    }
+
+    /** Grades the game on a background thread, then opens the review screen. */
+    private void startReview(Button trigger, java.util.List<TurnRecord> history, int humanPlayer) {
+        trigger.setEnabled(false);
+        trigger.setText(R.string.review_working);
+        new Thread(() -> {
+            java.util.List<TurnAnalysis> analyses = new GameAnalyzer().analyze(history, humanPlayer);
+            activity.runOnUiThread(() -> {
+                trigger.setEnabled(true);
+                trigger.setText(R.string.review_button);
+                GameReviewData.put(analyses);
+                activity.startActivity(new Intent(activity, GameReviewActivity.class));
+            });
+        }, "game-review").start();
     }
 
     private static int winTypeRes(WinType type) {

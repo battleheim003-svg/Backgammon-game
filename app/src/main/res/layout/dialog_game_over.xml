@@ -35,6 +35,24 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
+    <!-- Post-game review -->
+    <Button
+        android:id="@+id/gameOverReview"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_difficulty_normal"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:text="@string/review_button"
+        android:textAllCaps="false"
+        android:textColor="@color/color_difficulty_text_normal"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
     <!-- Variant, win type and points -->
     <TextView
         android:id="@+id/gameOverResultType"

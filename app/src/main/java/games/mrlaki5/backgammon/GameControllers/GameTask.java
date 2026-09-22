@@ -158,6 +158,7 @@ public class GameTask {
                         model.setNextMoves(gameLogic.calculateMoves(model.getBoardFields(),
                                 model.getCurrentPlayer(), model.getDiceThrows()));
 
+                        model.beginTurnRecord();
                         if (!model.getNextMoves().isEmpty()) {
                             writeMessage(gameActivity.getString(R.string.move_checkers));
                             model.getCurrentObjectPlayer().actionMove();
@@ -177,6 +178,7 @@ public class GameTask {
                                 } else {
                                     gameMode = MenuActivity.GAME_MODE_VS_BOT;
                                 }
+                                model.flushTurnRecord();
                                 GameResult result = gameLogic.calculateResult();
                                 if (result != null && !gameActivity.isTutorialMode()) {
                                     model.getMatch().record(result);

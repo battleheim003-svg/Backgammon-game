@@ -23,7 +23,8 @@ import games.mrlaki5.backgammon.GameModel.Model;
 public class GameLogic {
 
     //Model for saving state of game
-    private Model model;
+    private final Model model;
+    private final Variant fixedVariant;
     //Flag for signaling wining player
     private int CurrPlayerFinished=0;
     //Set once the game has ended; CurrPlayerFinished is 0 for a draw
@@ -32,6 +33,13 @@ public class GameLogic {
     //Controller
     public GameLogic(Model model) {
         this.model = model;
+        this.fixedVariant = null;
+    }
+
+    //Used for position mapping alone (analysis), without a live model
+    public GameLogic(Variant variant) {
+        this.model = null;
+        this.fixedVariant = variant;
     }
 
     //Board/position rules are delegated to game-core (single source of truth for all variants).
@@ -114,7 +122,10 @@ public class GameLogic {
     }
 
     private Variant variant(){
-        return model != null ? model.getVariant() : Variant.STANDARD;
+        if (model != null) {
+            return model.getVariant();
+        }
+        return fixedVariant != null ? fixedVariant : Variant.STANDARD;
     }
 
     private static BoardField[] toCoreBoard(BoardFieldState[] chipMatrix){

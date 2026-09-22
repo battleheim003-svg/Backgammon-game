@@ -65,6 +65,10 @@
             android:name=".PlayerStatsActivity"
             android:screenOrientation="landscape" />
 
+        <activity
+            android:name=".Analysis.GameReviewActivity"
+            android:screenOrientation="landscape" />
+
     </application>
 
 </manifest>
