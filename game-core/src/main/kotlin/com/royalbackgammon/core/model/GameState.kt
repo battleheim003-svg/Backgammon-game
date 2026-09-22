@@ -50,6 +50,8 @@ data class GameState(
          * Creates a new game with the standard backgammon starting position
          * (shared by all hitting-family variants).
          */
+        @JvmStatic
+        @JvmOverloads
         fun newGame(variant: Variant = Variant.STANDARD): GameState {
             val state = GameState(variant = variant)
             // White pieces

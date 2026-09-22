@@ -23,6 +23,7 @@ object PositionMapper {
      * Converts matrix position to "real" position for [player].
      * Real positions: 0 = bar, 1–24 = board points, 100 = borne off.
      */
+    @JvmStatic
     fun toReal(matrixPos: Int, player: Int): Int {
         if (player == Player.RED) {
             return when (matrixPos) {
@@ -43,6 +44,7 @@ object PositionMapper {
     /**
      * Converts "real" position for [player] back to matrix position.
      */
+    @JvmStatic
     fun toMatrix(realPos: Int, player: Int): Int {
         if (player == Player.RED) {
             return when (realPos) {

@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 import java.util.List;
 
+import com.royalbackgammon.core.variant.Variant;
+
 import games.mrlaki5.backgammon.Beans.BoardFieldState;
 import games.mrlaki5.backgammon.Beans.DiceThrow;
 import games.mrlaki5.backgammon.Beans.NextJump;
@@ -35,6 +37,8 @@ public class Model {
     //2: currentPlayer move chips
     //3: currentPlayer roll dices
     private int State;
+    //Rule variant of this game
+    private Variant variant = Variant.STANDARD;
 
     //Constructor used when loading model from save file
     public Model(){}
@@ -52,6 +56,7 @@ public class Model {
         CurrentPlayer=1;
         //Load from extras player names and player kinds and create players
         if(extras!=null){
+            variant=parseVariant(extras.getString(MenuActivity.EXTRA_VARIANT));
             String p1Name=extras.getString(MenuActivity.EXTRA_PLAYER1_NAME);
             String p2Name=extras.getString(MenuActivity.EXTRA_PLAYER2_NAME);
             if("Player".equals(extras.getString(MenuActivity.EXTRA_PLAYER1_KIND))){
@@ -149,6 +154,26 @@ public class Model {
 
     public void setNextMoves(List<NextJump> nextMoves) {
         NextMoves = nextMoves;
+    }
+
+    public Variant getVariant() {
+        return variant;
+    }
+
+    public void setVariant(Variant variant) {
+        this.variant = variant;
+    }
+
+    //Unknown or missing names fall back to STANDARD (old saves, old intents)
+    public static Variant parseVariant(String name){
+        if(name==null){
+            return Variant.STANDARD;
+        }
+        try{
+            return Variant.valueOf(name);
+        } catch (IllegalArgumentException e){
+            return Variant.STANDARD;
+        }
     }
 
     public Player getCurrentObjectPlayer(){

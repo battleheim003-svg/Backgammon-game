@@ -51,6 +51,7 @@
     <string name="roll_dice">تاس بریزید</string>
     <string name="roll_dice_button">ریختن تاس</string>
     <string name="move_checkers">مهره‌ها را حرکت دهید</string>
+    <string name="opening_tie">مساوی شد! دوباره تاس بریزید</string>
     <string name="current_turn_message">نوبت %1$s - %2$s</string>
     <string name="initial_game_message">بازیکن اول، تاس بریزید</string>
     <string name="tutorial_next">بعدی ◀</string>

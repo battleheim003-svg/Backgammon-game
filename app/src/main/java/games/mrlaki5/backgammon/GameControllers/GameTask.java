@@ -2,6 +2,9 @@ package games.mrlaki5.backgammon.GameControllers;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.royalbackgammon.core.variant.OpeningRoll;
+
+import games.mrlaki5.backgammon.Beans.DiceThrow;
 import games.mrlaki5.backgammon.GameModel.Model;
 import games.mrlaki5.backgammon.GameView.OnBoardImage;
 import games.mrlaki5.backgammon.Menus.MenuActivity;
@@ -139,15 +142,7 @@ public class GameTask {
                         model.getCurrentObjectPlayer().actionRoll();
                         if (workFlag.get() == 0 || executor.isCancelled()) break;
 
-                        // Check which player got higher number, that one plays first
-                        if (model.getDiceThrows()[0].getThrowNumber() >=
-                                model.getDiceThrows()[1].getThrowNumber()) {
-                            model.setCurrentPlayer(1);
-                        } else {
-                            model.setCurrentPlayer(2);
-                        }
-
-                        model.setState(2);
+                        resolveOpeningRoll();
 
                         try {
                             Thread.sleep(sleepTime);
@@ -233,6 +228,31 @@ public class GameTask {
             synchronized (this) {
                 this.notifyAll();
             }
+        }
+    }
+
+    // Higher opening die starts; a tie restarts the opening roll
+    private void resolveOpeningRoll() {
+        DiceThrow[] dice = model.getDiceThrows();
+        int whiteRoll = dice[0].getThrowNumber();
+        int redRoll = dice[1].getThrowNumber();
+        if (whiteRoll == redRoll) {
+            dice[2].setAlreadyUsed(1);
+            dice[3].setAlreadyUsed(1);
+            model.setCurrentPlayer(1);
+            model.setState(0);
+            onBoardImage.setMessage(gameActivity.getString(R.string.opening_tie), 1, false);
+            onBoardImage.postInvalidate();
+            return;
+        }
+        model.setCurrentPlayer(whiteRoll > redRoll ? 1 : 2);
+        if (model.getVariant().getOpeningRoll() == OpeningRoll.STARTER_REROLLS) {
+            for (DiceThrow die : dice) {
+                die.setAlreadyUsed(1);
+            }
+            model.setState(3);
+        } else {
+            model.setState(2);
         }
     }
 

@@ -55,6 +55,7 @@
     <string name="roll_dice">Roll the dice</string>
     <string name="roll_dice_button">Roll Dice</string>
     <string name="move_checkers">Move the checkers</string>
+    <string name="opening_tie">Tie! Roll again</string>
     <string name="current_turn_message">Turn: %1$s - %2$s</string>
     <string name="initial_game_message">Player One, roll the dice</string>
     <string name="tutorial_next">Next</string>

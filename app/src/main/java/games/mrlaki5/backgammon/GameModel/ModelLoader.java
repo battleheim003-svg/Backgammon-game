@@ -104,6 +104,10 @@ public class ModelLoader {
                             model.setCurrentPlayer(currentPlayer);
                             model.setState(state);
                             break;
+                        //Line 6: load variant name (absent in saves from older versions)
+                        case 6:
+                            model.setVariant(Model.parseVariant(line.trim()));
+                            break;
                         default:
                             break;
                     }
@@ -176,6 +180,8 @@ public class ModelLoader {
             //Line 5: save current player and game state=CurrentPlayer State
             tempOut=""+model.getCurrentPlayer()+" "+model.getState()+"\n";
             out.append(tempOut);
+            //Line 6: save variant name
+            out.append(model.getVariant().name()).append("\n");
             //Flush writer
             out.flush();
         } catch (FileNotFoundException e) {
