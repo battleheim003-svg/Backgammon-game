@@ -251,7 +251,12 @@ public class GameTask {
             onBoardImage.postInvalidate();
             return;
         }
-        model.setCurrentPlayer(whiteRoll > redRoll ? 1 : 2);
+        int starter = whiteRoll > redRoll ? 1 : 2;
+        boolean handOver = starter != model.getCurrentPlayer();
+        model.setCurrentPlayer(starter);
+        if (handOver && gameActivity.isPassAndPlayMode()) {
+            gameActivity.showTurnSwitchAndWait(model.getCurrentObjectPlayer().getPlayerName(), starter);
+        }
         if (model.getVariant().getOpeningRoll() == OpeningRoll.STARTER_REROLLS) {
             for (DiceThrow die : dice) {
                 die.setAlreadyUsed(1);

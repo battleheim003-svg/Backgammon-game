@@ -224,6 +224,13 @@
                         android:text="1200" />
                 </LinearLayout>
 
+                <!-- Per-variant ratings, filled in code -->
+                <LinearLayout
+                    android:id="@+id/statsVariantElo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
                 <View android:layout_width="match_parent" android:layout_height="1dp"
                     android:background="#33FFFFFF" android:layout_marginBottom="10dp" />
 

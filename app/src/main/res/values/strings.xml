@@ -370,6 +370,7 @@
     <string name="stats_wld_label">Wins / Losses / Draws</string>
     <string name="stats_win_rate_label">Win Rate</string>
     <string name="stats_best_streak_label">Best Streak</string>
+    <string name="stats_variant_elo_label">%1$s (%2$d games)</string>
     <string name="stats_elo_label">Current ELO</string>
     <string name="stats_coins_label">Coin Balance</string>
     <string name="stats_achievements_label">Achievements</string>

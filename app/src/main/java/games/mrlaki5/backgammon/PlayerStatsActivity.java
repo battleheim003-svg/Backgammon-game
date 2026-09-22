@@ -1,5 +1,13 @@
 package games.mrlaki5.backgammon;
 
+import android.view.Gravity;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.royalbackgammon.core.variant.Variant;
+
+import games.mrlaki5.backgammon.Menus.VariantPicker;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.WindowManager;
@@ -83,6 +91,9 @@ public class PlayerStatsActivity extends AppCompatActivity {
             tvElo.setText(String.valueOf(profile.getElo()));
         }
 
+        // Ratings of the other variants (only those that have been played)
+        bindVariantRatings(profile);
+
         // Coin balance
         TextView tvCoins = findViewById(R.id.tvStatsCoins);
         if (tvCoins != null) {
@@ -97,6 +108,40 @@ public class PlayerStatsActivity extends AppCompatActivity {
             int unlocked = countUnlockedAchievements(achievementManager);
             tvAchievements.setText(unlocked + " / " + AchievementManager.ACHIEVEMENT_IDS.length);
         }
+    }
+
+    private void bindVariantRatings(PlayerProfileManager profile) {
+        LinearLayout container = findViewById(R.id.statsVariantElo);
+        if (container == null) return;
+        container.removeAllViews();
+
+        for (Variant variant : Variant.values()) {
+            if (variant == Variant.STANDARD || profile.getGamesPlayed(variant) == 0) continue;
+            container.addView(variantRatingRow(getString(VariantPicker.nameRes(variant)),
+                    profile.getElo(variant), profile.getGamesPlayed(variant)));
+        }
+    }
+
+    private View variantRatingRow(String name, int elo, int games) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(0, 0, 0, (int) (10 * getResources().getDisplayMetrics().density));
+
+        TextView label = new TextView(this);
+        label.setLayoutParams(new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+        label.setText(getString(R.string.stats_variant_elo_label, name, games));
+        label.setTextColor(getResources().getColor(R.color.text_primary));
+        label.setTextSize(13f);
+        row.addView(label);
+
+        TextView value = new TextView(this);
+        value.setText(String.valueOf(elo));
+        value.setTextColor(getResources().getColor(R.color.accent_gold));
+        value.setTextSize(14f);
+        row.addView(value);
+        return row;
     }
 
     private int countUnlockedAchievements(AchievementManager manager) {

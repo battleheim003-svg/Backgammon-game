@@ -103,6 +103,11 @@ public class PlayerProfileManager {
         return variant == Variant.STANDARD ? KEY_ELO : KEY_ELO + "_" + variant.name();
     }
 
+    /** Games recorded for [variant]; STANDARD shares the global counter. */
+    public int getGamesPlayed(Variant variant) {
+        return prefs.getInt(gamesKey(variant), 0);
+    }
+
     private static String gamesKey(Variant variant) {
         return variant == Variant.STANDARD ? KEY_TOTAL_GAMES : KEY_TOTAL_GAMES + "_" + variant.name();
     }
