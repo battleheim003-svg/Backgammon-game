@@ -246,6 +246,27 @@
                 android:textStyle="bold" />
 
             <Button
+                android:id="@+id/journey"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_columnWeight="1"
+                android:layout_marginBottom="9dp"
+                android:background="@drawable/neuro_secondary_button"
+                android:elevation="0dp"
+                android:fontFamily="sans-serif-medium"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:onClick="openJourney"
+                android:text="@string/journey_title"
+                android:textAllCaps="false"
+                android:textColor="@color/accent_gold"
+                android:maxLines="1"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="16sp"
+                android:textStyle="bold" />
+
+            <Button
                 android:id="@+id/tutorial"
                 android:layout_width="0dp"
                 android:layout_height="46dp"

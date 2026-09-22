@@ -109,7 +109,8 @@ public class GameOverHandler {
     public void handleGameFinished(int winningPlayer, String p1Name, String p2Name, String gameMode,
                                    boolean passAndPlayMode, boolean tutorialMode, boolean isRematchGame,
                                    int sessionGameNumber, long durationSeconds, String difficultyName,
-                                   @Nullable GameResult gameResult, Variant variant, MatchState match) {
+                                   @Nullable GameResult gameResult, Variant variant, MatchState match,
+                                   int botDifficulty) {
         boolean draw = winningPlayer == 0;
         if (!gameResultRecorded) {
             gameResultRecorded = true;
@@ -155,7 +156,7 @@ public class GameOverHandler {
         GameResultHandler.ProcessedResult result = draw
                 ? new GameResultHandler.ProcessedResult(0, 0, 0, 0, "")
                 : gameResultHandler.processResult(winningPlayer == 1, gameMode, passAndPlayMode,
-                        tutorialMode, variant, points);
+                        tutorialMode, variant, points, botDifficulty);
 
         final String winnerName = (winningPlayer == 1) ? p1Name : p2Name;
         final int streak = result.currentStreak;

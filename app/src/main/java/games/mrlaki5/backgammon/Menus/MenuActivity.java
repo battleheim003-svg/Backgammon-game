@@ -43,6 +43,7 @@ import games.mrlaki5.backgammon.Monetization.ads.AdCallback;
 import games.mrlaki5.backgammon.Monetization.ads.RewardedAdPlacement;
 import games.mrlaki5.backgammon.Monetization.ads.RewardedAdTracker;
 import games.mrlaki5.backgammon.Monetization.ads.RewardedAdUiHelper;
+import games.mrlaki5.backgammon.Journey.JourneyActivity;
 import games.mrlaki5.backgammon.R;
 
 //Activity class for main menu
@@ -64,6 +65,8 @@ public class MenuActivity extends AppCompatActivity {
     public static final String EXTRA_VARIANT="variant";
     public static final String EXTRA_MATCH_TARGET="matchTarget";
     public static final String EXTRA_TAVLI="tavliRotation";
+    public static final String EXTRA_BOT_DIFFICULTY="botDifficulty";
+    public static final String EXTRA_JOURNEY_STAGE="journeyStage";
     public static final String EXTRA_MATCH_WHITE_SCORE="matchWhiteScore";
     public static final String EXTRA_MATCH_RED_SCORE="matchRedScore";
     public static final String EXTRA_MATCH_GAMES="matchGames";
@@ -547,6 +550,12 @@ public class MenuActivity extends AppCompatActivity {
         //Create and start settings activity
         Intent intent= new Intent(MenuActivity.this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    //Method called when Journey is chosen from the menu
+    public void openJourney(View view) {
+        playMenuTap();
+        startActivity(new Intent(MenuActivity.this, JourneyActivity.class));
     }
 
     public void startTutorial(View view) {

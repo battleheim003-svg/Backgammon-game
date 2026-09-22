@@ -26,7 +26,7 @@ public class Bot extends Player {
     }
 
     private int difficulty() {
-        return GamePreferences.getBotDifficulty(getCurrGame());
+        return getCurrGame().getBotDifficulty();
     }
 
     private long thinkTime() {

@@ -54,7 +54,8 @@ public class GameResultHandler {
      * daily/weekly challenges, achievements.
      */
     public ProcessedResult processResult(boolean won, String gameMode, boolean passAndPlayMode,
-                                         boolean tutorialMode, Variant variant, int points) {
+                                         boolean tutorialMode, Variant variant, int points,
+                                         int difficulty) {
         int currentStreak = 0;
         int previousStreak = 0;
         int coinsEarned = 0;
@@ -64,7 +65,6 @@ public class GameResultHandler {
         if (!passAndPlayMode && !tutorialMode) {
             WinStreakTracker streakTracker = new WinStreakTracker(context);
             previousStreak = streakTracker.getCurrentStreak();
-            int difficulty = GamePreferences.getBotDifficulty(context);
             int botElo = PlayerProfileManager.getBotElo(difficulty);
 
             eloDelta = profileManager.recordGameResult(won, botElo, gameMode, variant);

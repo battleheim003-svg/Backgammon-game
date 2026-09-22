@@ -4,6 +4,8 @@ import androidx.annotation.Nullable;
 
 import com.royalbackgammon.core.model.GameResult;
 import com.royalbackgammon.core.scoring.MatchState;
+
+import games.mrlaki5.backgammon.Journey.JourneyManager;
 import com.royalbackgammon.core.variant.Variant;
 
 import games.mrlaki5.backgammon.Menus.VariantPicker;
@@ -875,7 +877,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private String getDifficultyName() {
-        int diff = GamePreferences.getBotDifficulty(this);
+        int diff = getBotDifficulty();
         switch (diff) {
             case 0: return "easy";
             case 1: return "medium";
@@ -899,13 +901,37 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    /** Difficulty for this game: a journey chapter overrides the player's setting. */
+    public int getBotDifficulty() {
+        int override = getIntent().getIntExtra(MenuActivity.EXTRA_BOT_DIFFICULTY, -1);
+        return override >= 0 ? override : GamePreferences.getBotDifficulty(this);
+    }
+
+    //Marks a journey chapter finished once its match is won
+    private void checkJourneyCompletion(int winningPlayer) {
+        int stage = getIntent().getIntExtra(MenuActivity.EXTRA_JOURNEY_STAGE, -1);
+        if (stage < 0 || winningPlayer != 1) {
+            return;
+        }
+        MatchState match = model.getMatch();
+        if (match.getTargetPoints() > 1 && !match.isOver()) {
+            return;
+        }
+        int reward = new JourneyManager(this).completeStage(stage, new CoinManager(this));
+        if (reward > 0) {
+            runOnUiThread(() -> Toast.makeText(this,
+                    getString(R.string.journey_stage_done, reward), Toast.LENGTH_LONG).show());
+        }
+    }
+
     public void onGameFinished(int winningPlayer, String p1Name, String p2Name, String gameMode,
                                @Nullable GameResult result) {
+        checkJourneyCompletion(winningPlayer);
         if (gameOverHandler != null) {
             gameOverHandler.handleGameFinished(winningPlayer, p1Name, p2Name, gameMode,
                     isPassAndPlayMode(), isTutorialMode(), isRematchGame,
                     sessionGameNumber, getGameDurationSeconds(), getDifficultyName(),
-                    result, model.getVariant(), model.getMatch());
+                    result, model.getVariant(), model.getMatch(), getBotDifficulty());
         }
     }
 
