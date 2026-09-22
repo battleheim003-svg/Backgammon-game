@@ -16,6 +16,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ import games.mrlaki5.backgammon.Economy.CoinManager;
 import games.mrlaki5.backgammon.GameControllers.GameActivity;
 import games.mrlaki5.backgammon.GamePreferences;
 import games.mrlaki5.backgammon.GameView.themes.ThemeRegistry;
+import games.mrlaki5.backgammon.GameView.themes.ThemeThumbnailLoader;
 import games.mrlaki5.backgammon.R;
 
 public class NewGameDialogFragment extends BottomSheetDialogFragment {
@@ -127,10 +129,10 @@ public class NewGameDialogFragment extends BottomSheetDialogFragment {
             MenuActivity.setupInlineEditText(nameField, getString(R.string.player_one));
         }
 
-        // Action buttons
-        MaterialButton btnCancel = view.findViewById(R.id.singleCancel);
-        if (btnCancel != null) {
-            btnCancel.setOnClickListener(v -> {
+        // Close button (replaces the old Cancel button — dismisses the sheet)
+        View btnClose = view.findViewById(R.id.singleCloseButton);
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> {
                 if (getActivity() instanceof MenuActivity) {
                     ((MenuActivity) getActivity()).playMenuTap();
                 }
@@ -214,6 +216,22 @@ public class NewGameDialogFragment extends BottomSheetDialogFragment {
             }
         }
 
+        // The 4 photographic previews are large JPEGs — decode them down-sampled to the
+        // thumbnail's actual pixel size instead of full resolution.
+        int targetPx = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 52f, getResources().getDisplayMetrics());
+        int[] photoImgIds = {R.id.themeImg0, R.id.themeImg1, R.id.themeImg2, R.id.themeImg3};
+        int[] photoResIds = {
+                R.drawable.preview_theme_royal, R.drawable.preview_theme_pop_art,
+                R.drawable.preview_theme_cyberpunk, R.drawable.preview_theme_luxury
+        };
+        for (int i = 0; i < photoImgIds.length; i++) {
+            ImageView iv = root.findViewById(photoImgIds[i]);
+            if (iv != null) {
+                ThemeThumbnailLoader.loadInto(iv, photoResIds[i], targetPx);
+            }
+        }
+
         refreshThemeLocks(lockViews);
         updateThemeSelection(thumbs, selectedRef[0]);
 
@@ -239,7 +257,7 @@ public class NewGameDialogFragment extends BottomSheetDialogFragment {
         int userCoins = coinManager.getBalance();
 
         ThemeRegistry.ThemeInfo themeInfo = ThemeRegistry.getThemeInfo(idx);
-        String themeName = (themeInfo != null) ? themeInfo.getNameFa() : ("تم " + idx);
+        String themeName = (themeInfo != null) ? getString(themeInfo.getNameResId()) : String.valueOf(idx);
 
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_theme_unlock, null);
         AlertDialog dialog = new AlertDialog.Builder(requireContext())

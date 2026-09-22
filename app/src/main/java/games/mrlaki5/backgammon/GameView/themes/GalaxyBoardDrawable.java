@@ -18,6 +18,8 @@ import androidx.annotation.Nullable;
 
 import java.util.Random;
 
+import games.mrlaki5.backgammon.GameView.BoardMetrics;
+
 /**
  * Procedural board drawable for the Galaxy theme.
  * Deep space radial gradient, seeded starfield, indigo/purple triangles with star-shimmer details.
@@ -45,6 +47,7 @@ public class GalaxyBoardDrawable extends Drawable {
     private final Paint pShimmer   = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Path  path       = new Path();
     private final Path  shimmerPath = new Path();
+    private final BoardMetrics bm  = new BoardMetrics();
 
     // 28 seeded star coordinates (fractions of board width and height)
     private static final float[] STAR_X = new float[28];
@@ -80,17 +83,18 @@ public class GalaxyBoardDrawable extends Drawable {
         float H = b.height();
         if (W <= 0 || H <= 0) return;
 
-        float panelColW = W * 0.145f;
-        float boardW    = W - panelColW;
-        float frameT    = Math.max(10f, boardW * 0.013f);
+        bm.update((int) W, (int) H);
+        float frameT    = Math.max(10f, W * 0.011f);
+        float boardW    = bm.Width + bm.XBaseRight;
+        float panelColW = W - boardW;
 
         // ── Outer frame (dark metallic #1C1C3A) ──
         pFill.setColor(C_FRAME);
         canvas.drawRect(0, 0, boardW, H, pFill);
 
         // ── Inner board surface (deep space radial gradient: #0A0A2E center to #000000 edge) ──
-        float iL = frameT, iT = frameT;
-        float iR = boardW - frameT, iB = H - frameT;
+        float iL = bm.XBaseLeft, iT = bm.YBaseTop;
+        float iR = bm.Width, iB = bm.Height;
         float iW = iR - iL, iH = iB - iT;
         float cx = iL + iW / 2f, cy = iT + iH / 2f;
         float gradR = Math.max(iW, iH) * 0.72f;
@@ -109,23 +113,21 @@ public class GalaxyBoardDrawable extends Drawable {
         }
 
         // ── Bar ──
-        float barW = iW * 0.027f;
-        float barX = iL + (iW - barW) / 2f;
+        float barX = iL + bm.LeftX;
+        float barW = bm.RightX - bm.LeftX;
         pFill.setShader(new LinearGradient(barX, 0, barX + barW, 0,
                 C_BAR_DARK, C_BAR_MID, Shader.TileMode.CLAMP));
         canvas.drawRect(barX, iT, barX + barW, iB, pFill);
         pFill.setShader(null);
 
         // ── Triangles ──
-        float qW   = (iW - barW) / 2f;
-        float ptW  = qW / 6f;
-        float ptH  = iH * 0.435f;
-        float outSW = Math.max(1.0f, ptW * 0.014f);
+        float ptH  = bm.TriangleHeight;
+        float outSW = Math.max(1.0f, bm.PaddingXLeft * 0.014f);
         pOutline.setStrokeWidth(outSW);
         pOutline.setColor(C_GOLD_DIM);
 
-        drawQuadrantTriangles(canvas, iL, iT, iB, ptW, ptH, true);
-        drawQuadrantTriangles(canvas, barX + barW, iT, iB, ptW, ptH, false);
+        drawQuadrantTriangles(canvas, iL, iT, iB, bm.PaddingXLeft, ptH, true);
+        drawQuadrantTriangles(canvas, barX + barW, iT, iB, bm.PaddingXRight, ptH, false);
 
         // Bar edge lines
         pGold.setColor(C_GOLD);

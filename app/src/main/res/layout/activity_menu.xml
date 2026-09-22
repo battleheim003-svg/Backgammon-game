@@ -11,7 +11,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#78112532" />
+        android:background="#33112532" />
 
     <LinearLayout
         android:id="@+id/menuTopBar"
@@ -78,7 +78,7 @@
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <!-- ELO rating badge -->
+        <!-- ELO rating badge — tapping opens PlayerStatsActivity -->
         <TextView
             android:id="@+id/tvEloRating"
             android:layout_width="wrap_content"
@@ -91,7 +91,10 @@
             android:textColor="@color/text_primary"
             android:textSize="13sp"
             android:textStyle="bold"
-            android:text="ELO 1200" />
+            android:text="🏅 ELO 1200"
+            android:onClick="openPlayerStats"
+            android:clickable="true"
+            android:focusable="true" />
 
         <!-- Shop Button -->
         <Button
@@ -151,11 +154,19 @@
         android:paddingBottom="20dp">
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="👑"
+            android:textSize="26sp" />
+
+        <TextView
             android:id="@+id/menuTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
+            android:letterSpacing="0.02"
             android:shadowColor="#80000000"
             android:shadowDx="0"
             android:shadowDy="2"
@@ -206,7 +217,10 @@
                 android:text="@string/play_game"
                 android:textAllCaps="false"
                 android:textColor="@color/surface_base"
-                android:textSize="16sp"
+                android:maxLines="1"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="16sp"
                 android:textStyle="bold" />
 
             <Button
@@ -225,7 +239,10 @@
                 android:text="@string/pass_and_play"
                 android:textAllCaps="false"
                 android:textColor="@color/surface_base"
-                android:textSize="16sp"
+                android:maxLines="1"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="16sp"
                 android:textStyle="bold" />
 
             <Button
@@ -243,7 +260,10 @@
                 android:text="@string/tutorial"
                 android:textAllCaps="false"
                 android:textColor="@color/accent_gold"
-                android:textSize="16sp"
+                android:maxLines="1"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="16sp"
                 android:textStyle="bold" />
 
             <Button
@@ -261,7 +281,10 @@
                 android:text="@string/scores"
                 android:textAllCaps="false"
                 android:textColor="@color/accent_gold"
-                android:textSize="16sp"
+                android:maxLines="1"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="16sp"
                 android:textStyle="bold" />
 
             <Button
@@ -279,7 +302,10 @@
                 android:text="@string/settings"
                 android:textAllCaps="false"
                 android:textColor="@color/accent_gold"
-                android:textSize="16sp"
+                android:maxLines="1"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeMaxTextSize="16sp"
                 android:textStyle="bold" />
 
         </GridLayout>

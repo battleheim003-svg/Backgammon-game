@@ -11,14 +11,14 @@
         android:background="@drawable/bg_pause_dialog"
         android:elevation="4dp"
         android:orientation="vertical"
-        android:padding="0dp">
+        android:padding="3dp">
 
         <!-- Rarity color bar (top) -->
         <View
             android:id="@+id/viewRarityBar"
             android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="#9E9E9E" />
+            android:layout_height="4dp"
+            android:background="@drawable/shape_rarity_bar" />
 
         <!-- Card body -->
         <LinearLayout
@@ -48,7 +48,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
-                    android:background="#1565C0"
+                    android:background="@drawable/bg_badge_blue"
                     android:fontFamily="sans-serif-black"
                     android:paddingStart="4dp"
                     android:paddingTop="1dp"
@@ -162,7 +162,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
         android:layout_margin="3dp"
-        android:background="#E65100"
+        android:background="@drawable/bg_badge_orange"
         android:fontFamily="sans-serif-black"
         android:paddingStart="5dp"
         android:paddingTop="2dp"
@@ -174,22 +174,6 @@
         android:textStyle="bold"
         android:visibility="gone" />
 
-    <!-- Rental expiry overlay (top-left / top-start corner) -->
-    <TextView
-        android:id="@+id/tvShopItemRentalExpiry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:layout_margin="3dp"
-        android:background="#2E7D32"
-        android:fontFamily="sans-serif-medium"
-        android:paddingStart="5dp"
-        android:paddingTop="2dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="2dp"
-        android:textColor="#FFFFFF"
-        android:textSize="8sp"
-        android:textStyle="bold"
-        android:visibility="gone" />
+    <!-- tvShopItemRentalExpiry REMOVED — rental system eliminated -->
 
 </FrameLayout>

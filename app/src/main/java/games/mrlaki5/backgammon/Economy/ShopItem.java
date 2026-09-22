@@ -1,5 +1,7 @@
 package games.mrlaki5.backgammon.Economy;
 
+import android.content.Context;
+
 import games.mrlaki5.backgammon.R;
 
 public class ShopItem {
@@ -10,7 +12,6 @@ public class ShopItem {
         DICE_SKIN,
         TITLE,
         THEME,
-        RENTAL,
         COSMETIC,
         CONSUMABLE,
         BUNDLE
@@ -19,7 +20,6 @@ public class ShopItem {
     public enum Rarity {
         COMMON, RARE, EPIC, LEGENDARY;
 
-        /** Color int for this rarity (use Color.parseColor in views). */
         public String hexColor() {
             switch (this) {
                 case COMMON:    return "#9E9E9E";
@@ -30,12 +30,13 @@ public class ShopItem {
             }
         }
 
-        public String label() {
+        /** Locale-aware rarity label — pass a Context (e.g. from the RecyclerView item's view). */
+        public String label(Context context) {
             switch (this) {
-                case COMMON:    return "معمولی";
-                case RARE:      return "نادر";
-                case EPIC:      return "حماسی";
-                case LEGENDARY: return "افسانه‌ای";
+                case COMMON:    return context.getString(R.string.shop_rarity_common);
+                case RARE:      return context.getString(R.string.shop_rarity_rare);
+                case EPIC:      return context.getString(R.string.shop_rarity_epic);
+                case LEGENDARY: return context.getString(R.string.shop_rarity_legendary);
                 default:        return "";
             }
         }
@@ -50,16 +51,15 @@ public class ShopItem {
     public final String iconEmoji;
     public final int iconRes;
     public final int nameRes;
-    public final int unlockRequirement; // 0 = no requirement; else min total wins
-    public final boolean isRental;      // true = 24h rental, not permanent
-    public final String badge;          // null | "NEW" | "HOT" | "OFFER"
-    public final int quantity;          // default 0 for non-consumables
+    public final int unlockRequirement;
+    public final String badge;
+    public final int quantity;
     public final boolean isConsumable;
 
     public ShopItem(String id, String title, String description, int price,
                     Category category, Rarity rarity, String iconEmoji,
                     int iconRes, int nameRes, int unlockRequirement,
-                    boolean isRental, String badge, int quantity, boolean isConsumable) {
+                    String badge, int quantity, boolean isConsumable) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -70,7 +70,6 @@ public class ShopItem {
         this.iconRes = iconRes;
         this.nameRes = nameRes;
         this.unlockRequirement = unlockRequirement;
-        this.isRental = isRental;
         this.badge = badge;
         this.quantity = quantity;
         this.isConsumable = isConsumable;
@@ -78,60 +77,58 @@ public class ShopItem {
 
     public ShopItem(String id, String title, String description, int price,
                     Category category, Rarity rarity, String iconEmoji,
-                    int unlockRequirement, boolean isRental, String badge) {
+                    int unlockRequirement, String badge) {
         this(id, title, description, price, category, rarity, iconEmoji,
-                0, 0, unlockRequirement, isRental, badge, 0, category == Category.CONSUMABLE);
+                0, 0, unlockRequirement, badge, 0, category == Category.CONSUMABLE);
     }
 
-    // Convenience constructors
     public static ShopItem permanent(String id, String title, String description, int price,
                                      Category category, Rarity rarity, String iconEmoji) {
-        return new ShopItem(id, title, description, price, category, rarity, iconEmoji, 0, false, null);
+        return new ShopItem(id, title, description, price, category, rarity, iconEmoji, 0, null);
     }
 
     public static ShopItem withUnlock(String id, String title, String description, int price,
                                       Category category, Rarity rarity, String iconEmoji,
                                       int minWins) {
-        return new ShopItem(id, title, description, price, category, rarity, iconEmoji, minWins, false, null);
-    }
-
-    public static ShopItem rental(String id, String title, String description, int price,
-                                  Category originalCategory, Rarity rarity, String iconEmoji) {
-        return new ShopItem(id, title, description, price, Category.RENTAL, rarity, iconEmoji, 0, true, "اجاره");
+        return new ShopItem(id, title, description, price, category, rarity, iconEmoji, minWins, null);
     }
 
     public static ShopItem badged(String id, String title, String description, int price,
                                    Category category, Rarity rarity, String iconEmoji, String badge) {
-        return new ShopItem(id, title, description, price, category, rarity, iconEmoji, 0, false, badge);
+        return new ShopItem(id, title, description, price, category, rarity, iconEmoji, 0, badge);
     }
 
-    // Consumable items
-    public static ShopItem hintPack3() {
-        return new ShopItem("hint_pack_3", "۳ راهنما", "۳ شارژ راهنما برای بازی", 50,
+    // Consumable factory methods
+    public static ShopItem hintPack3(Context context) {
+        return new ShopItem("hint_pack_3", context.getString(R.string.shop_hint_pack_3),
+                context.getString(R.string.shop_hint_pack_3_desc), 50,
                 Category.CONSUMABLE, Rarity.COMMON, "💡",
                 R.drawable.ic_shop_hint, R.string.shop_hint_pack_3,
-                0, false, null, 3, true);
+                0, null, 3, true);
     }
 
-    public static ShopItem hintPack10() {
-        return new ShopItem("hint_pack_10", "۱۰ راهنما", "۱۰ شارژ راهنما برای بازی", 150,
+    public static ShopItem hintPack10(Context context) {
+        return new ShopItem("hint_pack_10", context.getString(R.string.shop_hint_pack_10),
+                context.getString(R.string.shop_hint_pack_10_desc), 150,
                 Category.CONSUMABLE, Rarity.RARE, "💡",
                 R.drawable.ic_shop_hint, R.string.shop_hint_pack_10,
-                0, false, "تخفیف", 10, true);
+                0, context.getString(R.string.shop_badge_discount), 10, true);
     }
 
-    public static ShopItem undoPack3() {
-        return new ShopItem("undo_pack_3", "۳ برگشت", "۳ شارژ برگشت حرکت رایگان", 65,
+    public static ShopItem undoPack3(Context context) {
+        return new ShopItem("undo_pack_3", context.getString(R.string.shop_undo_pack_3),
+                context.getString(R.string.shop_undo_pack_3_desc), 65,
                 Category.CONSUMABLE, Rarity.COMMON, "↩️",
                 R.drawable.ic_shop_undo, R.string.shop_undo_pack_3,
-                0, false, null, 3, true);
+                0, null, 3, true);
     }
 
-    public static ShopItem starterBundle() {
-        return new ShopItem("starter_bundle", "باندل شروع", "فریم نقره + تاس استیل + ۵۰ سکه هدیه + ۲ راهنما", 340,
+    public static ShopItem starterBundle(Context context) {
+        return new ShopItem("starter_bundle", context.getString(R.string.shop_starter_bundle),
+                context.getString(R.string.shop_starter_bundle_desc), 340,
                 Category.BUNDLE, Rarity.EPIC, "🎁",
                 R.drawable.ic_shop_bundle, R.string.shop_starter_bundle,
-                0, false, "ویژه", 0, false);
+                0, context.getString(R.string.shop_badge_special), 0, false);
     }
 
     public String getId()              { return id; }
@@ -144,7 +141,6 @@ public class ShopItem {
     public int getIconRes()            { return iconRes; }
     public int getNameRes()            { return nameRes; }
     public int getUnlockRequirement()  { return unlockRequirement; }
-    public boolean isRental()          { return isRental; }
     public String getBadge()           { return badge; }
     public int getQuantity()           { return quantity; }
     public boolean isConsumable()      { return isConsumable; }

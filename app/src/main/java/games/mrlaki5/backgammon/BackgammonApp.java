@@ -9,6 +9,7 @@ import android.util.Log;
 import games.mrlaki5.backgammon.Analytics.AnalyticsProvider;
 import games.mrlaki5.backgammon.Analytics.CrashReporter;
 import games.mrlaki5.backgammon.Analytics.FirebaseAnalyticsProvider;
+import games.mrlaki5.backgammon.Analytics.FirebaseCrashReporter;
 import games.mrlaki5.backgammon.Analytics.GameAnalytics;
 import games.mrlaki5.backgammon.Analytics.StubAnalyticsProvider;
 import games.mrlaki5.backgammon.Analytics.StubCrashReporter;
@@ -103,7 +104,13 @@ public class BackgammonApp extends Application {
             provider = new StubAnalyticsProvider();
         }
 
-        CrashReporter crashReporter = new StubCrashReporter();
+        CrashReporter crashReporter;
+        try {
+            crashReporter = new FirebaseCrashReporter();
+        } catch (Exception e) {
+            Log.w(TAG, "Firebase Crashlytics unavailable, using stub crash reporter", e);
+            crashReporter = new StubCrashReporter();
+        }
 
         GameAnalytics.init(activity, provider, crashReporter);
 

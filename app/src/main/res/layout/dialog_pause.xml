@@ -1,98 +1,187 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="380dp"
+    android:layout_width="360dp"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_pause_dialog"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingStart="32dp"
-    android:paddingTop="24dp"
-    android:paddingEnd="32dp"
-    android:paddingBottom="22dp">
+    android:paddingStart="20dp"
+    android:paddingTop="22dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="20dp">
 
-    <!-- Header: PAUSE -->
-    <TextView
+    <!-- Header: pause icon + title -->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:fontFamily="sans-serif-black"
-        android:text="@string/pause_title"
-        android:textColor="#E6A100"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginBottom="22dp">
 
-    <!-- Button Row 1: Resume / Restart / Quit -->
+        <FrameLayout
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bg_icon_badge_restart">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="⏸"
+                android:textSize="16sp"
+                android:textColor="#1A1400" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:text="@string/pause_title"
+            android:textColor="#E6A100"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- 3 Icon-Action Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="16dp"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:weightSum="3">
 
-        <Button
+        <!-- Resume -->
+        <LinearLayout
             android:id="@+id/pauseResume"
             android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_marginEnd="8dp"
+            android:layout_height="86dp"
+            android:layout_marginEnd="7dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_pause_button"
-            android:fontFamily="sans-serif-medium"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
-            android:text="@string/pause_resume"
-            android:textAllCaps="false"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:background="@drawable/bg_pause_action_tile"
+            android:clickable="true"
+            android:elevation="2dp"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <Button
+            <FrameLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_icon_badge_resume">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="2dp"
+                    android:text="▶"
+                    android:textColor="#0A2233"
+                    android:textSize="16sp" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/pause_resume"
+                android:textColor="#E8EEF2"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- Restart -->
+        <LinearLayout
             android:id="@+id/pauseRestart"
             android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_marginEnd="8dp"
+            android:layout_height="86dp"
+            android:layout_marginEnd="7dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_pause_button"
-            android:fontFamily="sans-serif-medium"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
-            android:text="@string/pause_restart"
-            android:textAllCaps="false"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:background="@drawable/bg_pause_action_tile"
+            android:clickable="true"
+            android:elevation="2dp"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <Button
+            <FrameLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_icon_badge_restart">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="↺"
+                    android:textColor="#4A2E00"
+                    android:textSize="19sp" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/pause_restart"
+                android:textColor="#E8EEF2"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- Quit -->
+        <LinearLayout
             android:id="@+id/pauseQuit"
             android:layout_width="0dp"
-            android:layout_height="44dp"
+            android:layout_height="86dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_pause_button"
-            android:fontFamily="sans-serif-medium"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
-            android:text="@string/pause_quit"
-            android:textAllCaps="false"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:background="@drawable/bg_pause_action_tile"
+            android:clickable="true"
+            android:elevation="2dp"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_icon_badge_quit">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="⏏"
+                    android:textColor="#4A0A0A"
+                    android:textSize="17sp" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/pause_quit"
+                android:textColor="#E8EEF2"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Control Row 2: Volume -->
+    <!-- Volume Row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_volume_track"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="12dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="8dp">
+        android:paddingStart="14dp"
+        android:paddingTop="9dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="9dp">
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:contentDescription="@string/pause_volume_desc"
             android:src="@drawable/ic_volume_up_gold" />
 
@@ -100,7 +189,7 @@
             android:id="@+id/pauseVolumeSeekBar"
             android:layout_width="0dp"
             android:layout_height="28dp"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="12dp"
             android:layout_weight="1"
             android:max="100"
             android:progress="80"

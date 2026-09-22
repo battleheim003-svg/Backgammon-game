@@ -6,6 +6,9 @@
     android:layoutDirection="locale"
     android:gravity="center_vertical"
     android:orientation="horizontal"
+    android:background="@drawable/bg_pause_button"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp"
     android:paddingTop="10dp"
     android:paddingBottom="10dp">
 

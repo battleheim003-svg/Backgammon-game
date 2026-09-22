@@ -7,6 +7,7 @@ def googleServicesFile = file('google-services.json')
 def hasGoogleServices = googleServicesFile.exists()
 if (hasGoogleServices) {
     apply plugin: 'com.google.gms.google-services'
+    apply plugin: 'com.google.firebase.crashlytics'
 }
 
 def localProps = new Properties()
@@ -128,6 +129,7 @@ dependencies {
     // Firebase Analytics (works without google-services.json in debug, just logs warnings)
     implementation platform('com.google.firebase:firebase-bom:33.7.0')
     implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-crashlytics'
 
     // Tapsell Plus Ad SDK
     implementation 'ir.tapsell.plus:tapsell-plus-sdk-android:2.2.4'

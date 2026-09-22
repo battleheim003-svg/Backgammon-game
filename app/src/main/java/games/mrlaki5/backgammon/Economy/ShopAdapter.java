@@ -2,6 +2,8 @@ package games.mrlaki5.backgammon.Economy;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import games.mrlaki5.backgammon.Database.PlayerProfileManager;
 import games.mrlaki5.backgammon.R;
@@ -66,8 +67,7 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
                 if (item.getCategory() == ShopItem.Category.AVATAR_FRAME ||
                     item.getCategory() == ShopItem.Category.DICE_SKIN ||
                     item.getCategory() == ShopItem.Category.TITLE ||
-                    item.getCategory() == ShopItem.Category.THEME ||
-                    item.getCategory() == ShopItem.Category.RENTAL) {
+                    item.getCategory() == ShopItem.Category.THEME) {
                     displayedItems.add(item);
                 }
             }
@@ -128,10 +128,15 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
 
         // Rarity styling
         int rarityColor = Color.parseColor(item.getRarity().hexColor());
-        holder.tvRarity.setText(item.getRarity().label());
+        holder.tvRarity.setText(item.getRarity().label(context));
         holder.tvRarity.setTextColor(rarityColor);
         if (holder.rarityBar != null) {
-            holder.rarityBar.setBackgroundColor(rarityColor);
+            Drawable bg = holder.rarityBar.getBackground();
+            if (bg instanceof GradientDrawable) {
+                ((GradientDrawable) bg.mutate()).setColor(rarityColor);
+            } else {
+                holder.rarityBar.setBackgroundColor(rarityColor);
+            }
         }
 
         // Badge (NEW, HOT, etc.)
@@ -144,25 +149,6 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
             }
         }
 
-        boolean isRental = item.isRental() || item.getCategory() == ShopItem.Category.RENTAL;
-
-        // Rental remaining time overlay
-        if (holder.tvRentalExpiry != null) {
-            if (isRental && profileManager.isRentalActive(item.getId())) {
-                long remainingMs = profileManager.getRentalExpiry(item.getId()) - System.currentTimeMillis();
-                if (remainingMs > 0) {
-                    long hours = TimeUnit.MILLISECONDS.toHours(remainingMs);
-                    long minutes = TimeUnit.MILLISECONDS.toMinutes(remainingMs) % 60;
-                    holder.tvRentalExpiry.setVisibility(View.VISIBLE);
-                    holder.tvRentalExpiry.setText("⏳ " + hours + "h " + minutes + "m");
-                } else {
-                    holder.tvRentalExpiry.setVisibility(View.GONE);
-                }
-            } else {
-                holder.tvRentalExpiry.setVisibility(View.GONE);
-            }
-        }
-
         // Unlock requirement & Win-progress ProgressBar
         int playerWins = profileManager.getTotalWins();
         boolean isLocked = item.hasUnlockReq() && playerWins < item.getUnlockRequirement();
@@ -171,7 +157,7 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
                 holder.layoutUnlock.setVisibility(View.VISIBLE);
                 if (holder.tvUnlock != null) {
                     holder.tvUnlock.setVisibility(View.VISIBLE);
-                    holder.tvUnlock.setText("نیاز به " + item.getUnlockRequirement() + " برد");
+                    holder.tvUnlock.setText(context.getString(R.string.shop_locked_format, item.getUnlockRequirement()));
                 }
             } else {
                 holder.layoutUnlock.setVisibility(View.GONE);
@@ -216,7 +202,7 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
                 holder.btnAction.setAlpha(1f);
                 holder.btnAction.setOnClickListener(v -> {
                     if (profileManager.hasStarterBundle()) {
-                        Toast.makeText(context, "قبلاً خریداری شده", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.shop_already_purchased, Toast.LENGTH_SHORT).show();
                     } else {
                         boolean ok = profileManager.purchaseStarterBundle(item.getPrice());
                         Toast.makeText(context, ok ? R.string.purchase_successful : R.string.not_enough_coins,
@@ -229,14 +215,11 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
                 });
             }
         } else {
-            // Existing Cosmetic & Rental flow
-            boolean isOwned = isRental
-                    ? profileManager.isRentalActive(item.getId())
-                    : (item.isFree() || profileManager.isItemPurchased(item.getId()));
+            boolean isOwned = item.isFree() || profileManager.isItemPurchased(item.getId());
             boolean isEquipped = !isLocked && isItemEquipped(item);
 
             if (isLocked) {
-                holder.btnAction.setText("قفل");
+                holder.btnAction.setText(R.string.shop_locked_short);
                 holder.btnAction.setEnabled(false);
                 holder.btnAction.setAlpha(0.5f);
             } else if (isEquipped) {
@@ -255,20 +238,13 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
                     if (actionListener != null) actionListener.onItemAction();
                 });
             } else {
-                String priceLabel = item.isRental()
-                        ? "اجاره " + item.getPrice() + " 🪙"
-                        : item.getPrice() + " 🪙";
-                holder.btnAction.setText(priceLabel);
+                holder.btnAction.setText(item.getPrice() + " 🪙");
                 holder.btnAction.setBackgroundResource(R.drawable.neuro_primary_button);
                 holder.btnAction.setEnabled(true);
                 holder.btnAction.setAlpha(1f);
                 holder.btnAction.setOnClickListener(v -> {
                     if (coinManager.spend(item.getPrice(), "shop_" + item.getId())) {
-                        if (isRental) {
-                            profileManager.purchaseRental(item.getId(), 24);
-                        } else {
-                            profileManager.addPurchasedItem(item.getId());
-                        }
+                        profileManager.addPurchasedItem(item.getId());
                         equipItem(item);
                         Toast.makeText(context, R.string.shop_purchase_success, Toast.LENGTH_SHORT).show();
                         notifyDataSetChanged();
@@ -282,19 +258,6 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
     }
 
     private boolean isItemEquipped(ShopItem item) {
-        if (item.isRental() || item.getCategory() == ShopItem.Category.RENTAL) {
-            if (!profileManager.isRentalActive(item.getId())) {
-                return false;
-            }
-            String targetId = item.getId().replace("rental_", "");
-            if (item.getId().startsWith("rental_frame_") || item.getId().equals("rental_diamond") || item.getId().equals("rental_sultan")) {
-                String frameTarget = targetId.startsWith("frame_") ? targetId : "frame_" + targetId;
-                return frameTarget.equals(profileManager.getActiveFrame());
-            } else if (item.getId().startsWith("rental_dice_") || item.getId().equals("rental_dragon")) {
-                String diceTarget = targetId.startsWith("dice_") ? targetId : "dice_" + targetId;
-                return diceTarget.equals(profileManager.getActiveDice());
-            }
-        }
         switch (item.getCategory()) {
             case AVATAR_FRAME:
                 return item.getId().equals(profileManager.getActiveFrame());
@@ -308,17 +271,6 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
     }
 
     private void equipItem(ShopItem item) {
-        if (item.isRental() || item.getCategory() == ShopItem.Category.RENTAL) {
-            String targetId = item.getId().replace("rental_", "");
-            if (item.getId().startsWith("rental_frame_") || item.getId().equals("rental_diamond") || item.getId().equals("rental_sultan")) {
-                String frameTarget = targetId.startsWith("frame_") ? targetId : "frame_" + targetId;
-                profileManager.setActiveFrame(frameTarget);
-            } else if (item.getId().startsWith("rental_dice_") || item.getId().equals("rental_dragon")) {
-                String diceTarget = targetId.startsWith("dice_") ? targetId : "dice_" + targetId;
-                profileManager.setActiveDice(diceTarget);
-            }
-            return;
-        }
         switch (item.getCategory()) {
             case AVATAR_FRAME:
                 profileManager.setActiveFrame(item.getId());
@@ -342,7 +294,6 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
         final TextView tvUnlock;
         final View layoutUnlock;
         final ImageView ivLock;
-        final TextView tvRentalExpiry;
         final View rarityBar;
         final ProgressBar unlockProgress;
         final Button btnAction;
@@ -358,7 +309,6 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
             tvUnlock = itemView.findViewById(R.id.tvShopItemUnlock);
             layoutUnlock = itemView.findViewById(R.id.layoutShopItemUnlock);
             ivLock = itemView.findViewById(R.id.ivShopItemLock);
-            tvRentalExpiry = itemView.findViewById(R.id.tvShopItemRentalExpiry);
             rarityBar = itemView.findViewById(R.id.viewRarityBar);
             unlockProgress = itemView.findViewById(R.id.shopItemUnlockProgress);
             btnAction = itemView.findViewById(R.id.btnShopItemAction);

@@ -61,6 +61,10 @@
             android:name=".Economy.CoinShopActivity"
             android:screenOrientation="landscape" />
 
+        <activity
+            android:name=".PlayerStatsActivity"
+            android:screenOrientation="landscape" />
+
     </application>
 
 </manifest>

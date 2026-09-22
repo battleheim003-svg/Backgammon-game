@@ -6,14 +6,14 @@
     <string name="studio_splash_content_description">Battleheim Studio logo</string>
 
     <string name="continue_game">Continue Game</string>
-    <string name="play_game">Play</string>
+    <string name="play_game">▶️ Play</string>
     <string name="new_game">New Game</string>
     <string name="play_choice_title">Choose Game</string>
     <string name="play_choice_message">Continue your saved match or start fresh.</string>
-    <string name="tutorial">Tutorial</string>
-    <string name="scores">Scores</string>
-    <string name="settings">Settings</string>
-    <string name="language_toggle">فارسی</string>
+    <string name="tutorial">🎓 Tutorial</string>
+    <string name="scores">🏆 Scores</string>
+    <string name="settings">⚙️ Settings</string>
+    <string name="language_toggle">🌐 فارسی</string>
 
     <string name="player_one">Player One</string>
     <string name="player_two">Player Two</string>
@@ -56,9 +56,9 @@
     <string name="move_checkers">Move the checkers</string>
     <string name="current_turn_message">Turn: %1$s - %2$s</string>
     <string name="initial_game_message">Player One, roll the dice</string>
-    <string name="tutorial_next">Next</string>
+    <string name="tutorial_next">Next ▶</string>
     <string name="tutorial_done">Done</string>
-    <string name="tutorial_title">Tutorial</string>
+    <string name="tutorial_title">🎓 Tutorial</string>
     <string name="tutorial_player">You</string>
     <string name="tutorial_bot">Tutor Bot</string>
     <string name="tutorial_intro">Welcome! Your goal is to move all your checkers around the board and bear them off before your opponent. Let\'s practice each skill!</string>
@@ -85,7 +85,7 @@
     <string name="game_time_with_value">Game Time: %1$s</string>
     <string name="results_summary">%1$s %2$d:%3$d %4$s</string>
 
-    <string name="settings_title">Game Settings</string>
+    <string name="settings_title">⚙️ Game Settings</string>
     <string name="sound_enabled">Sound</string>
     <string name="effects_enabled">Effects</string>
     <string name="sound">Sound Volume</string>
@@ -94,7 +94,7 @@
     <string name="shake_duration">Shake Detection Precision</string>
     <string name="dice_delay">Dice Detection Delay</string>
     <string name="turn_delay">Delay Between Turns</string>
-    <string name="restore_defaults">Restore Defaults</string>
+    <string name="restore_defaults">↺ Restore Defaults</string>
     <string name="use_persian_digits">Use Persian Digits</string>
 
     <string name="shake_threshold_value">Shake sensitivity: %1$d</string>
@@ -112,7 +112,7 @@
     <string name="reset">Reset</string>
 
     <!-- Pass & Play -->
-    <string name="pass_and_play">Two Player</string>
+    <string name="pass_and_play">👥 Two Player</string>
     <string name="pass_and_play_subtitle">Play on one device</string>
     <string name="pass_and_play_setup">Two Player Setup</string>
     <string name="pass_and_play_player1_default">Player 1</string>
@@ -167,7 +167,7 @@
     <string name="iap_restore_purchases">Restore Purchases</string>
     <string name="iap_purchase_success">Purchase successful!</string>
     <string name="iap_purchase_failed">Purchase failed. Please try again.</string>
-    <string name="hint_button">Hint</string>
+    <string name="hint_button">💡 Hint</string>
     <string name="hint_watch_ad">Watch a short video to see the best move</string>
     <string name="hint_best_move">Best move highlighted!</string>
     <string name="theme_locked">Locked — tap to purchase</string>
@@ -181,7 +181,7 @@
     <string name="roll_button_label">ROLL</string>
 
     <!-- Game Over / Rematch -->
-    <string name="game_over_title">Game Over</string>
+    <string name="game_over_title">🏆 Game Over</string>
     <string name="game_over_winner">%1$s wins!</string>
     <string name="game_over_duration">Duration: %1$d:%2$02d</string>
     <string name="game_over_game_number">Game #%1$d</string>
@@ -193,9 +193,9 @@
     <string name="review_rate">Rate Now</string>
     <string name="review_later">Maybe Later</string>
     <string name="review_never">No Thanks</string>
-    <string name="rematch">Rematch</string>
+    <string name="rematch">🔄 Rematch</string>
     <string name="change_settings">Change Settings</string>
-    <string name="main_menu">Main Menu</string>
+    <string name="main_menu">🏠 Main Menu</string>
 
     <!-- Coin Economy -->
     <string name="coins">Coins</string>
@@ -206,25 +206,28 @@
     <string name="daily_login_claim">Claim</string>
     <string name="daily_login_claimed">Claimed!</string>
     <string name="daily_login_day">Day %1$d</string>
-    <string name="free_coins">Free Coins</string>
-    <string name="watch_ad_for_coins">Watch video for %1$d coins</string>
+    <string name="free_coins">🎬 Free Coins</string>
+    <string name="watch_ad_for_coins">🎬 Watch video for %1$d coins</string>
     <string name="double_reward">Double Coins</string>
     <string name="double_reward_desc">Watch a video to double your reward!</string>
     <string name="save_streak">Save Streak</string>
     <string name="save_streak_desc">Watch a video to keep your %1$d win streak!</string>
     <string name="bonus_chest">Bonus Chest</string>
     <string name="bonus_chest_desc">Watch a video for %1$d bonus coins!</string>
-    <string name="hint_choice_title">Get Hint</string>
-    <string name="hint_use_coins">Use %1$d coins</string>
-    <string name="hint_watch_video">Watch video (free)</string>
+    <string name="hint_choice_title">💡 Get Hint</string>
+    <string name="hint_use_coins">🪙 Use %1$d coins</string>
+    <string name="hint_watch_video">🎬 Watch video (free)</string>
     <string name="insufficient_coins">Not enough coins</string>
+    <string name="ad_on_cooldown">Next free ad in %1$s</string>
+    <string name="ad_daily_limit_reached">Come back tomorrow for more!</string>
+    <string name="reward_earned_title">Reward Earned!</string>
     <string name="weekly_challenge">Weekly Challenge</string>
     <string name="weekly_player">Player of the Week</string>
     <string name="weekly_warrior">Weekly Warrior</string>
     <string name="weekly_endurance">Endurance</string>
     <string name="weekly_progress">%1$d / %2$d</string>
-    <string name="undo_move">Undo Move</string>
-    <string name="coin_shop">Shop</string>
+    <string name="undo_move">↺ Undo</string>
+    <string name="coin_shop">🛍️ Shop</string>
     <string name="avatar_frames">Avatar Frames</string>
     <string name="dice_skins">Dice Skins</string>
     <string name="profile_titles">Titles</string>
@@ -241,9 +244,11 @@
     <string name="shop_rarity_epic">Epic</string>
     <string name="shop_rarity_legendary">Legendary</string>
     <string name="shop_locked_format">🔒 %1$d wins required</string>
+    <string name="shop_already_purchased">Already purchased</string>
+    <string name="shop_locked_short">Locked</string>
     <string name="shop_rental_button">Rent %1$d 🪙</string>
     <string name="shop_rental_active">Rented</string>
-    <string name="elo_rating_format">ELO %1$d</string>
+    <string name="elo_rating_format">🏅 ELO %1$d</string>
     <string name="elo_delta_positive">+%1$d ELO</string>
     <string name="elo_delta_negative">%1$d ELO</string>
     <string name="coins_breakdown">Coins Earned</string>
@@ -285,21 +290,90 @@
     <string name="theme_discount_activated">50%% discount activated for 1 hour!</string>
 
     <!-- Shop Deepening: Consumables & Bundles -->
-    <string name="shop_hint_pack_3">۳ راهنما</string>
-    <string name="shop_hint_pack_10">۱۰ راهنما</string>
-    <string name="shop_undo_pack_3">۳ برگشت</string>
-    <string name="shop_starter_bundle">باندل شروع</string>
-    <string name="shop_category_cosmetic">زیبایی</string>
-    <string name="shop_category_consumable">مصرفی</string>
-    <string name="shop_category_bundle">باندل</string>
-    <string name="shop_hint_charges">%d راهنما</string>
-    <string name="shop_undo_charges">%d برگشت</string>
-    <string name="not_enough_coins">سکه کافی نیست</string>
-    <string name="purchase_successful">خرید موفق</string>
+    <string name="shop_hint_pack_3">3 Hints</string>
+    <string name="shop_hint_pack_10">10 Hints</string>
+    <string name="shop_undo_pack_3">3 Undos</string>
+    <string name="shop_starter_bundle">Starter Bundle</string>
+    <string name="shop_hint_pack_3_desc">3 hint charges for your games</string>
+    <string name="shop_hint_pack_10_desc">10 hint charges for your games</string>
+    <string name="shop_undo_pack_3_desc">3 free move-undo charges</string>
+    <string name="shop_starter_bundle_desc">Silver Frame + Steel Dice + 50 bonus coins + 2 hints</string>
+    <string name="shop_category_cosmetic">Cosmetic</string>
+    <string name="shop_category_consumable">Consumable</string>
+    <string name="shop_category_bundle">Bundle</string>
+    <string name="shop_hint_charges">%d hints</string>
+    <string name="shop_undo_charges">%d undos</string>
+    <string name="not_enough_coins">Not enough coins</string>
+    <string name="purchase_successful">Purchase successful</string>
+
+    <!-- Shop badges -->
+    <string name="shop_badge_popular">Popular</string>
+    <string name="shop_badge_new">New</string>
+    <string name="shop_badge_discount">Discount</string>
+    <string name="shop_badge_special">Special</string>
+
+    <!-- Avatar Frames -->
+    <string name="frame_default_title">Classic Frame</string>
+    <string name="frame_default_desc">Simple wooden border</string>
+    <string name="frame_bronze_title">Bronze Frame</string>
+    <string name="frame_bronze_desc">Polished antique bronze border</string>
+    <string name="frame_silver_title">Silver Frame</string>
+    <string name="frame_silver_desc">Shining sterling silver border</string>
+    <string name="frame_carpet_title">Persian Carpet Frame</string>
+    <string name="frame_carpet_desc">Traditional hand-woven Isfahan carpet motifs</string>
+    <string name="frame_gold_title">Gold Frame</string>
+    <string name="frame_gold_desc">24-karat Persian gold with a royal pattern</string>
+    <string name="frame_peacock_title">Peacock Frame</string>
+    <string name="frame_peacock_desc">Persian peacock motifs with jewels</string>
+    <string name="frame_diamond_title">Diamond Crown</string>
+    <string name="frame_diamond_desc">Royal crown with sparkling diamonds</string>
+    <string name="frame_sultan_title">Sultan Frame</string>
+    <string name="frame_sultan_desc">Exclusive frame for backgammon sultans</string>
+
+    <!-- Dice Skins -->
+    <string name="dice_default_title">Bone Dice</string>
+    <string name="dice_default_desc">Classic white dice</string>
+    <string name="dice_walnut_title">Walnut Dice</string>
+    <string name="dice_walnut_desc">Natural dark mahogany dice</string>
+    <string name="dice_ruby_title">Ruby Dice</string>
+    <string name="dice_ruby_desc">Fiery red ruby dice</string>
+    <string name="dice_marble_title">Marble Dice</string>
+    <string name="dice_marble_desc">Beautiful swirled marble dice</string>
+    <string name="dice_crystal_title">Crystal Dice</string>
+    <string name="dice_crystal_desc">Clear crystal dice with a light shimmer</string>
+    <string name="dice_dragon_title">Dragon Dice</string>
+    <string name="dice_dragon_desc">Legendary dice with a dragon motif</string>
+
+    <!-- Titles -->
+    <string name="title_beginner_title">Beginner</string>
+    <string name="title_beginner_desc">Starting title for players</string>
+    <string name="title_sharp_title">Sharp</string>
+    <string name="title_sharp_desc">A clever backgammon player</string>
+    <string name="title_tactician_title">Tactician</string>
+    <string name="title_tactician_desc">Expert in strategy and tactics</string>
+    <string name="title_master_title">Board Master</string>
+    <string name="title_master_desc">A recognized backgammon master</string>
+    <string name="title_king_title">Royal Falcon</string>
+    <string name="title_king_desc">A royal backgammon player</string>
+    <string name="title_sultan_title">Board Sultan</string>
+    <string name="title_sultan_desc">Legendary title — for elites only</string>
 
     <!-- Retention & Rewards -->
-    <string name="daily_login_reward">روز %1$d ورود — %2$d سکه دریافت کردی! 🎉</string>
-    <string name="achievement_unlocked">دستاورد جدید: %1$s (%2$d سکه)</string>
-    <string name="daily_challenge_complete">چالش روزانه تکمیل شد! +%1$d سکه</string>
-    <string name="streak_milestone">رکورد %1$d برد متوالی! +%2$d سکه 🔥</string>
+    <string name="daily_login_reward">Day %1$d login — you earned %2$d coins! 🎉</string>
+    <string name="achievement_unlocked">New achievement: %1$s (%2$d coins)</string>
+    <string name="daily_challenge_complete">Daily challenge complete! +%1$d coins</string>
+    <string name="streak_milestone">%1$d-win streak! +%2$d coins 🔥</string>
+
+    <!-- Player Stats Screen -->
+    <string name="player_stats_title">Player Stats</string>
+    <string name="stats_wld_label">Wins / Losses / Draws</string>
+    <string name="stats_win_rate_label">Win Rate</string>
+    <string name="stats_best_streak_label">Best Streak</string>
+    <string name="stats_elo_label">Current ELO</string>
+    <string name="stats_coins_label">Coin Balance</string>
+    <string name="stats_achievements_label">Achievements</string>
+
+    <!-- Coin Shop Free Coins -->
+    <string name="free_coins_shop_button">Free Coins 📺</string>
+    <string name="free_coins_cooldown">%d min until next free coins</string>
 </resources>

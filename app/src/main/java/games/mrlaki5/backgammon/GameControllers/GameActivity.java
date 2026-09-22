@@ -954,7 +954,7 @@ public class GameActivity extends AppCompatActivity {
         if (model == null || model.getState() != 2 || model.getNextMoves() == null || model.getNextMoves().isEmpty()) {
             return;
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.DarkAlertDialogTheme);
         builder.setTitle(R.string.hint_choice_title);
         String[] options = new String[]{
                 getString(R.string.hint_use_coins, CoinConfig.HINT_COST),

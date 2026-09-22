@@ -27,3 +27,18 @@
     private android.graphics.Paint BorderChipPaint;
     private android.graphics.Paint TextPaint;
 }
+
+# Tapsell Plus SDK references optional ad-network adapters that are not bundled.
+# Suppress R8 missing-class warnings for all of them.
+-dontwarn com.adcolony.**
+-dontwarn com.unity3d.ads.**
+-dontwarn com.unity3d.services.**
+-dontwarn com.vungle.**
+-dontwarn com.ironsource.**
+-dontwarn com.applovin.**
+-dontwarn com.chartboost.**
+-dontwarn com.mopub.**
+-dontwarn ir.tapsell.plus.adnetworks.**
+# AdMob / IMA SDK — referenced by Tapsell but not in the foss/bazaar dependency tree
+-dontwarn com.google.android.gms.ads.**
+-dontwarn com.google.ads.interactivemedia.**

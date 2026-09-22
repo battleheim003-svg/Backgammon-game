@@ -381,6 +381,13 @@ public class GameAnalytics {
         analytics.logEvent(AnalyticsEvent.ACHIEVEMENT_UNLOCKED, params);
     }
 
+    public void trackStreakMilestone(int milestone, int reward) {
+        Bundle params = new Bundle();
+        params.putInt("milestone", milestone);
+        params.putInt(AnalyticsEvent.PARAM_AMOUNT, reward);
+        analytics.logEvent("streak_milestone", params);
+    }
+
     // ==================== ECONOMY & REWARDS ====================
 
     public void trackCoinEarned(int amount, String source, int newBalance) {

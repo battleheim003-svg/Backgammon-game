@@ -188,8 +188,8 @@
                     android:layout_height="36dp"
                     android:max="100"
                     android:progress="80"
-                    android:progressTint="@color/accent_gold"
-                    android:thumbTint="@color/accent_gold"
+                    android:progressDrawable="@drawable/seekbar_pause_progress"
+                    android:thumb="@drawable/seekbar_pause_thumb"
                     android:layout_marginBottom="12dp" />
 
                 <!-- Music Volume -->
@@ -224,8 +224,8 @@
                     android:layout_height="36dp"
                     android:max="100"
                     android:progress="55"
-                    android:progressTint="@color/accent_gold"
-                    android:thumbTint="@color/accent_gold" />
+                    android:progressDrawable="@drawable/seekbar_pause_progress"
+                    android:thumb="@drawable/seekbar_pause_thumb" />
 
             </LinearLayout>
 
@@ -303,8 +303,8 @@
                     android:layout_height="36dp"
                     android:max="5"
                     android:progress="1"
-                    android:progressTint="@color/accent_gold"
-                    android:thumbTint="@color/accent_gold" />
+                    android:progressDrawable="@drawable/seekbar_pause_progress"
+                    android:thumb="@drawable/seekbar_pause_thumb" />
 
             </LinearLayout>
 
@@ -382,8 +382,8 @@
                     android:layout_height="36dp"
                     android:max="1000"
                     android:progress="550"
-                    android:progressTint="@color/accent_gold"
-                    android:thumbTint="@color/accent_gold"
+                    android:progressDrawable="@drawable/seekbar_pause_progress"
+                    android:thumb="@drawable/seekbar_pause_thumb"
                     android:layout_marginBottom="12dp" />
 
                 <!-- Shake Precision -->
@@ -418,8 +418,8 @@
                     android:layout_height="36dp"
                     android:max="200"
                     android:progress="70"
-                    android:progressTint="@color/accent_gold"
-                    android:thumbTint="@color/accent_gold"
+                    android:progressDrawable="@drawable/seekbar_pause_progress"
+                    android:thumb="@drawable/seekbar_pause_thumb"
                     android:layout_marginBottom="12dp" />
 
                 <!-- Shake Delay -->
@@ -454,8 +454,8 @@
                     android:layout_height="36dp"
                     android:max="15"
                     android:progress="4"
-                    android:progressTint="@color/accent_gold"
-                    android:thumbTint="@color/accent_gold" />
+                    android:progressDrawable="@drawable/seekbar_pause_progress"
+                    android:thumb="@drawable/seekbar_pause_thumb" />
 
             </LinearLayout>
 

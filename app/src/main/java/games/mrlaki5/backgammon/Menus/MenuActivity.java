@@ -42,6 +42,7 @@ import games.mrlaki5.backgammon.MenuAudioManager;
 import games.mrlaki5.backgammon.Monetization.ads.AdCallback;
 import games.mrlaki5.backgammon.Monetization.ads.RewardedAdPlacement;
 import games.mrlaki5.backgammon.Monetization.ads.RewardedAdTracker;
+import games.mrlaki5.backgammon.Monetization.ads.RewardedAdUiHelper;
 import games.mrlaki5.backgammon.R;
 
 //Activity class for main menu
@@ -86,6 +87,14 @@ public class MenuActivity extends AppCompatActivity {
     private android.widget.TextView tvCoinBalance;
     private android.widget.TextView tvEloRating;
     private Button btnFreeCoins;
+    private final android.os.Handler freeCoinsTickHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable freeCoinsTick = new Runnable() {
+        @Override
+        public void run() {
+            refreshFreeCoinsButton();
+            freeCoinsTickHandler.postDelayed(this, 1000L);
+        }
+    };
 
     /**
      * Returns the shared AdManager instance.
@@ -249,6 +258,8 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        freeCoinsTickHandler.removeCallbacks(freeCoinsTick);
+        freeCoinsTickHandler.post(freeCoinsTick);
         if (profileManager != null) {
             profileManager.checkAndExpireRentals();
         } else {
@@ -286,6 +297,10 @@ public class MenuActivity extends AppCompatActivity {
                         int color = (i < result.streak) ? 0xFF4CAF50 : 0xFF616161;
                         dayCircle.setBackgroundTintList(android.content.res.ColorStateList.valueOf(color));
                     }
+                    View dayLabel = ((ViewGroup) dayCard).getChildAt(1);
+                    if (dayLabel instanceof TextView) {
+                        ((TextView) dayLabel).setText(getString(R.string.daily_login_day, i + 1));
+                    }
                 }
             }
         }
@@ -310,15 +325,23 @@ public class MenuActivity extends AppCompatActivity {
         if (tvEloRating != null && profileManager != null) {
             tvEloRating.setText(getString(R.string.elo_rating_format, profileManager.getElo()));
         }
-        if (btnFreeCoins != null && rewardedAdTracker != null) {
-            btnFreeCoins.setEnabled(rewardedAdTracker.canShow(RewardedAdPlacement.FREE_COINS));
-        }
+        refreshFreeCoinsButton();
+    }
+
+    private void refreshFreeCoinsButton() {
+        if (btnFreeCoins == null || rewardedAdTracker == null) return;
+        RewardedAdUiHelper.refreshButton(this, btnFreeCoins, rewardedAdTracker,
+                RewardedAdPlacement.FREE_COINS, CoinConfig.REWARDED_AD_WATCH);
     }
 
     public void onFreeCoinsClicked(View v) {
         playMenuTap();
-        if (rewardedAdTracker != null && !rewardedAdTracker.canShow(RewardedAdPlacement.FREE_COINS)) {
-            android.widget.Toast.makeText(this, R.string.insufficient_coins, android.widget.Toast.LENGTH_SHORT).show();
+        if (rewardedAdTracker != null && rewardedAdTracker.isDailyLimitReached(RewardedAdPlacement.FREE_COINS)) {
+            android.widget.Toast.makeText(this, R.string.ad_daily_limit_reached, android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (rewardedAdTracker != null && rewardedAdTracker.getCooldownRemainingSeconds(RewardedAdPlacement.FREE_COINS) > 0) {
+            refreshFreeCoinsButton();
             return;
         }
         if (adManager != null && adManager.isRewardedAdReady()) {
@@ -329,7 +352,7 @@ public class MenuActivity extends AppCompatActivity {
                 @Override
                 public void onAdFailedToLoad(String error) {
                     runOnUiThread(() -> android.widget.Toast.makeText(MenuActivity.this,
-                            R.string.iap_purchase_failed, android.widget.Toast.LENGTH_SHORT).show());
+                            R.string.ad_not_ready, android.widget.Toast.LENGTH_SHORT).show());
                 }
 
                 @Override
@@ -350,12 +373,16 @@ public class MenuActivity extends AppCompatActivity {
                         rewardedAdTracker.recordShow(RewardedAdPlacement.FREE_COINS);
                     }
                     GameAnalytics.get().trackRewardedAdWatched("free_coins");
-                    runOnUiThread(() -> updateCoinDisplay());
+                    runOnUiThread(() -> {
+                        updateCoinDisplay();
+                        RewardedAdUiHelper.showRewardDialog(MenuActivity.this,
+                                CoinConfig.REWARDED_AD_WATCH, MenuActivity.this::updateCoinDisplay);
+                    });
                 }
             });
         } else {
             if (adManager != null) adManager.preloadAds();
-            android.widget.Toast.makeText(this, R.string.iap_purchase_failed, android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(this, R.string.ad_not_ready, android.widget.Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -365,9 +392,16 @@ public class MenuActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void openPlayerStats(View v) {
+        playMenuTap();
+        Intent intent = new Intent(this, games.mrlaki5.backgammon.PlayerStatsActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
+        freeCoinsTickHandler.removeCallbacks(freeCoinsTick);
         MenuAudioManager.get().pauseMenuMusic();
     }
 

@@ -98,4 +98,33 @@ public class RewardedAdTracker {
         refreshIfNewDay();
         return MAX_TOTAL_PER_DAY - prefs.getInt(KEY_TOTAL_TODAY, 0);
     }
+
+    /**
+     * Returns true if the placement (or the global daily cap) has used up
+     * all of today's allowance — i.e. it won't become available again until tomorrow.
+     */
+    public synchronized boolean isDailyLimitReached(RewardedAdPlacement placement) {
+        refreshIfNewDay();
+        if (prefs.getInt(KEY_TOTAL_TODAY, 0) >= MAX_TOTAL_PER_DAY) return true;
+        if (placement.maxPerDay > 0 && prefs.getInt("count_" + placement.id, 0) >= placement.maxPerDay) return true;
+        return false;
+    }
+
+    /**
+     * Seconds remaining before this placement can show again, considering both the
+     * per-placement cooldown and the global cross-placement cooldown. 0 = ready now
+     * (though the daily cap may still be blocking it — check isDailyLimitReached too).
+     */
+    public synchronized long getCooldownRemainingSeconds(RewardedAdPlacement placement) {
+        refreshIfNewDay();
+        long now = System.currentTimeMillis();
+        long remainingMs = GLOBAL_COOLDOWN_MS - (now - prefs.getLong(KEY_LAST_AD_TIME, 0));
+
+        if (placement.cooldownSeconds > 0) {
+            long lastPlacement = prefs.getLong("last_" + placement.id, 0);
+            long placementRemaining = placement.cooldownSeconds * 1000L - (now - lastPlacement);
+            remainingMs = Math.max(remainingMs, placementRemaining);
+        }
+        return Math.max(0, remainingMs) / 1000L;
+    }
 }

@@ -15,6 +15,8 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import games.mrlaki5.backgammon.GameView.BoardMetrics;
+
 /**
  * Procedural board drawable for the Neon Retro theme.
  * Dark scanline grid (#0D0D0D with 4px scanlines at 15% alpha),
@@ -41,6 +43,7 @@ public class NeonRetroBoardDrawable extends Drawable {
     private final Paint pGlowLine    = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint pScanline    = new Paint();
     private final Path  path         = new Path();
+    private final BoardMetrics bm    = new BoardMetrics();
 
     public NeonRetroBoardDrawable() {
         pFill.setStyle(Paint.Style.FILL);
@@ -59,18 +62,18 @@ public class NeonRetroBoardDrawable extends Drawable {
         float H = b.height();
         if (W <= 0 || H <= 0) return;
 
-        float panelColW = W * 0.145f;
-        float boardW    = W - panelColW;
-        float frameT    = Math.max(10f, boardW * 0.013f);
+        bm.update((int) W, (int) H);
+        float frameT    = Math.max(10f, W * 0.011f);
+        float boardW    = bm.Width + bm.XBaseRight;
+        float panelColW = W - boardW;
 
         // ── Outer frame (#111111) ──
         pFill.setColor(C_FRAME);
         canvas.drawRect(0, 0, boardW, H, pFill);
 
-        // ── Inner board surface (#0D0D0D) ──
-        float iL = frameT, iT = frameT;
-        float iR = boardW - frameT, iB = H - frameT;
-        float iW = iR - iL, iH = iB - iT;
+        // ── Inner board surface (#0D0D0D), aligned to BoardMetrics ──
+        float iL = bm.XBaseLeft, iT = bm.YBaseTop;
+        float iR = bm.Width, iB = bm.Height;
 
         pFill.setColor(C_BG_DARK);
         canvas.drawRect(iL, iT, iR, iB, pFill);
@@ -81,20 +84,18 @@ public class NeonRetroBoardDrawable extends Drawable {
         }
 
         // ── Bar ──
-        float barW = iW * 0.027f;
-        float barX = iL + (iW - barW) / 2f;
+        float barX = iL + bm.LeftX;
+        float barW = bm.RightX - bm.LeftX;
         pFill.setColor(C_BAR_BG);
         canvas.drawRect(barX, iT, barX + barW, iB, pFill);
 
         // ── Triangles ──
-        float qW   = (iW - barW) / 2f;
-        float ptW  = qW / 6f;
-        float ptH  = iH * 0.435f;
-        float outSW = Math.max(1.0f, ptW * 0.014f);
+        float ptH  = bm.TriangleHeight;
+        float outSW = Math.max(1.0f, bm.PaddingXLeft * 0.014f);
         pOutline.setStrokeWidth(outSW);
 
-        drawQuadrantTriangles(canvas, iL, iT, iB, ptW, ptH, true);
-        drawQuadrantTriangles(canvas, barX + barW, iT, iB, ptW, ptH, false);
+        drawQuadrantTriangles(canvas, iL, iT, iB, bm.PaddingXLeft, ptH, true);
+        drawQuadrantTriangles(canvas, barX + barW, iT, iB, bm.PaddingXRight, ptH, false);
 
         // Bar neon lines (cyan on left, magenta on right)
         pGlowLine.setStrokeWidth(outSW);

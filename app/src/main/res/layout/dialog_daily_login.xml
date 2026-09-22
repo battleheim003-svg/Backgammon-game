@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-black"
-        android:text="ورود روزانه"
+        android:text="@string/daily_login_title"
         android:textColor="@color/color_gold_primary"
         android:textSize="16sp"
         android:textStyle="bold" />
@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="روز ۱"
+                android:text="@string/daily_login_day"
                 android:textColor="@color/text_primary"
                 android:textSize="10sp" />
         </LinearLayout>
@@ -66,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="روز ۲"
+                android:text="@string/daily_login_day"
                 android:textColor="@color/text_primary"
                 android:textSize="10sp" />
         </LinearLayout>
@@ -88,7 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="روز ۳"
+                android:text="@string/daily_login_day"
                 android:textColor="@color/text_primary"
                 android:textSize="10sp" />
         </LinearLayout>
@@ -110,7 +110,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="روز ۴"
+                android:text="@string/daily_login_day"
                 android:textColor="@color/text_primary"
                 android:textSize="10sp" />
         </LinearLayout>
@@ -132,7 +132,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="روز ۵"
+                android:text="@string/daily_login_day"
                 android:textColor="@color/text_primary"
                 android:textSize="10sp" />
         </LinearLayout>
@@ -154,7 +154,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="روز ۶"
+                android:text="@string/daily_login_day"
                 android:textColor="@color/text_primary"
                 android:textSize="10sp" />
         </LinearLayout>
@@ -176,7 +176,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="روز ۷"
+                android:text="@string/daily_login_day"
                 android:textColor="@color/text_primary"
                 android:textSize="10sp" />
         </LinearLayout>
@@ -197,7 +197,7 @@
         android:layout_height="44dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_button_play"
-        android:text="باشه"
+        android:text="@string/daily_login_claim"
         android:textColor="@color/surface_base"
         android:textSize="14sp"
         android:textStyle="bold"
