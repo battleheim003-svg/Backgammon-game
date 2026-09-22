@@ -3,6 +3,7 @@ package com.royalbackgammon.core.model
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import com.royalbackgammon.core.variant.Variant
 
 /**
  * Complete, serializable state of a backgammon game.
@@ -19,6 +20,7 @@ import kotlinx.serialization.json.Json
  * @property currentPlayer Currently active player (1=White, 2=Red).
  * @property turnState FSM state: 0=P1 initial roll, 1=P2 initial roll, 2=move, 3=roll.
  * @property winner 0 if game is ongoing, otherwise the winning player number.
+ * @property variant Rule variant this game is played under.
  */
 @Serializable
 data class GameState(
@@ -26,7 +28,8 @@ data class GameState(
     val dice: Array<Die> = Array(4) { Die(value = 0, used = true) },
     var currentPlayer: Int = Player.WHITE,
     var turnState: Int = STATE_INITIAL_ROLL_P1,
-    var winner: Int = Player.NONE
+    var winner: Int = Player.NONE,
+    val variant: Variant = Variant.STANDARD
 ) {
     companion object {
         const val STATE_INITIAL_ROLL_P1 = 0
@@ -44,10 +47,11 @@ data class GameState(
         fun bearOffIndex(player: Int): Int = if (player == Player.WHITE) WHITE_BEAR_OFF else RED_BEAR_OFF
 
         /**
-         * Creates a new game with the standard backgammon starting position.
+         * Creates a new game with the standard backgammon starting position
+         * (shared by all hitting-family variants).
          */
-        fun newGame(): GameState {
-            val state = GameState()
+        fun newGame(variant: Variant = Variant.STANDARD): GameState {
+            val state = GameState(variant = variant)
             // White pieces
             state.board[0].chipCount = 5; state.board[0].owner = Player.WHITE
             state.board[11].chipCount = 2; state.board[11].owner = Player.WHITE
@@ -61,7 +65,7 @@ data class GameState(
             return state
         }
 
-        private val json = Json { prettyPrint = false }
+        private val json = Json { prettyPrint = false; encodeDefaults = true; ignoreUnknownKeys = true }
 
         /**
          * Deserializes a GameState from JSON.
@@ -82,7 +86,8 @@ data class GameState(
         dice = Array(dice.size) { dice[it].copy() },
         currentPlayer = currentPlayer,
         turnState = turnState,
-        winner = winner
+        winner = winner,
+        variant = variant
     )
 
     /**
@@ -99,7 +104,8 @@ data class GameState(
                 dice.contentEquals(other.dice) &&
                 currentPlayer == other.currentPlayer &&
                 turnState == other.turnState &&
-                winner == other.winner
+                winner == other.winner &&
+                variant == other.variant
     }
 
     override fun hashCode(): Int {
@@ -108,6 +114,7 @@ data class GameState(
         result = 31 * result + currentPlayer
         result = 31 * result + turnState
         result = 31 * result + winner
+        result = 31 * result + variant.hashCode()
         return result
     }
 }
