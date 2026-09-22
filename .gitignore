@@ -15,3 +15,5 @@ app/release/baselineProfiles/
 hs_err_pid*
 replay_pid*
 .gradle-ci/
+/game-core/bin/
+/app/*/release/
