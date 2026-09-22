@@ -420,6 +420,9 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- Variant & match length -->
+    <include layout="@layout/include_variant_picker" />
+
     <!-- Difficulty selector row -->
     <LinearLayout
         android:id="@+id/difficultyRow"

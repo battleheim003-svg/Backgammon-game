@@ -378,4 +378,21 @@
     <!-- Coin Shop Free Coins -->
     <string name="free_coins_shop_button">سکه رایگان 📺</string>
     <string name="free_coins_cooldown">%d دقیقه تا سکه رایگان بعدی</string>
+
+    <!-- Variants & matches -->
+    <string name="variant_standard">استاندارد</string>
+    <string name="variant_tavla">تاولا</string>
+    <string name="variant_portes">پورتس</string>
+    <string name="variant_standard_rules">قوانین بین‌المللی: شروع‌کننده با تاس‌های اولیه بازی می‌کند. مارس ۲ و بک‌گمون ۳ امتیاز.</string>
+    <string name="variant_tavla_rules">سبک ترکی: برندهٔ تاس اول دوباره تاس می‌ریزد (جفت هم ممکن است). مارس ۲ امتیاز، بدون برد سه‌برابر.</string>
+    <string name="variant_portes_rules">سبک یونانی (دست اول تاولی): برندهٔ تاس اول دوباره تاس می‌ریزد. مارس ۲ امتیاز، بدون برد سه‌برابر.</string>
+    <string name="match_single">تک دست</string>
+    <string name="match_to_points">مسابقه تا %1$d</string>
+    <string name="game_over_result_line">%1$s — %2$s (%3$d امتیاز)</string>
+    <string name="win_type_single">برد ساده</string>
+    <string name="win_type_gammon">مارس!</string>
+    <string name="win_type_backgammon">بک‌گمون!</string>
+    <string name="game_over_match_score">مسابقه تا %1$d: %2$s %3$d – %4$d %5$s</string>
+    <string name="game_over_match_winner">برندهٔ مسابقه: %1$s</string>
+    <string name="next_game">بازی بعدی</string>
 </resources>

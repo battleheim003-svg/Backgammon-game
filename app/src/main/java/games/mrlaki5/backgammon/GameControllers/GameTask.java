@@ -2,6 +2,7 @@ package games.mrlaki5.backgammon.GameControllers;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.royalbackgammon.core.model.GameResult;
 import com.royalbackgammon.core.variant.OpeningRoll;
 
 import games.mrlaki5.backgammon.Beans.DiceThrow;
@@ -176,8 +177,12 @@ public class GameTask {
                                 } else {
                                     gameMode = MenuActivity.GAME_MODE_VS_BOT;
                                 }
+                                GameResult result = gameLogic.calculateResult();
+                                if (result != null && !gameActivity.isTutorialMode()) {
+                                    model.getMatch().record(result);
+                                }
                                 gameActivity.playGameFinishedEffect();
-                                gameActivity.onGameFinished(winningPlayer, p1Name, p2Name, gameMode);
+                                gameActivity.onGameFinished(winningPlayer, p1Name, p2Name, gameMode, result);
                             }
                             break;
                         }

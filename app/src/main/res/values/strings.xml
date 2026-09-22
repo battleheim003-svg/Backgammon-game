@@ -377,4 +377,21 @@
     <!-- Coin Shop Free Coins -->
     <string name="free_coins_shop_button">Free Coins 📺</string>
     <string name="free_coins_cooldown">%d min until next free coins</string>
+
+    <!-- Variants & matches -->
+    <string name="variant_standard">Standard</string>
+    <string name="variant_tavla">Tavla</string>
+    <string name="variant_portes">Portes</string>
+    <string name="variant_standard_rules">International rules: the starter plays the opening dice. Gammon 2, backgammon 3 points.</string>
+    <string name="variant_tavla_rules">Turkish style: the opening winner rolls again (doubles possible). Mars 2 points, no triple win.</string>
+    <string name="variant_portes_rules">Greek style (first game of Tavli): the opening winner rolls again. Gammon 2 points, no triple win.</string>
+    <string name="match_single">Single game</string>
+    <string name="match_to_points">Match to %1$d</string>
+    <string name="game_over_result_line">%1$s — %2$s (%3$d pts)</string>
+    <string name="win_type_single">Single win</string>
+    <string name="win_type_gammon">Gammon!</string>
+    <string name="win_type_backgammon">Backgammon!</string>
+    <string name="game_over_match_score">Match to %1$d: %2$s %3$d – %4$d %5$s</string>
+    <string name="game_over_match_winner">Match winner: %1$s</string>
+    <string name="next_game">Next game</string>
 </resources>

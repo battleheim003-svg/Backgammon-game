@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import com.royalbackgammon.core.scoring.MatchState;
+
 import games.mrlaki5.backgammon.Beans.BoardFieldState;
 import games.mrlaki5.backgammon.Beans.DiceThrow;
 import games.mrlaki5.backgammon.GameControllers.GameActivity;
@@ -108,6 +110,16 @@ public class ModelLoader {
                         case 6:
                             model.setVariant(Model.parseVariant(line.trim()));
                             break;
+                        //Line 7: load match=target whiteScore redScore gamesPlayed
+                        case 7:
+                            data=line.trim().split(" ");
+                            if(data.length==4){
+                                model.setMatch(new MatchState(model.getVariant(),
+                                        Math.max(1, Integer.parseInt(data[0])),
+                                        Integer.parseInt(data[1]), Integer.parseInt(data[2]),
+                                        Integer.parseInt(data[3])));
+                            }
+                            break;
                         default:
                             break;
                     }
@@ -182,6 +194,10 @@ public class ModelLoader {
             out.append(tempOut);
             //Line 6: save variant name
             out.append(model.getVariant().name()).append("\n");
+            //Line 7: save match=target whiteScore redScore gamesPlayed
+            MatchState match=model.getMatch();
+            out.append(match.getTargetPoints()+" "+match.getWhiteScore()+" "
+                    +match.getRedScore()+" "+match.getGamesPlayed()+"\n");
             //Flush writer
             out.flush();
         } catch (FileNotFoundException e) {

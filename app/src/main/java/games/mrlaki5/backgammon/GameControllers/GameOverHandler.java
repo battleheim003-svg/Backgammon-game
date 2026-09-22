@@ -1,5 +1,13 @@
 package games.mrlaki5.backgammon.GameControllers;
 
+import androidx.annotation.Nullable;
+
+import com.royalbackgammon.core.model.GameResult;
+import com.royalbackgammon.core.model.WinType;
+import com.royalbackgammon.core.scoring.MatchState;
+import com.royalbackgammon.core.variant.Variant;
+
+import games.mrlaki5.backgammon.Menus.VariantPicker;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -89,7 +97,8 @@ public class GameOverHandler {
      */
     public void handleGameFinished(int winningPlayer, String p1Name, String p2Name, String gameMode,
                                    boolean passAndPlayMode, boolean tutorialMode, boolean isRematchGame,
-                                   int sessionGameNumber, long durationSeconds, String difficultyName) {
+                                   int sessionGameNumber, long durationSeconds, String difficultyName,
+                                   @Nullable GameResult gameResult, Variant variant, MatchState match) {
         if (!gameResultRecorded) {
             gameResultRecorded = true;
             recordGameResult(winningPlayer, p1Name, p2Name, gameMode);
@@ -125,8 +134,9 @@ public class GameOverHandler {
         saveFile.delete();
 
         // Update ELO rating & economy via GameResultHandler
+        int points = gameResult != null ? gameResult.getPoints() : 1;
         GameResultHandler.ProcessedResult result = gameResultHandler.processResult(
-                winningPlayer == 1, gameMode, passAndPlayMode, tutorialMode);
+                winningPlayer == 1, gameMode, passAndPlayMode, tutorialMode, variant, points);
 
         final String winnerName = (winningPlayer == 1) ? p1Name : p2Name;
         final int streak = result.currentStreak;
@@ -139,7 +149,8 @@ public class GameOverHandler {
             showInterstitialIfAllowed();
             showGameOverDialog(winnerName, winningPlayer, p1Name, p2Name, gameMode,
                     passAndPlayMode, tutorialMode, streak, prevStreak, totalEarned,
-                    breakdown, delta, durationSeconds, sessionGameNumber, difficultyName);
+                    breakdown, delta, durationSeconds, sessionGameNumber, difficultyName,
+                    gameResult, variant, match);
         });
     }
 
@@ -183,7 +194,8 @@ public class GameOverHandler {
                                     int winStreak, int prevStreak, int coinsEarned,
                                     String coinBreakdown, int eloDelta,
                                     long durationSec, int sessionGameNumber,
-                                    String difficultyName) {
+                                    String difficultyName, @Nullable GameResult gameResult,
+                                    Variant variant, MatchState match) {
         if (activity.isFinishing() || activity.isDestroyed()) return;
         if (gameOverDialog != null && gameOverDialog.isShowing()) return;
 
@@ -193,6 +205,29 @@ public class GameOverHandler {
         TextView winnerText = dialogView.findViewById(R.id.gameOverWinner);
         if (winnerText != null) {
             winnerText.setText(activity.getString(R.string.game_over_winner, winnerName));
+        }
+
+        // 1b. Variant, win type and match score
+        TextView resultTypeText = dialogView.findViewById(R.id.gameOverResultType);
+        if (resultTypeText != null && gameResult != null && !tutorialMode) {
+            resultTypeText.setVisibility(View.VISIBLE);
+            resultTypeText.setText(activity.getString(R.string.game_over_result_line,
+                    activity.getString(VariantPicker.nameRes(variant)),
+                    activity.getString(winTypeRes(gameResult.getWinType())),
+                    gameResult.getPoints()));
+        }
+        TextView matchText = dialogView.findViewById(R.id.gameOverMatchScore);
+        boolean matchOngoing = match.getTargetPoints() > 1 && !match.isOver();
+        if (matchText != null && match.getTargetPoints() > 1 && !tutorialMode) {
+            matchText.setVisibility(View.VISIBLE);
+            String score = activity.getString(R.string.game_over_match_score,
+                    match.getTargetPoints(), p1Name, match.getWhiteScore(),
+                    match.getRedScore(), p2Name);
+            if (match.isOver()) {
+                String matchWinner = match.winner() == 1 ? p1Name : p2Name;
+                score += "\n" + activity.getString(R.string.game_over_match_winner, matchWinner);
+            }
+            matchText.setText(score);
         }
 
         // 2. Set game duration
@@ -215,7 +250,7 @@ public class GameOverHandler {
                 String deltaStr = (eloDelta > 0)
                         ? activity.getString(R.string.elo_delta_positive, eloDelta)
                         : activity.getString(R.string.elo_delta_negative, eloDelta);
-                eloText.setText(deltaStr + " (" + profileManager.getElo() + ")");
+                eloText.setText(deltaStr + " (" + profileManager.getElo(variant) + ")");
                 eloText.setTextColor((eloDelta > 0) ? Color.parseColor("#4CAF50") : Color.parseColor("#E57373"));
             } else {
                 eloText.setVisibility(View.GONE);
@@ -378,8 +413,11 @@ public class GameOverHandler {
         }
 
         // Rematch button
-        View btnRematch = dialogView.findViewById(R.id.gameOverRematch);
+        Button btnRematch = dialogView.findViewById(R.id.gameOverRematch);
         if (btnRematch != null) {
+            if (matchOngoing) {
+                btnRematch.setText(R.string.next_game);
+            }
             btnRematch.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onPlayEffect(GameAudio.EFFECT_MENU_TAP);
@@ -415,6 +453,14 @@ public class GameOverHandler {
         }
 
         gameOverDialog.show();
+    }
+
+    private static int winTypeRes(WinType type) {
+        switch (type) {
+            case GAMMON: return R.string.win_type_gammon;
+            case BACKGAMMON: return R.string.win_type_backgammon;
+            default: return R.string.win_type_single;
+        }
     }
 
     private void showInterstitialIfAllowed() {

@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.graphics.TypefaceCompat;
+import androidx.core.widget.NestedScrollView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -41,6 +42,8 @@ import games.mrlaki5.backgammon.GameView.themes.ThemeThumbnailLoader;
 import games.mrlaki5.backgammon.R;
 
 public class NewGameDialogFragment extends BottomSheetDialogFragment {
+
+    private VariantPicker variantPicker;
 
     private final int[] selectedTheme = new int[1];
     private final int[] selectedDiff = new int[1];
@@ -83,12 +86,17 @@ public class NewGameDialogFragment extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.new_game_bottom_sheet, container, false);
+        // Scroll wrapper keeps the sheet usable on short landscape screens
+        NestedScrollView scroll = new NestedScrollView(requireContext());
+        scroll.addView(inflater.inflate(R.layout.new_game_bottom_sheet, scroll, false));
+        return scroll;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        variantPicker = new VariantPicker(view);
 
         // Custom font for title
         TextView tvTitle = view.findViewById(R.id.sheetTitle);
@@ -164,6 +172,7 @@ public class NewGameDialogFragment extends BottomSheetDialogFragment {
                 intent.putExtra(MenuActivity.EXTRA_PLAYER2_NAME, getString(R.string.bot_player));
                 intent.putExtra(MenuActivity.EXTRA_PLAYER1_KIND, "Player");
                 intent.putExtra(MenuActivity.EXTRA_PLAYER2_KIND, "Bot");
+                variantPicker.applyTo(intent);
                 requireActivity().startActivityForResult(intent, MenuActivity.REQUEST_CODE_GAME);
             });
         }

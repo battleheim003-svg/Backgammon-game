@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import java.util.List;
 
+import com.royalbackgammon.core.scoring.MatchState;
 import com.royalbackgammon.core.variant.Variant;
 
 import games.mrlaki5.backgammon.Beans.BoardFieldState;
@@ -39,6 +40,8 @@ public class Model {
     private int State;
     //Rule variant of this game
     private Variant variant = Variant.STANDARD;
+    //Running score of the match this game belongs to (target 1 = single game)
+    private MatchState match = new MatchState(Variant.STANDARD, 1, 0, 0, 0);
 
     //Constructor used when loading model from save file
     public Model(){}
@@ -57,6 +60,11 @@ public class Model {
         //Load from extras player names and player kinds and create players
         if(extras!=null){
             variant=parseVariant(extras.getString(MenuActivity.EXTRA_VARIANT));
+            match=new MatchState(variant,
+                    Math.max(1, extras.getInt(MenuActivity.EXTRA_MATCH_TARGET, 1)),
+                    extras.getInt(MenuActivity.EXTRA_MATCH_WHITE_SCORE, 0),
+                    extras.getInt(MenuActivity.EXTRA_MATCH_RED_SCORE, 0),
+                    extras.getInt(MenuActivity.EXTRA_MATCH_GAMES, 0));
             String p1Name=extras.getString(MenuActivity.EXTRA_PLAYER1_NAME);
             String p2Name=extras.getString(MenuActivity.EXTRA_PLAYER2_NAME);
             if("Player".equals(extras.getString(MenuActivity.EXTRA_PLAYER1_KIND))){
@@ -162,6 +170,14 @@ public class Model {
 
     public void setVariant(Variant variant) {
         this.variant = variant;
+    }
+
+    public MatchState getMatch() {
+        return match;
+    }
+
+    public void setMatch(MatchState match) {
+        this.match = match;
     }
 
     //Unknown or missing names fall back to STANDARD (old saves, old intents)

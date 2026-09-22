@@ -398,6 +398,9 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- Variant & match length -->
+    <include layout="@layout/include_variant_picker" />
+
     <!-- Player Names Row -->
     <LinearLayout
         android:layout_width="match_parent"

@@ -1,6 +1,8 @@
 package games.mrlaki5.backgammon.GameControllers;
 
 import android.content.Context;
+
+import com.royalbackgammon.core.variant.Variant;
 import android.content.SharedPreferences;
 
 import games.mrlaki5.backgammon.Database.PlayerProfileManager;
@@ -15,10 +17,6 @@ import games.mrlaki5.backgammon.Util.DateUtil;
 import games.mrlaki5.backgammon.WinStreakTracker;
 
 public class GameResultHandler {
-
-    public interface ResultCallback {
-        void onResultProcessed(ProcessedResult result);
-    }
 
     public static class ProcessedResult {
         public final int currentStreak;
@@ -52,9 +50,11 @@ public class GameResultHandler {
     }
 
     /**
-     * Process game outcome: ELO update, win streak, coins, daily/weekly challenges, achievements.
+     * Process game outcome: ELO update (per variant), win streak, coins scaled by points won,
+     * daily/weekly challenges, achievements.
      */
-    public ProcessedResult processResult(boolean won, String gameMode, boolean passAndPlayMode, boolean tutorialMode) {
+    public ProcessedResult processResult(boolean won, String gameMode, boolean passAndPlayMode,
+                                         boolean tutorialMode, Variant variant, int points) {
         int currentStreak = 0;
         int previousStreak = 0;
         int coinsEarned = 0;
@@ -67,13 +67,13 @@ public class GameResultHandler {
             int difficulty = GamePreferences.getBotDifficulty(context);
             int botElo = PlayerProfileManager.getBotElo(difficulty);
 
-            eloDelta = profileManager.recordGameResult(won, botElo, gameMode);
+            eloDelta = profileManager.recordGameResult(won, botElo, gameMode, variant);
 
             if (won) {
                 profileManager.incrementWinCount();
                 currentStreak = streakTracker.recordWin();
-                coinsEarned = CoinConfig.WIN_BASE;
-                coinBreakdown.append(context.getString(R.string.coins_base_win, CoinConfig.WIN_BASE));
+                coinsEarned = CoinConfig.WIN_BASE * Math.max(1, points);
+                coinBreakdown.append(context.getString(R.string.coins_base_win, coinsEarned));
 
                 int diffBonus = 0;
                 if (difficulty == 1) diffBonus = CoinConfig.WIN_BONUS_MEDIUM;
@@ -125,29 +125,5 @@ public class GameResultHandler {
         }
 
         return new ProcessedResult(currentStreak, previousStreak, coinsEarned, eloDelta, coinBreakdown.toString());
-    }
-
-    /**
-     * Call when the local human player wins.
-     * Handles: coin reward, win count, streak, ELO, achievements.
-     * @param opponentKind "AI" | "Player" | "Online"
-     */
-    public void onPlayerWon(String opponentKind, ResultCallback callback) {
-        boolean passAndPlay = "Player".equalsIgnoreCase(opponentKind);
-        ProcessedResult result = processResult(true, passAndPlay ? "pass_and_play" : "vs_bot", passAndPlay, false);
-        if (callback != null) {
-            callback.onResultProcessed(result);
-        }
-    }
-
-    /**
-     * Call when the local human player loses.
-     */
-    public void onPlayerLost(String opponentKind, ResultCallback callback) {
-        boolean passAndPlay = "Player".equalsIgnoreCase(opponentKind);
-        ProcessedResult result = processResult(false, passAndPlay ? "pass_and_play" : "vs_bot", passAndPlay, false);
-        if (callback != null) {
-            callback.onResultProcessed(result);
-        }
     }
 }

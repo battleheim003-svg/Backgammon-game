@@ -1,5 +1,13 @@
 package games.mrlaki5.backgammon.GameControllers;
 
+import androidx.annotation.Nullable;
+
+import com.royalbackgammon.core.model.GameResult;
+import com.royalbackgammon.core.scoring.MatchState;
+import com.royalbackgammon.core.variant.Variant;
+
+import games.mrlaki5.backgammon.Menus.VariantPicker;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,6 +17,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
+import android.widget.Toast;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -342,6 +351,8 @@ public class GameActivity extends AppCompatActivity {
 
         // Subsystem Controllers
         initControllers(tutorialMode, passAndPlayMode, shakeThreshold, sampleTime, diceDelay);
+
+        showVariantBanner(tutorialMode);
 
         // Board initial draw
         BoardImage.setChipMatrix(model.getBoardFields());
@@ -874,11 +885,13 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    public void onGameFinished(int winningPlayer, String p1Name, String p2Name, String gameMode) {
+    public void onGameFinished(int winningPlayer, String p1Name, String p2Name, String gameMode,
+                               @Nullable GameResult result) {
         if (gameOverHandler != null) {
             gameOverHandler.handleGameFinished(winningPlayer, p1Name, p2Name, gameMode,
                     isPassAndPlayMode(), isTutorialMode(), isRematchGame,
-                    sessionGameNumber, getGameDurationSeconds(), getDifficultyName());
+                    sessionGameNumber, getGameDurationSeconds(), getDifficultyName(),
+                    result, model.getVariant(), model.getMatch());
         }
     }
 
@@ -892,6 +905,21 @@ public class GameActivity extends AppCompatActivity {
         finish();
     }
 
+    // Brief reminder of the variant and running match score when it is not a plain single game
+    private void showVariantBanner(boolean tutorialMode) {
+        MatchState match = model.getMatch();
+        if (tutorialMode || (model.getVariant() == Variant.STANDARD && match.getTargetPoints() <= 1)) {
+            return;
+        }
+        String text = getString(VariantPicker.nameRes(model.getVariant()));
+        if (match.getTargetPoints() > 1) {
+            text += " • " + getString(R.string.game_over_match_score, match.getTargetPoints(),
+                    model.getPlayers()[0].getPlayerName(), match.getWhiteScore(),
+                    match.getRedScore(), model.getPlayers()[1].getPlayerName());
+        }
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    }
+
     private void startRematch() {
         sessionGameNumber++;
         String mode = isPassAndPlayMode() ? "pass_and_play" : "vs_bot";
@@ -901,6 +929,14 @@ public class GameActivity extends AppCompatActivity {
         saveFile.delete();
 
         Intent intent = getIntent();
+        // Continue the running match, or start a fresh one of the same length and variant
+        MatchState match = model.getMatch();
+        boolean matchOngoing = !match.isOver();
+        intent.putExtra(MenuActivity.EXTRA_VARIANT, model.getVariant().name());
+        intent.putExtra(MenuActivity.EXTRA_MATCH_TARGET, match.getTargetPoints());
+        intent.putExtra(MenuActivity.EXTRA_MATCH_WHITE_SCORE, matchOngoing ? match.getWhiteScore() : 0);
+        intent.putExtra(MenuActivity.EXTRA_MATCH_RED_SCORE, matchOngoing ? match.getRedScore() : 0);
+        intent.putExtra(MenuActivity.EXTRA_MATCH_GAMES, matchOngoing ? match.getGamesPlayed() : 0);
         intent.putExtra(EXTRA_SESSION_GAME_NUMBER, sessionGameNumber);
         intent.putExtra(EXTRA_IS_REMATCH, true);
         finish();

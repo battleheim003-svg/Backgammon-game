@@ -1,5 +1,7 @@
 package games.mrlaki5.backgammon.Database;
 
+import com.royalbackgammon.core.variant.Variant;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -90,6 +92,19 @@ public class PlayerProfileManager {
 
     public int getElo() {
         return prefs.getInt(KEY_ELO, PlayerProfile.DEFAULT_ELO);
+    }
+
+    /** Rating for [variant]; STANDARD keeps the legacy global rating key. */
+    public int getElo(Variant variant) {
+        return prefs.getInt(eloKey(variant), PlayerProfile.DEFAULT_ELO);
+    }
+
+    private static String eloKey(Variant variant) {
+        return variant == Variant.STANDARD ? KEY_ELO : KEY_ELO + "_" + variant.name();
+    }
+
+    private static String gamesKey(Variant variant) {
+        return variant == Variant.STANDARD ? KEY_TOTAL_GAMES : KEY_TOTAL_GAMES + "_" + variant.name();
     }
 
     public int getWins() {
@@ -231,25 +246,30 @@ public class PlayerProfileManager {
      *
      * @param won true if player won
      * @param opponentElo opponent's ELO rating
-     * @param gameMode mode of game ("vs_bot", "pass_and_play", "online")
+     * @param gameMode mode of game ("vs_bot", "pass_and_play")
+     * @param variant rule variant; each variant has its own rating
      * @return ELO delta (positive if gained, negative if lost)
      */
-    public int recordGameResult(boolean won, int opponentElo, String gameMode) {
-        int currentElo = getElo();
-        int totalGames = getTotalGames();
-        int delta = EloCalculator.ratingDelta(currentElo, opponentElo, won, totalGames);
+    public int recordGameResult(boolean won, int opponentElo, String gameMode, Variant variant) {
+        int currentElo = getElo(variant);
+        int variantGames = prefs.getInt(gamesKey(variant), 0);
+        int delta = EloCalculator.ratingDelta(currentElo, opponentElo, won, variantGames);
         int newElo = currentElo + delta;
         if (newElo < 100) newElo = 100;
+        int totalGames = getTotalGames();
 
         int wins = getWins() + (won ? 1 : 0);
         int losses = getLosses() + (won ? 0 : 1);
         int newTotalGames = totalGames + 1;
 
         SharedPreferences.Editor editor = prefs.edit()
-                .putInt(KEY_ELO, newElo)
+                .putInt(eloKey(variant), newElo)
                 .putInt(KEY_WINS, wins)
                 .putInt(KEY_LOSSES, losses)
                 .putInt(KEY_TOTAL_GAMES, newTotalGames);
+        if (variant != Variant.STANDARD) {
+            editor.putInt(gamesKey(variant), variantGames + 1);
+        }
         if (won) {
             int totalWins = prefs.getInt("total_wins", 0);
             editor.putInt("total_wins", totalWins + 1);
@@ -259,7 +279,9 @@ public class PlayerProfileManager {
         // Update database profile
         try {
             PlayerProfile profile = dbHelper.getOrCreateProfile(getDisplayName());
-            profile.setElo(newElo);
+            if (variant == Variant.STANDARD) {
+                profile.setElo(newElo);
+            }
             profile.setWins(wins);
             profile.setLosses(losses);
             profile.setTotalGames(newTotalGames);

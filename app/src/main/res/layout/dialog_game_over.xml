@@ -35,6 +35,30 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
+    <!-- Variant, win type and points -->
+    <TextView
+        android:id="@+id/gameOverResultType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:textColor="#E6A100"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
+    <!-- Match score (matches longer than one point) -->
+    <TextView
+        android:id="@+id/gameOverMatchScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:textColor="@color/text_primary"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
     <!-- Game duration & info -->
     <TextView
         android:id="@+id/gameOverDuration"
