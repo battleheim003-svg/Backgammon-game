@@ -35,7 +35,13 @@ data class GameState(
     var winner: Int = Player.NONE,
     val variant: Variant = Variant.STANDARD,
     var turnsPlayed: Int = 0,
-    var headMovesThisTurn: Int = 0
+    var headMovesThisTurn: Int = 0,
+    /** Acey-deucey: a 1-2 was rolled and the named double has not been played yet. */
+    /** Acey-deucey: checkers of each player sent back by a hit (index 0 = White). */
+    var barHits: IntArray = IntArray(2),
+    var bonusDoublePending: Boolean = false,
+    /** Acey-deucey: this player rolls again after finishing the turn. */
+    var extraTurnPending: Boolean = false
 ) {
     companion object {
         const val STATE_INITIAL_ROLL_P1 = 0
@@ -49,7 +55,9 @@ data class GameState(
         const val RED_BEAR_OFF = 26
         const val WHITE_BEAR_OFF = 27
 
+        @JvmStatic
         fun barIndex(player: Int): Int = if (player == Player.WHITE) WHITE_BAR else RED_BAR
+        @JvmStatic
         fun bearOffIndex(player: Int): Int = if (player == Player.WHITE) WHITE_BEAR_OFF else RED_BEAR_OFF
 
         /**
@@ -61,6 +69,11 @@ data class GameState(
         fun newGame(variant: Variant = Variant.STANDARD): GameState {
             val state = GameState(variant = variant)
             val b = state.board
+            if (variant.startsOnBar) {
+                b[barIndex(Player.WHITE)].let { it.chipCount = 15; it.owner = Player.WHITE }
+                b[barIndex(Player.RED)].let { it.chipCount = 15; it.owner = Player.RED }
+                return state
+            }
             if (variant.family == RuleFamily.RUNNING || variant.family == RuleFamily.PINNING) {
                 b[BackgammonRules.headIndex(Player.WHITE, variant)].let { it.chipCount = 15; it.owner = Player.WHITE }
                 b[BackgammonRules.headIndex(Player.RED, variant)].let { it.chipCount = 15; it.owner = Player.RED }
@@ -103,16 +116,29 @@ data class GameState(
         winner = winner,
         variant = variant,
         turnsPlayed = turnsPlayed,
-        headMovesThisTurn = headMovesThisTurn
+        headMovesThisTurn = headMovesThisTurn,
+        barHits = barHits.copyOf(),
+        bonusDoublePending = bonusDoublePending,
+        extraTurnPending = extraTurnPending
     )
 
     /** Head-rule context for the current player's turn. */
-    fun turnContext(): TurnContext = TurnContext(headMovesThisTurn, firstTurn = turnsPlayed < 2)
+    fun turnContext(): TurnContext = TurnContext(headMovesThisTurn,
+        firstTurn = turnsPlayed < 2, hitCheckersOnBar = hitsOnBar(currentPlayer))
+
+    /** Checkers of [player] that are on the bar because they were hit. */
+    fun hitsOnBar(player: Int): Int = barHits[if (player == Player.WHITE) 0 else 1]
+
+    fun setHitsOnBar(player: Int, value: Int) {
+        barHits[if (player == Player.WHITE) 0 else 1] = maxOf(0, value)
+    }
 
     /** Ends the current turn: counts it, clears the head counter and switches player. */
     fun passTurn() {
         turnsPlayed++
         headMovesThisTurn = 0
+        bonusDoublePending = false
+        extraTurnPending = false
         switchPlayer()
     }
 
@@ -133,7 +159,10 @@ data class GameState(
                 winner == other.winner &&
                 variant == other.variant &&
                 turnsPlayed == other.turnsPlayed &&
-                headMovesThisTurn == other.headMovesThisTurn
+                headMovesThisTurn == other.headMovesThisTurn &&
+                barHits.contentEquals(other.barHits) &&
+                bonusDoublePending == other.bonusDoublePending &&
+                extraTurnPending == other.extraTurnPending
     }
 
     override fun hashCode(): Int {
@@ -145,6 +174,9 @@ data class GameState(
         result = 31 * result + variant.hashCode()
         result = 31 * result + turnsPlayed
         result = 31 * result + headMovesThisTurn
+        result = 31 * result + barHits.contentHashCode()
+        result = 31 * result + bonusDoublePending.hashCode()
+        result = 31 * result + extraTurnPending.hashCode()
         return result
     }
 }

@@ -447,7 +447,14 @@
     <string name="journey_7_title">کنار خزر</string>
     <string name="journey_7_flavor">نرد بلند: زدن نداریم، از سر هر نوبت یک مهره، و بستن راه سرنوشت را می‌سازد.</string>
     <string name="journey_7_opponent">فرید</string>
-    <string name="journey_8_title">استاد بزرگ</string>
-    <string name="journey_8_flavor">یک مسابقهٔ کامل تاولی: پورتس، پلاکوتو و فِوگا در برابر سرسخت‌ترین حریف.</string>
-    <string name="journey_8_opponent">استاد بزرگ</string>
+    <string name="journey_9_title">استاد بزرگ</string>
+    <string name="journey_9_flavor">یک مسابقهٔ کامل تاولی: پورتس، پلاکوتو و فِوگا در برابر سرسخت‌ترین حریف.</string>
+    <string name="journey_9_opponent">استاد بزرگ</string>
+    <string name="variant_acey">آسی-دیوسی</string>
+    <string name="variant_acey_rules">سبک آمریکایی: همهٔ مهره‌ها بیرون از صفحه شروع می‌کنند و مثل مهرهٔ بار وارد می‌شوند. تاس ۱-۲ یک جفت به انتخاب شما و یک نوبت اضافه می‌دهد. بازندهٔ بازی به ازای هر مهرهٔ باقی‌مانده یک امتیاز می‌دهد.</string>
+    <string name="acey_bonus_title">جفت را انتخاب کنید</string>
+    <string name="acey_bonus_option">جفت %1$d</string>
+    <string name="journey_8_title">بندر</string>
+    <string name="journey_8_flavor">آسی-دیوسی، بازی ملوان‌ها: همهٔ مهره‌ها بیرون از صفحه شروع می‌کنند و یک تاس ۱-۲ همه‌چیز را عوض می‌کند.</string>
+    <string name="journey_8_opponent">ناخدا</string>
 </resources>

@@ -165,6 +165,16 @@ public class ModelLoader {
                         model.setHeadMovesThisTurn(Integer.parseInt(data[1]));
                     }
                     break;
+                //Line 9 (acey-deucey): whiteHitsOnBar redHitsOnBar bonusPending extraTurnPending
+                case 9:
+                    data=line.trim().split(" ");
+                    if(data.length==4){
+                        model.setHitsOnBar(1, Integer.parseInt(data[0]));
+                        model.setHitsOnBar(2, Integer.parseInt(data[1]));
+                        model.setBonusDoublePending("1".equals(data[2]));
+                        model.setExtraTurnPending("1".equals(data[3]));
+                    }
+                    break;
                 default:
                     break;
             }
@@ -198,5 +208,8 @@ public class ModelLoader {
         out.append(match.getTargetPoints()+" "+match.getWhiteScore()+" "+match.getRedScore()+" "
                 +match.getGamesPlayed()+" "+(match.getRotation().isEmpty() ? "0" : "1")+"\n");
         out.append(model.getTurnsPlayed()+" "+model.getHeadMovesThisTurn()+"\n");
+        out.append(model.getHitsOnBar(1)+" "+model.getHitsOnBar(2)+" "
+                +(model.isBonusDoublePending() ? "1" : "0")+" "
+                +(model.isExtraTurnPending() ? "1" : "0")+"\n");
     }
 }

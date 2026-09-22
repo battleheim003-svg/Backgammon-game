@@ -45,6 +45,32 @@ public class BotMoveStrategy {
         return best;
     }
 
+    /** Acey-deucey: names the double that leaves the best position after playing it out. */
+    public int chooseBonusDouble(Model model, int difficulty, Random random) {
+        SearchProfile profile = profileFor(difficulty);
+        int bestValue = 6;
+        double bestScore = -Double.MAX_VALUE;
+        for (int value = 1; value <= 6; value++) {
+            Model copy = copyModel(model);
+            copy.setDiceThrows(dice(value, value));
+            GameLogic logic = new GameLogic(copy);
+            GameMoveExecutor executor = new GameMoveExecutor(copy);
+            while (true) {
+                List<NextJump> moves = logic.calculateMoves(copy.getBoardFields(),
+                        copy.getCurrentPlayer(), copy.getDiceThrows());
+                if (moves.isEmpty()) break;
+                NextJump move = chooseMove(copy, moves, difficulty, random);
+                executor.applyMove(move);
+            }
+            double score = evaluateBoard(copy, model.getCurrentPlayer(), profile);
+            if (score > bestScore) {
+                bestScore = score;
+                bestValue = value;
+            }
+        }
+        return bestValue;
+    }
+
     private double continueTurnOrRoll(Model model, int rootPlayer, int rollsRemaining,
                                       SearchProfile profile, Random random,
                                       SearchBudget budget) {

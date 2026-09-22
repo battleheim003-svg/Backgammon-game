@@ -901,6 +901,52 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    private final Object bonusDoubleLock = new Object();
+    private volatile int bonusDoubleChoice = 0;
+
+    /**
+     * Acey-deucey: asks the player (or the bot) which double to play after a 1-2.
+     * Called from the game thread and blocks until a value is chosen.
+     */
+    public int chooseBonusDouble() {
+        if (!(model.getCurrentObjectPlayer() instanceof games.mrlaki5.backgammon.Players.Human)) {
+            return new games.mrlaki5.backgammon.Players.BotMoveStrategy()
+                    .chooseBonusDouble(model, getBotDifficulty(), new java.util.Random());
+        }
+        bonusDoubleChoice = 0;
+        runOnUiThread(this::showBonusDoubleDialog);
+        synchronized (bonusDoubleLock) {
+            while (bonusDoubleChoice == 0) {
+                try {
+                    bonusDoubleLock.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return 6;
+                }
+            }
+        }
+        return bonusDoubleChoice;
+    }
+
+    private void showBonusDoubleDialog() {
+        String[] options = new String[6];
+        for (int i = 0; i < 6; i++) {
+            options[i] = getString(R.string.acey_bonus_option, i + 1);
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.DarkAlertDialogTheme);
+        builder.setTitle(R.string.acey_bonus_title);
+        builder.setCancelable(false);
+        builder.setItems(options, (dialog, which) -> setBonusDoubleChoice(which + 1));
+        builder.show();
+    }
+
+    private void setBonusDoubleChoice(int value) {
+        synchronized (bonusDoubleLock) {
+            bonusDoubleChoice = value;
+            bonusDoubleLock.notifyAll();
+        }
+    }
+
     /** Difficulty for this game: a journey chapter overrides the player's setting. */
     public int getBotDifficulty() {
         int override = getIntent().getIntExtra(MenuActivity.EXTRA_BOT_DIFFICULTY, -1);

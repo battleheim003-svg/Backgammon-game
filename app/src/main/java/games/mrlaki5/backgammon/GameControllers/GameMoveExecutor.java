@@ -1,6 +1,7 @@
 package games.mrlaki5.backgammon.GameControllers;
 
 import com.royalbackgammon.core.logic.BackgammonRules;
+import com.royalbackgammon.core.model.GameState;
 import com.royalbackgammon.core.variant.RuleFamily;
 import com.royalbackgammon.core.variant.Variant;
 
@@ -62,6 +63,7 @@ public class GameMoveExecutor {
         }
 
         countHeadMove(srcField);
+        countBarEntry(srcField);
         releasePinnedIfUncovered(srcField);
         model.recordMove(jump);
         consumeDice(jump.getJumpNumber());
@@ -80,6 +82,7 @@ public class GameMoveExecutor {
         releasePinnedIfUncovered(src);
 
         countHeadMove(src);
+        countBarEntry(src);
         model.recordMove(jump);
         consumeDice(jump.getJumpNumber());
         boolean hit = placeChecker(jump.getDstField());
@@ -100,6 +103,15 @@ public class GameMoveExecutor {
         board[srcField].setNumberOfChips(board[srcField].getNumberOfChips() + 1);
         if (board[srcField].getNumberOfChips() == 1) {
             board[srcField].setPlayer(model.getCurrentPlayer());
+        }
+    }
+
+    // Acey-deucey: a checker coming in off the bar clears one of the hits waiting there
+    private void countBarEntry(int srcField) {
+        if (model.getVariant().getStartsOnBar()
+                && srcField == GameState.barIndex(model.getCurrentPlayer())) {
+            model.setHitsOnBar(model.getCurrentPlayer(),
+                    model.getHitsOnBar(model.getCurrentPlayer()) - 1);
         }
     }
 
@@ -144,6 +156,7 @@ public class GameMoveExecutor {
         boolean hit = lone;
 
         if (hit) {
+            model.setHitsOnBar(destinationPlayer, model.getHitsOnBar(destinationPlayer) + 1);
             int bar = 23 + destinationPlayer;
             board[bar].setNumberOfChips(board[bar].getNumberOfChips() + 1);
             board[bar].setPlayer(destinationPlayer);

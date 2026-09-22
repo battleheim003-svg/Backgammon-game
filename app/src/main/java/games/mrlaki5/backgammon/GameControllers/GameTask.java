@@ -165,6 +165,17 @@ public class GameTask {
                             if (workFlag.get() == 0 || executor.isCancelled()) break;
                         }
 
+                        // Acey-deucey: after the 1-2 the player names a double and plays it
+                        if (model.isBonusDoublePending()) {
+                            int value = gameActivity.chooseBonusDouble();
+                            if (workFlag.get() == 0 || executor.isCancelled()) break;
+                            model.setDiceThrows(bonusDice(value));
+                            model.setBonusDoublePending(false);
+                            onBoardImage.setDices(model.getDiceThrows());
+                            onBoardImage.postInvalidate();
+                            break;  // replay state 2 with the named double
+                        }
+
                         // Check if current player finished game
                         if (gameLogic.isGameOver()) {
                             if (endRoutineStarted.compareAndSet(0, 1)) {
@@ -186,6 +197,14 @@ public class GameTask {
                                 gameActivity.playGameFinishedEffect();
                                 gameActivity.onGameFinished(winningPlayer, p1Name, p2Name, gameMode, result);
                             }
+                            break;
+                        }
+
+                        // Acey-deucey: the 1-2 roll earns another roll for the same player
+                        if (model.isExtraTurnPending()) {
+                            model.setExtraTurnPending(false);
+                            model.flushTurnRecord();
+                            model.setState(3);
                             break;
                         }
 
@@ -237,6 +256,14 @@ public class GameTask {
                 this.notifyAll();
             }
         }
+    }
+
+    private static DiceThrow[] bonusDice(int value) {
+        DiceThrow[] dice = new DiceThrow[4];
+        for (int i = 0; i < dice.length; i++) {
+            dice[i] = new DiceThrow(value);
+        }
+        return dice;
     }
 
     // Higher opening die starts; a tie restarts the opening roll

@@ -106,7 +106,7 @@ object BackgammonRules {
         if (dieValues.isEmpty()) return emptyList()
 
         return when (variant.family) {
-            RuleFamily.HITTING -> hittingMoves(board, player, dieValues, phase, variant)
+            RuleFamily.HITTING -> hittingMoves(board, player, dieValues, phase, variant, turn)
             RuleFamily.RUNNING -> runningMoves(board, player, dice, dieValues, phase, variant, turn)
             RuleFamily.PINNING -> pinningMoves(board, player, dieValues, phase, variant)
         }
@@ -117,14 +117,17 @@ object BackgammonRules {
         player: Int,
         dieValues: List<Int>,
         phase: GamePhase,
-        variant: Variant
+        variant: Variant,
+        turn: TurnContext
     ): List<Move> {
         val moves = mutableListOf<Move>()
         val barIndex = GameState.barIndex(player)
-        val mustPlayBar = board[barIndex].chipCount > 0
+        // Acey-deucey: checkers that have never entered may wait, hit checkers may not
+        val mustPlayBar = board[barIndex].chipCount > 0 &&
+                (!variant.startsOnBar || turn.hitCheckersOnBar > 0)
         val farthestBack = if (phase == GamePhase.BEARING_OFF) farthestBackReal(board, player, variant) else -1
 
-        val sources = if (mustPlayBar) listOf(barIndex) else (0 until 24).toList()
+        val sources = if (mustPlayBar) listOf(barIndex) else (0 until 24).toList() + barIndex
         for (i in sources) {
             if (board[i].owner != player || board[i].chipCount <= 0) continue
             val realPos = PositionMapper.toReal(i, player, variant)
@@ -364,6 +367,8 @@ object BackgammonRules {
     fun winType(board: Array<BoardField>, winner: Int, variant: Variant = Variant.STANDARD): WinType {
         val loser = Player.opponent(winner)
         if (board[GameState.bearOffIndex(loser)].chipCount > 0) return WinType.SINGLE
+        // Acey-deucey scores by checkers left, so gammons carry no extra meaning
+        if (variant.scoreByRemainingCheckers) return WinType.SINGLE
         if (variant.family != RuleFamily.HITTING) return WinType.GAMMON
 
         if (board[GameState.barIndex(loser)].chipCount > 0) return WinType.BACKGAMMON
@@ -387,7 +392,14 @@ object BackgammonRules {
             return if (variant.family == RuleFamily.PINNING) motherResult(board, variant) else null
         }
         val type = winType(board, winner, variant)
-        return GameResult(winner = winner, winType = type, points = variant.scoring.pointsFor(type))
+        val points = if (variant.scoreByRemainingCheckers) {
+            // Acey-deucey: one point per checker the loser has not borne off
+            val loser = Player.opponent(winner)
+            maxOf(1, 15 - board[GameState.bearOffIndex(loser)].chipCount)
+        } else {
+            variant.scoring.pointsFor(type)
+        }
+        return GameResult(winner = winner, winType = type, points = points)
     }
 
     /**

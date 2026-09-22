@@ -446,7 +446,14 @@
     <string name="journey_7_title">By the Caspian</string>
     <string name="journey_7_flavor">Long Nardy: no hitting, one checker per turn off the head, blocks decide the race.</string>
     <string name="journey_7_opponent">Farid</string>
-    <string name="journey_8_title">The grand master</string>
-    <string name="journey_8_flavor">A full Tavli match: Portes, Plakoto and Fevga against the strongest opponent.</string>
-    <string name="journey_8_opponent">The grand master</string>
+    <string name="journey_9_title">The grand master</string>
+    <string name="journey_9_flavor">A full Tavli match: Portes, Plakoto and Fevga against the strongest opponent.</string>
+    <string name="journey_9_opponent">The grand master</string>
+    <string name="variant_acey">Acey-deucey</string>
+    <string name="variant_acey_rules">American style: all checkers start off the board and enter like from the bar. A 1-2 roll adds a double of your choice and another roll. The loser pays a point for every checker still on the board.</string>
+    <string name="acey_bonus_title">Name a double</string>
+    <string name="acey_bonus_option">Double %1$d</string>
+    <string name="journey_8_title">The harbour</string>
+    <string name="journey_8_flavor">Acey-deucey, the sailors\' game: every checker starts off the board and a 1-2 changes everything.</string>
+    <string name="journey_8_opponent">The captain</string>
 </resources>

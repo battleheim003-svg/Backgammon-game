@@ -81,6 +81,10 @@ class GameEngine(
             GameState.STATE_ROLL -> {
                 val rolled = diceRoller.rollTurn()
                 for (i in 0 until 4) state.dice[i] = rolled[i]
+                if (state.variant.aceyDeuceyRoll && isAceyDeucey(state.dice)) {
+                    state.bonusDoublePending = true
+                    state.extraTurnPending = true
+                }
                 state.turnState = GameState.STATE_MOVE
                 recalculateLegalMoves()
                 state.dice
@@ -110,11 +114,31 @@ class GameEngine(
         return moveResult
     }
 
+    /** True once the 1-2 has been played and the player still has to name a double. */
+    fun needsBonusDouble(): Boolean =
+        state.bonusDoublePending && legalMoves.isEmpty() && state.turnState == GameState.STATE_MOVE
+
+    /** Acey-deucey: plays the named double [value] (1–6) as four dice. */
+    fun playBonusDouble(value: Int) {
+        require(value in 1..6) { "A named double must be 1-6" }
+        check(state.bonusDoublePending) { "No bonus double is pending" }
+        for (i in 0 until 4) state.dice[i] = Die(value)
+        state.bonusDoublePending = false
+        recalculateLegalMoves()
+    }
+
     /**
      * Ends the current player's turn and switches to the other player's roll phase.
      * Should be called when [legalMoves] is empty after dice have been rolled.
      */
     fun endTurn() {
+        if (state.extraTurnPending && !state.bonusDoublePending) {
+            // Acey-deucey: the same player rolls again
+            state.extraTurnPending = false
+            state.turnState = GameState.STATE_ROLL
+            legalMoves = emptyList()
+            return
+        }
         state.passTurn()
         state.turnState = GameState.STATE_ROLL
         legalMoves = emptyList()
@@ -130,6 +154,11 @@ class GameEngine(
      * Returns true if the game has ended.
      */
     fun isGameOver(): Boolean = result != null
+
+    private fun isAceyDeucey(dice: Array<Die>): Boolean {
+        val values = dice.filter { it.value > 0 }.map { it.value }.sorted()
+        return values == listOf(1, 2)
+    }
 
     private fun finishIfWon(): Boolean {
         val gameResult = BackgammonRules.gameResult(state.board, state.variant) ?: return false

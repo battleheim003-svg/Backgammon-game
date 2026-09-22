@@ -22,7 +22,9 @@ public enum JourneyStage {
             Variant.FEVGA, GamePreferences.BOT_HARD, 3, false, 70),
     CASPIAN(R.string.journey_7_title, R.string.journey_7_flavor, R.string.journey_7_opponent,
             Variant.NARDY, GamePreferences.BOT_HARD, 5, false, 90),
-    GRAND_MASTER(R.string.journey_8_title, R.string.journey_8_flavor, R.string.journey_8_opponent,
+    HARBOUR(R.string.journey_8_title, R.string.journey_8_flavor, R.string.journey_8_opponent,
+            Variant.ACEY_DEUCEY, GamePreferences.BOT_HARD, 1, false, 100),
+    GRAND_MASTER(R.string.journey_9_title, R.string.journey_9_flavor, R.string.journey_9_opponent,
             Variant.PORTES, GamePreferences.BOT_ROYAL, 5, true, 150);
 
     private final int titleRes;

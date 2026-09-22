@@ -73,6 +73,13 @@ public class VariantGameFlowTest {
     }
 
     @Test
+    public void botGamesFinishUnderAceyDeuceyRules() {
+        for (int seed = 0; seed < 3; seed++) {
+            playBotGame(Variant.ACEY_DEUCEY, seed);
+        }
+    }
+
+    @Test
     public void botGameStillFinishesUnderStandardRules() {
         playBotGame(Variant.STANDARD, 11);
     }
@@ -100,9 +107,11 @@ public class VariantGameFlowTest {
         int head1 = BackgammonRules.headIndex(1, variant);
         int head2 = BackgammonRules.headIndex(2, variant);
 
-        for (int turn = 0; turn < 1500 && !logic.isGameOver(); turn++) {
-            model.setState(3);
-            model.setDiceThrows(logic.rollDices());
+        for (int turn = 0; turn < 3000 && !logic.isGameOver(); turn++) {
+            if (!model.isBonusDoublePending()) {
+                model.setState(3);
+                model.setDiceThrows(logic.rollDices());
+            }
             model.setState(2);
             int player = model.getCurrentPlayer();
             int headMoves = 0;
@@ -124,6 +133,19 @@ public class VariantGameFlowTest {
                 assertTrue("head rule", headMoves <= 1);
             }
             if (logic.isGameOver()) break;
+            if (model.isBonusDoublePending()) {
+                int value = new BotMoveStrategy().chooseBonusDouble(model,
+                        GamePreferences.BOT_MEDIUM, random);
+                DiceThrow[] bonus = new DiceThrow[]{new DiceThrow(value), new DiceThrow(value),
+                        new DiceThrow(value), new DiceThrow(value)};
+                model.setDiceThrows(bonus);
+                model.setBonusDoublePending(false);
+                continue;
+            }
+            if (model.isExtraTurnPending()) {
+                model.setExtraTurnPending(false);
+                continue;
+            }
             model.onTurnEnded();
             model.changeCurrentPlayer();
         }

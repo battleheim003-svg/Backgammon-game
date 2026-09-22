@@ -19,11 +19,11 @@ public final class VariantPicker {
 
     private static final Variant[] VARIANTS = {
             Variant.STANDARD, Variant.TAVLA, Variant.PORTES,
-            Variant.PLAKOTO, Variant.FEVGA, Variant.NARDY
+            Variant.PLAKOTO, Variant.FEVGA, Variant.NARDY, Variant.ACEY_DEUCEY
     };
     private static final int[] BUTTON_IDS = {
             R.id.variantStandard, R.id.variantTavla, R.id.variantPortes,
-            R.id.variantPlakoto, R.id.variantFevga, R.id.variantNardy
+            R.id.variantPlakoto, R.id.variantFevga, R.id.variantNardy, R.id.variantAcey
     };
     private static final int[] MATCH_LENGTHS = {1, 3, 5, 7};
     private static final int[] TAVLI_MATCH_LENGTHS = {5, 7};
@@ -116,6 +116,7 @@ public final class VariantPicker {
             case PLAKOTO: return R.string.variant_plakoto;
             case FEVGA: return R.string.variant_fevga;
             case NARDY: return R.string.variant_nardy;
+            case ACEY_DEUCEY: return R.string.variant_acey;
             default: return R.string.variant_standard;
         }
     }
@@ -127,6 +128,7 @@ public final class VariantPicker {
             case PLAKOTO: return R.string.variant_plakoto_rules;
             case FEVGA: return R.string.variant_fevga_rules;
             case NARDY: return R.string.variant_nardy_rules;
+            case ACEY_DEUCEY: return R.string.variant_acey_rules;
             default: return R.string.variant_standard_rules;
         }
     }

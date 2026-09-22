@@ -53,6 +53,10 @@ public class Model {
     //Completed turns this game and checkers moved off the head this turn (running family)
     private int turnsPlayed = 0;
     private int headMovesThisTurn = 0;
+    //Acey-deucey: checkers sent back by a hit (index 0 white, 1 red), and the 1-2 bonus state
+    private final int[] barHits = new int[2];
+    private boolean bonusDoublePending = false;
+    private boolean extraTurnPending = false;
     //Turn-by-turn history for the post-game review (human turns are the ones analysed)
     private final List<TurnRecord> turnHistory = new ArrayList<>();
     private TurnRecord currentTurnRecord;
@@ -179,6 +183,8 @@ public class Model {
         flushTurnRecord();
         turnsPlayed++;
         headMovesThisTurn=0;
+        bonusDoublePending=false;
+        extraTurnPending=false;
     }
 
     //Called when the current player is about to move, and again after an undo
@@ -206,7 +212,31 @@ public class Model {
     }
 
     public TurnContext getTurnContext(){
-        return new TurnContext(headMovesThisTurn, turnsPlayed < 2);
+        return new TurnContext(headMovesThisTurn, turnsPlayed < 2, getHitsOnBar(CurrentPlayer));
+    }
+
+    public int getHitsOnBar(int player){
+        return barHits[player == 1 ? 0 : 1];
+    }
+
+    public void setHitsOnBar(int player, int value){
+        barHits[player == 1 ? 0 : 1] = Math.max(0, value);
+    }
+
+    public boolean isBonusDoublePending() {
+        return bonusDoublePending;
+    }
+
+    public void setBonusDoublePending(boolean pending) {
+        this.bonusDoublePending = pending;
+    }
+
+    public boolean isExtraTurnPending() {
+        return extraTurnPending;
+    }
+
+    public void setExtraTurnPending(boolean pending) {
+        this.extraTurnPending = pending;
     }
 
     public int getTurnsPlayed() {

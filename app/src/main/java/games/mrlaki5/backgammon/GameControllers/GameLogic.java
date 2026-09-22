@@ -145,6 +145,20 @@ public class GameLogic {
         return dice;
     }
 
+    //Acey-deucey: a 1-2 roll owes a named double and an extra roll
+    private void markAceyDeuceyRoll(DiceThrow[] dices){
+        if(model==null || !model.getVariant().getAceyDeuceyRoll()){
+            return;
+        }
+        int a=dices[0].getThrowNumber();
+        int b=dices[1].getThrowNumber();
+        boolean acey=(a==1 && b==2) || (a==2 && b==1);
+        if(acey && model.getState()>=2){
+            model.setBonusDoublePending(true);
+            model.setExtraTurnPending(true);
+        }
+    }
+
     //Method for rolling dices
     public DiceThrow[] rollDices(){
         //Create new array for rolled dices
@@ -183,6 +197,7 @@ public class GameLogic {
             retDices[2].setAlreadyUsed(1);
             retDices[3].setAlreadyUsed(1);
         }
+        markAceyDeuceyRoll(retDices);
         return retDices;
     }
 

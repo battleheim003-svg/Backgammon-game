@@ -21,6 +21,9 @@ object MoveExecutor {
         val src = move.from
         val dst = move.to
 
+        if (state.variant.startsOnBar && src == GameState.barIndex(player)) {
+            state.setHitsOnBar(player, state.hitsOnBar(player) - 1)
+        }
         if (state.variant.family == RuleFamily.RUNNING &&
             src == BackgammonRules.headIndex(player, state.variant)
         ) {
@@ -79,6 +82,7 @@ object MoveExecutor {
         }
         val hit = lone
         if (hit) {
+            state.setHitsOnBar(opponent, state.hitsOnBar(opponent) + 1)
             // Send opponent's checker to the bar
             val opponentBar = GameState.barIndex(opponent)
             board[opponentBar].chipCount++

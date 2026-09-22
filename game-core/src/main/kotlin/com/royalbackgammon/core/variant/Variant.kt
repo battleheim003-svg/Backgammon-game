@@ -55,7 +55,13 @@ enum class Variant(
     val openingRoll: OpeningRoll,
     val scoring: WinScoring,
     val cubeAllowed: Boolean,
-    val headRule: HeadRule = HeadRule.NONE
+    val headRule: HeadRule = HeadRule.NONE,
+    /** Acey-deucey: every checker starts on the bar and must be entered. */
+    val startsOnBar: Boolean = false,
+    /** Acey-deucey: a 1-2 roll adds a named double and another roll. */
+    val aceyDeuceyRoll: Boolean = false,
+    /** Acey-deucey: the loser pays one point per checker still on the board. */
+    val scoreByRemainingCheckers: Boolean = false
 ) {
     STANDARD(RuleFamily.HITTING, OpeningRoll.PLAY_OPENING_DICE, WinScoring(1, 2, 3), cubeAllowed = true),
     TAVLA(RuleFamily.HITTING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false),
@@ -65,6 +71,10 @@ enum class Variant(
     /** Long Nardy: oyn 1, mars 2. */
     NARDY(RuleFamily.RUNNING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false,
         headRule = HeadRule.ONE_PER_TURN),
+    /** American acey-deucey: enter from the fence, 1-2 grants a named double and an extra roll. */
+    ACEY_DEUCEY(RuleFamily.HITTING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 1, 1),
+        cubeAllowed = false, startsOnBar = true, aceyDeuceyRoll = true,
+        scoreByRemainingCheckers = true),
     /** Fevga, third game of Tavli: the lead checker must pass the opponent's start first. */
     FEVGA(RuleFamily.RUNNING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false,
         headRule = HeadRule.LEAD_MUST_PASS);
