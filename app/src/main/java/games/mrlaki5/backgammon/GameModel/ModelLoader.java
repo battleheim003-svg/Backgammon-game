@@ -76,14 +76,15 @@ public class ModelLoader {
                             }
                             model.setPlayers(players);
                             break;
-                        //Line 3: load board fields=F0NumChip,F0Player F1NumChip,F1Player...
+                        //Line 3: load board fields=F0NumChip,F0Player[,F0Pinned] F1NumChip,F1Player[,F1Pinned]...
                         case 3:
                             data=line.split(" ");
                             for(int j=0; j<BoardFields.length; j++){
                                 String[] dataTemp=data[j].split(",");
                                 int numOfChips=Integer.parseInt(dataTemp[0]);
                                 int player=Integer.parseInt(dataTemp[1]);
-                                BoardFields[j]=new BoardFieldState(numOfChips, player);
+                                int pinned=dataTemp.length>2 ? Integer.parseInt(dataTemp[2]) : 0;
+                                BoardFields[j]=new BoardFieldState(numOfChips, player, pinned);
                             }
                             model.setBoardFields(BoardFields);
                             break;
@@ -181,11 +182,12 @@ public class ModelLoader {
                 tempOut+="2"+"\n";
             }
             out.append(tempOut);
-            //Line 3: save board fields=F0NumChip,F0Player F1NumChip,F1Player...
+            //Line 3: save board fields=F0NumChip,F0Player,F0Pinned F1NumChip,F1Player,F1Pinned...
             tempOut="";
             BoardFieldState[] BoardFields=model.getBoardFields();
             for(int j=0; j<BoardFields.length; j++){
-                tempOut+=BoardFields[j].getNumberOfChips()+","+BoardFields[j].getPlayer()+" ";
+                tempOut+=BoardFields[j].getNumberOfChips()+","+BoardFields[j].getPlayer()+","
+                        +BoardFields[j].getPinnedPlayer()+" ";
             }
             tempOut+="\n";
             out.append(tempOut);

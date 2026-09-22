@@ -18,11 +18,13 @@
             android:layout_width="0dp"
             android:layout_height="32dp"
             android:layout_weight="1"
+            android:layout_marginStart="2dp"
             android:layout_marginEnd="2dp"
             android:background="@drawable/bg_difficulty_normal"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:includeFontPadding="false"
+            android:maxLines="1"
             android:minHeight="0dp"
             android:minWidth="0dp"
             android:text="@string/variant_standard"
@@ -41,6 +43,7 @@
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:includeFontPadding="false"
+            android:maxLines="1"
             android:minHeight="0dp"
             android:minWidth="0dp"
             android:text="@string/variant_tavla"
@@ -59,9 +62,29 @@
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:includeFontPadding="false"
+            android:maxLines="1"
             android:minHeight="0dp"
             android:minWidth="0dp"
             android:text="@string/variant_portes"
+            android:textAllCaps="false"
+            android:textColor="@color/color_difficulty_text_normal"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/variantPlakoto"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/bg_difficulty_normal"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:text="@string/variant_plakoto"
             android:textAllCaps="false"
             android:textColor="@color/color_difficulty_text_normal"
             android:textSize="12sp" />
@@ -77,6 +100,7 @@
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:includeFontPadding="false"
+            android:maxLines="1"
             android:minHeight="0dp"
             android:minWidth="0dp"
             android:text="@string/variant_nardy"
@@ -84,32 +108,41 @@
             android:textColor="@color/color_difficulty_text_normal"
             android:textSize="12sp" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
         <Button
             android:id="@+id/matchLength"
-            android:layout_width="0dp"
+            android:layout_width="110dp"
             android:layout_height="32dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/bg_difficulty_normal"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:includeFontPadding="false"
+            android:maxLines="1"
             android:minHeight="0dp"
             android:minWidth="0dp"
             android:text="@string/match_single"
             android:textAllCaps="false"
             android:textColor="@color/color_difficulty_text_normal"
             android:textSize="12sp" />
-    </LinearLayout>
 
-    <TextView
-        android:id="@+id/variantHint"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:fontFamily="sans-serif"
-        android:gravity="center"
-        android:maxLines="2"
-        android:textColor="@color/color_difficulty_text_normal"
-        android:textSize="11sp" />
+        <TextView
+            android:id="@+id/variantHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif"
+            android:maxLines="3"
+            android:textColor="@color/color_difficulty_text_normal"
+            android:textSize="11sp" />
+    </LinearLayout>
 </LinearLayout>

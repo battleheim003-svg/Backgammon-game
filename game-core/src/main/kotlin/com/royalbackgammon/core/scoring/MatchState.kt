@@ -23,7 +23,7 @@ data class MatchState(
         when (result.winner) {
             Player.WHITE -> whiteScore += result.points
             Player.RED -> redScore += result.points
-            else -> throw IllegalArgumentException("Result has no winner")
+            else -> Unit  // draw: counts as a game, no points
         }
         gamesPlayed++
     }

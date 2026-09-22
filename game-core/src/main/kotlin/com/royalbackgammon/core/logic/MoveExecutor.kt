@@ -27,10 +27,16 @@ object MoveExecutor {
             state.headMovesThisTurn++
         }
 
-        // Remove checker from source
+        // Remove checker from source; a checker pinned underneath is released
         board[src].chipCount--
         if (board[src].chipCount == 0) {
-            board[src].owner = Player.NONE
+            if (board[src].pinned != Player.NONE) {
+                board[src].owner = board[src].pinned
+                board[src].chipCount = 1
+                board[src].pinned = Player.NONE
+            } else {
+                board[src].owner = Player.NONE
+            }
         }
 
         // Consume the die
@@ -64,8 +70,14 @@ object MoveExecutor {
     private fun placeChecker(state: GameState, dstIndex: Int, player: Int): Boolean {
         val board = state.board
         val opponent = Player.opponent(player)
-        val hit = board[dstIndex].chipCount == 1 && board[dstIndex].owner == opponent
+        val lone = board[dstIndex].chipCount == 1 && board[dstIndex].owner == opponent
 
+        if (lone && state.variant.family == RuleFamily.PINNING) {
+            board[dstIndex].pinned = opponent
+            board[dstIndex].owner = player
+            return false
+        }
+        val hit = lone
         if (hit) {
             // Send opponent's checker to the bar
             val opponentBar = GameState.barIndex(opponent)

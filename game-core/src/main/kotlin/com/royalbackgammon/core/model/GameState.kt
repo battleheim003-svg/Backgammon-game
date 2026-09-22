@@ -54,14 +54,14 @@ data class GameState(
 
         /**
          * Creates a new game with [variant]'s starting position: the standard layout for the
-         * hitting family, all 15 checkers on each head for the running family.
+         * hitting family, all 15 checkers on each starting point otherwise.
          */
         @JvmStatic
         @JvmOverloads
         fun newGame(variant: Variant = Variant.STANDARD): GameState {
             val state = GameState(variant = variant)
             val b = state.board
-            if (variant.family == RuleFamily.RUNNING) {
+            if (variant.family == RuleFamily.RUNNING || variant.family == RuleFamily.PINNING) {
                 b[BackgammonRules.headIndex(Player.WHITE, variant)].let { it.chipCount = 15; it.owner = Player.WHITE }
                 b[BackgammonRules.headIndex(Player.RED, variant)].let { it.chipCount = 15; it.owner = Player.RED }
                 return state

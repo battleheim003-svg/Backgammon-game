@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Random;
 
 import games.mrlaki5.backgammon.Beans.BoardFieldState;
+import games.mrlaki5.backgammon.Beans.DiceThrow;
 import games.mrlaki5.backgammon.Beans.NextJump;
 import games.mrlaki5.backgammon.GameModel.Model;
 import games.mrlaki5.backgammon.GamePreferences;
@@ -21,14 +22,47 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-/** Bot-vs-bot games through the app's Model / GameLogic / GameMoveExecutor stack. */
-public class NardyGameFlowTest {
+/** Bot-vs-bot games and move execution through the app's Model / GameLogic / GameMoveExecutor stack. */
+public class VariantGameFlowTest {
 
     @Test
     public void botGamesFinishUnderNardyRules() {
         for (int seed = 0; seed < 3; seed++) {
             playBotGame(Variant.NARDY, seed);
         }
+    }
+
+    @Test
+    public void botGamesFinishUnderPlakotoRules() {
+        for (int seed = 0; seed < 4; seed++) {
+            playBotGame(Variant.PLAKOTO, seed);
+        }
+    }
+
+    @Test
+    public void pinningAndReleaseThroughAppExecutor() {
+        Model model = newModel(Variant.PLAKOTO);
+        BoardFieldState[] b = model.getBoardFields();
+        for (BoardFieldState f : b) { f.setNumberOfChips(0); f.setPlayer(0); }
+        b[5] = new BoardFieldState(1, 1);   // white real 7
+        b[3] = new BoardFieldState(1, 2);   // white real 9: lone red
+        b[11] = new BoardFieldState(14, 1);
+        b[23] = new BoardFieldState(14, 2);
+        model.setCurrentPlayer(1);
+        model.setDiceThrows(new DiceThrow[]{new DiceThrow(2), new DiceThrow(1),
+                new DiceThrow(0, 1), new DiceThrow(0, 1)});
+        GameMoveExecutor executor = new GameMoveExecutor(model);
+
+        executor.applyMove(new NextJump(2, 5, 3));
+        assertEquals(1, b[3].getNumberOfChips());
+        assertEquals(1, b[3].getPlayer());
+        assertEquals(2, b[3].getPinnedPlayer());
+        assertEquals(0, b[25].getNumberOfChips());
+
+        executor.applyMove(new NextJump(1, 3, 2));
+        assertEquals(1, b[3].getNumberOfChips());
+        assertEquals(2, b[3].getPlayer());
+        assertEquals(0, b[3].getPinnedPlayer());
     }
 
     @Test
@@ -59,7 +93,7 @@ public class NardyGameFlowTest {
         int head1 = BackgammonRules.headIndex(1, variant);
         int head2 = BackgammonRules.headIndex(2, variant);
 
-        for (int turn = 0; turn < 600 && logic.getCurrPlayerFinished() == 0; turn++) {
+        for (int turn = 0; turn < 1500 && !logic.isGameOver(); turn++) {
             model.setState(3);
             model.setDiceThrows(logic.rollDices());
             model.setState(2);
@@ -68,7 +102,7 @@ public class NardyGameFlowTest {
             while (true) {
                 List<NextJump> moves = logic.calculateMoves(model.getBoardFields(), player,
                         model.getDiceThrows());
-                if (logic.getCurrPlayerFinished() != 0 || moves.isEmpty()) break;
+                if (logic.isGameOver() || moves.isEmpty()) break;
                 NextJump move = bot.chooseMove(model, moves, GamePreferences.BOT_MEDIUM, random);
                 if (variant == Variant.NARDY) {
                     BoardFieldState dst = model.getBoardFields()[move.getDstField()];
@@ -82,7 +116,7 @@ public class NardyGameFlowTest {
             if (variant == Variant.NARDY && model.getTurnsPlayed() >= 2) {
                 assertTrue("head rule", headMoves <= 1);
             }
-            if (logic.getCurrPlayerFinished() != 0) break;
+            if (logic.isGameOver()) break;
             model.onTurnEnded();
             model.changeCurrentPlayer();
         }
@@ -98,7 +132,7 @@ public class NardyGameFlowTest {
         BoardField[] start = GameState.newGame(variant).getBoard();
         BoardFieldState[] board = new BoardFieldState[28];
         for (int i = 0; i < board.length; i++) {
-            board[i] = new BoardFieldState(start[i].getChipCount(), start[i].getOwner());
+            board[i] = new BoardFieldState(start[i].getChipCount(), start[i].getOwner(), start[i].getPinned());
         }
         model.setBoardFields(board);
         model.setCurrentPlayer(1);
@@ -108,7 +142,7 @@ public class NardyGameFlowTest {
 
     private static int totalCheckers(Model model) {
         int total = 0;
-        for (BoardFieldState f : model.getBoardFields()) total += f.getNumberOfChips();
+        for (BoardFieldState f : model.getBoardFields()) total += f.getVisibleChips();
         return total;
     }
 }

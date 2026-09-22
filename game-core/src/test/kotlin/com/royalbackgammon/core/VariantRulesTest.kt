@@ -228,6 +228,15 @@ class VariantRulesTest {
         assertEquals(4, match.gamesPlayed)
     }
 
+    @Test
+    fun `draw counts as a game without points`() {
+        val match = MatchState(Variant.PLAKOTO, targetPoints = 3)
+        match.record(GameResult(Player.NONE, WinType.DRAW, 0))
+        assertEquals(1, match.gamesPlayed)
+        assertEquals(0, match.whiteScore + match.redScore)
+        assertFalse(match.isOver())
+    }
+
     @Test(expected = IllegalStateException::class)
     fun `recording after match end fails`() {
         val match = MatchState(targetPoints = 1)

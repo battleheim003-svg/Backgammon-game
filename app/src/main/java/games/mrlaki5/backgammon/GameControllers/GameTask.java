@@ -165,7 +165,7 @@ public class GameTask {
                         }
 
                         // Check if current player finished game
-                        if (gameLogic.getCurrPlayerFinished() != 0) {
+                        if (gameLogic.isGameOver()) {
                             if (endRoutineStarted.compareAndSet(0, 1)) {
                                 workFlag.set(0);
                                 int winningPlayer = gameLogic.getCurrPlayerFinished();

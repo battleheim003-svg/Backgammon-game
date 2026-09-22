@@ -19,7 +19,12 @@ enum class RuleFamily {
      * Same rotational direction from diagonally opposite heads, no hitting, one checker owns a
      * point, one checker leaves the head per turn, no prime that traps all opponent checkers.
      */
-    RUNNING
+    RUNNING,
+    /**
+     * Opposite directions from opposite corners; landing on a lone opposing checker pins it
+     * under yours instead of hitting. Pinning the mother (last checker on its start) wins double.
+     */
+    PINNING
 }
 
 /** Points awarded per [WinType]. */
@@ -29,6 +34,8 @@ data class WinScoring(val single: Int, val gammon: Int, val backgammon: Int) {
         WinType.SINGLE -> single
         WinType.GAMMON -> gammon
         WinType.BACKGAMMON -> backgammon
+        WinType.MOTHER_PINNED -> gammon
+        WinType.DRAW -> 0
     }
 }
 
@@ -42,6 +49,8 @@ enum class Variant(
     STANDARD(RuleFamily.HITTING, OpeningRoll.PLAY_OPENING_DICE, WinScoring(1, 2, 3), cubeAllowed = true),
     TAVLA(RuleFamily.HITTING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false),
     PORTES(RuleFamily.HITTING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false),
+    /** Greek pinning game, second game of Tavli. */
+    PLAKOTO(RuleFamily.PINNING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false),
     /** Long Nardy: oyn 1, mars 2. */
     NARDY(RuleFamily.RUNNING, OpeningRoll.STARTER_REROLLS, WinScoring(1, 2, 2), cubeAllowed = false);
 }

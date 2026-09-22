@@ -11,6 +11,7 @@ import com.royalbackgammon.core.model.GamePhase;
 import com.royalbackgammon.core.model.GameResult;
 import com.royalbackgammon.core.model.Move;
 import com.royalbackgammon.core.model.TurnContext;
+import com.royalbackgammon.core.variant.RuleFamily;
 import com.royalbackgammon.core.variant.Variant;
 
 import games.mrlaki5.backgammon.Beans.BoardFieldState;
@@ -25,6 +26,8 @@ public class GameLogic {
     private Model model;
     //Flag for signaling wining player
     private int CurrPlayerFinished=0;
+    //Set once the game has ended; CurrPlayerFinished is 0 for a draw
+    private boolean gameOver=false;
 
     //Controller
     public GameLogic(Model model) {
@@ -72,7 +75,17 @@ public class GameLogic {
         ArrayList<NextJump> jumps=new ArrayList<>();
         if (BackgammonRules.gamePhase(board, PlayerNum, variant()) == GamePhase.FINISHED) {
             CurrPlayerFinished=PlayerNum;
+            gameOver=true;
             return jumps;
+        }
+        //Plakoto can end mid-turn on a mother pin (or draw when both mothers are pinned)
+        if (variant().getFamily() == RuleFamily.PINNING) {
+            GameResult result = BackgammonRules.gameResult(board, variant());
+            if (result != null) {
+                CurrPlayerFinished=result.getWinner();
+                gameOver=true;
+                return jumps;
+            }
         }
         TurnContext turn = model != null ? model.getTurnContext() : TurnContext.NONE;
         for (Move move : BackgammonRules.calculateLegalMoves(board, PlayerNum, toCoreDice(Throws),
@@ -107,7 +120,8 @@ public class GameLogic {
     private static BoardField[] toCoreBoard(BoardFieldState[] chipMatrix){
         BoardField[] board=new BoardField[chipMatrix.length];
         for(int i=0; i<chipMatrix.length; i++){
-            board[i]=new BoardField(chipMatrix[i].getNumberOfChips(), chipMatrix[i].getPlayer());
+            board[i]=new BoardField(chipMatrix[i].getNumberOfChips(), chipMatrix[i].getPlayer(),
+                    chipMatrix[i].getPinnedPlayer());
         }
         return board;
     }
@@ -159,6 +173,10 @@ public class GameLogic {
             retDices[3].setAlreadyUsed(1);
         }
         return retDices;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
     }
 
     //Getters and setters

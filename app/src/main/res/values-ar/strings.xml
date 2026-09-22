@@ -120,6 +120,8 @@
     <string name="variant_standard_rules">International rules: the starter plays the opening dice. Gammon 2, backgammon 3 points.</string>
     <string name="variant_tavla_rules">Turkish style: the opening winner rolls again (doubles possible). Mars 2 points, no triple win.</string>
     <string name="variant_portes_rules">Greek style (first game of Tavli): the opening winner rolls again. Gammon 2 points, no triple win.</string>
+    <string name="variant_plakoto">Plakoto</string>
+    <string name="variant_plakoto_rules">Greek style: all 15 start on the opposite corner. Landing on a lone checker pins it until you leave. Pin the last checker on its start (the mother) to win double.</string>
     <string name="variant_nardy">Long Nardy</string>
     <string name="variant_nardy_rules">Both sides run the same way from opposite heads. No hitting: one checker holds a point. One checker leaves the head per turn. Mars 2 points.</string>
     <string name="match_single">Single game</string>
@@ -128,6 +130,9 @@
     <string name="win_type_single">Single win</string>
     <string name="win_type_gammon">Gammon!</string>
     <string name="win_type_backgammon">Backgammon!</string>
+    <string name="win_type_mother">Mother pinned!</string>
+    <string name="win_type_draw">Draw</string>
+    <string name="game_over_draw">Draw — both mothers are pinned</string>
     <string name="game_over_match_score">Match to %1$d: %2$s %3$d – %4$d %5$s</string>
     <string name="game_over_match_winner">Match winner: %1$s</string>
     <string name="next_game">Next game</string>

@@ -114,7 +114,7 @@ public class BoardTouchHandler {
             return false;
         }
 
-        int numberOfChips = chipMatrix[trianglePosition].getNumberOfChips();
+        int numberOfChips = chipMatrix[trianglePosition].getVisibleChips();
         if (numberOfChips <= 0) {
             return false;
         }

@@ -29,11 +29,9 @@ class GameEngine(
         private set
 
     init {
-        if (state.winner != Player.NONE) {
-            result = BackgammonRules.gameResult(state.board, state.variant)
-        }
+        result = BackgammonRules.gameResult(state.board, state.variant)
         // If engine is created with a mid-turn state, calculate legal moves immediately
-        if (state.turnState == GameState.STATE_MOVE && state.winner == Player.NONE) {
+        if (state.turnState == GameState.STATE_MOVE && result == null) {
             recalculateLegalMoves()
         }
     }
@@ -131,7 +129,7 @@ class GameEngine(
     /**
      * Returns true if the game has ended.
      */
-    fun isGameOver(): Boolean = state.winner != Player.NONE
+    fun isGameOver(): Boolean = result != null
 
     private fun finishIfWon(): Boolean {
         val gameResult = BackgammonRules.gameResult(state.board, state.variant) ?: return false

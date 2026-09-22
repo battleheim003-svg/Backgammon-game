@@ -99,9 +99,12 @@ public class GameOverHandler {
                                    boolean passAndPlayMode, boolean tutorialMode, boolean isRematchGame,
                                    int sessionGameNumber, long durationSeconds, String difficultyName,
                                    @Nullable GameResult gameResult, Variant variant, MatchState match) {
+        boolean draw = winningPlayer == 0;
         if (!gameResultRecorded) {
             gameResultRecorded = true;
-            recordGameResult(winningPlayer, p1Name, p2Name, gameMode);
+            if (!draw) {
+                recordGameResult(winningPlayer, p1Name, p2Name, gameMode);
+            }
 
             AdManager adMgr = MenuActivity.getSharedAdManager();
             if (adMgr != null) {
@@ -114,10 +117,13 @@ public class GameOverHandler {
         if (passAndPlayMode) {
             winner = (winningPlayer == 1) ? "player1" : "player2";
         }
+        if (draw) {
+            winner = "draw";
+        }
         GameAnalytics.get().trackGameCompleted(gameMode, winner, durationSeconds,
                 sessionGameNumber, 0, 0);
 
-        if (!passAndPlayMode && !tutorialMode) {
+        if (!passAndPlayMode && !tutorialMode && !draw) {
             if (winningPlayer == 1) {
                 GameAnalytics.get().trackGameWon(gameMode, difficultyName, durationSeconds);
             } else {
@@ -135,8 +141,10 @@ public class GameOverHandler {
 
         // Update ELO rating & economy via GameResultHandler
         int points = gameResult != null ? gameResult.getPoints() : 1;
-        GameResultHandler.ProcessedResult result = gameResultHandler.processResult(
-                winningPlayer == 1, gameMode, passAndPlayMode, tutorialMode, variant, points);
+        GameResultHandler.ProcessedResult result = draw
+                ? new GameResultHandler.ProcessedResult(0, 0, 0, 0, "")
+                : gameResultHandler.processResult(winningPlayer == 1, gameMode, passAndPlayMode,
+                        tutorialMode, variant, points);
 
         final String winnerName = (winningPlayer == 1) ? p1Name : p2Name;
         final int streak = result.currentStreak;
@@ -204,7 +212,9 @@ public class GameOverHandler {
         // 1. Set winner text
         TextView winnerText = dialogView.findViewById(R.id.gameOverWinner);
         if (winnerText != null) {
-            winnerText.setText(activity.getString(R.string.game_over_winner, winnerName));
+            winnerText.setText(winningPlayer == 0
+                    ? activity.getString(R.string.game_over_draw)
+                    : activity.getString(R.string.game_over_winner, winnerName));
         }
 
         // 1b. Variant, win type and match score
@@ -459,6 +469,8 @@ public class GameOverHandler {
         switch (type) {
             case GAMMON: return R.string.win_type_gammon;
             case BACKGAMMON: return R.string.win_type_backgammon;
+            case MOTHER_PINNED: return R.string.win_type_mother;
+            case DRAW: return R.string.win_type_draw;
             default: return R.string.win_type_single;
         }
     }

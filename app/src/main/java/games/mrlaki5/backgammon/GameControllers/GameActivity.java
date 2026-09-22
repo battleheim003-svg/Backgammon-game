@@ -109,8 +109,7 @@ public class GameActivity extends AppCompatActivity {
                      java.util.List<NextJump> moves) {
             this.boardFields = new games.mrlaki5.backgammon.Beans.BoardFieldState[fields.length];
             for (int i = 0; i < fields.length; i++) {
-                this.boardFields[i] = new games.mrlaki5.backgammon.Beans.BoardFieldState(
-                        fields[i].getNumberOfChips(), fields[i].getPlayer());
+                this.boardFields[i] = fields[i].copy();
             }
             this.diceThrows = new games.mrlaki5.backgammon.Beans.DiceThrow[dice.length];
             for (int i = 0; i < dice.length; i++) {
@@ -129,8 +128,7 @@ public class GameActivity extends AppCompatActivity {
             games.mrlaki5.backgammon.Beans.BoardFieldState[] copy =
                     new games.mrlaki5.backgammon.Beans.BoardFieldState[boardFields.length];
             for (int i = 0; i < boardFields.length; i++) {
-                copy[i] = new games.mrlaki5.backgammon.Beans.BoardFieldState(
-                        boardFields[i].getNumberOfChips(), boardFields[i].getPlayer());
+                copy[i] = boardFields[i].copy();
             }
             return copy;
         }

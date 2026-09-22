@@ -1,5 +1,7 @@
 package games.mrlaki5.backgammon.Players;
 
+import com.royalbackgammon.core.model.GameResult;
+import com.royalbackgammon.core.model.WinType;
 import com.royalbackgammon.core.logic.BackgammonRules;
 import com.royalbackgammon.core.logic.PositionMapper;
 import com.royalbackgammon.core.variant.RuleFamily;
@@ -127,7 +129,8 @@ public class BotMoveStrategy {
         BoardFieldState[] board = model.getBoardFields();
         int opponent = player == 1 ? 2 : 1;
         GameLogic logic = new GameLogic(model);
-        double score = 0.0;
+        double score = model.getVariant().getFamily() == RuleFamily.PINNING
+                ? pinningTerms(model, player, logic, profile) : 0.0;
 
         for (int i = 0; i < board.length; i++) {
             int chips = board[i].getNumberOfChips();
@@ -156,6 +159,30 @@ public class BotMoveStrategy {
 
         score += madePointRun(board, player, logic) * profile.primeWeight;
         score -= madePointRun(board, opponent, logic) * profile.opponentPrimeWeight;
+        return score;
+    }
+
+    /**
+     * Plakoto extras on top of the hitting evaluation: a decisive mother result, pinned checkers
+     * (still progressing, but frozen and costly like a hit), and the value of pinning early.
+     */
+    private double pinningTerms(Model model, int player, GameLogic logic, SearchProfile profile) {
+        GameResult result = logic.calculateResult();
+        if (result != null) {
+            if (result.getWinType() == WinType.DRAW) return 0.0;
+            return result.getWinner() == player ? 100000.0 : -100000.0;
+        }
+        BoardFieldState[] board = model.getBoardFields();
+        double score = 0.0;
+        for (int i = 0; i < 24; i++) {
+            int pinned = board[i].getPinnedPlayer();
+            if (pinned == 0) continue;
+            int sign = pinned == player ? -1 : 1;
+            int real = logic.calculateRealPosition(i, pinned);
+            // Pinned deep in the pinner's home is worst: it will wait there for a long time
+            score += sign * (profile.barPenalty + (25 - real) * profile.progressWeight * 0.5);
+            score -= sign * real * profile.progressWeight;
+        }
         return score;
     }
 
@@ -254,7 +281,7 @@ public class BotMoveStrategy {
         BoardFieldState[] board = new BoardFieldState[source.getBoardFields().length];
         for (int i = 0; i < board.length; i++) {
             BoardFieldState field = source.getBoardFields()[i];
-            board[i] = new BoardFieldState(field.getNumberOfChips(), field.getPlayer());
+            board[i] = field.copy();
         }
         copy.setBoardFields(board);
         copy.setCurrentPlayer(source.getCurrentPlayer());

@@ -23,8 +23,9 @@ object BackgammonRules {
         var allInHome = true
 
         for (i in 0 until 26) {
-            if (board[i].owner == player && board[i].chipCount > 0) {
-                totalChips += board[i].chipCount
+            val count = board[i].checkersOf(player)
+            if (count > 0) {
+                totalChips += count
                 val realPos = PositionMapper.toReal(i, player, variant)
                 if (realPos !in 19..24) {
                     allInHome = false
@@ -79,7 +80,7 @@ object BackgammonRules {
         return legal
     }
 
-    /** Matrix index of [player]'s starting point in the running family. */
+    /** Matrix index of [player]'s starting point (head) in the running and pinning families. */
     @JvmStatic
     fun headIndex(player: Int, variant: Variant): Int =
         PositionMapper.toMatrix(HEAD_REAL, player, variant)
@@ -104,6 +105,7 @@ object BackgammonRules {
         return when (variant.family) {
             RuleFamily.HITTING -> hittingMoves(board, player, dieValues, phase, variant)
             RuleFamily.RUNNING -> runningMoves(board, player, dice, dieValues, phase, variant, turn)
+            RuleFamily.PINNING -> pinningMoves(board, player, dieValues, phase, variant)
         }
     }
 
@@ -173,6 +175,38 @@ object BackgammonRules {
         return moves
     }
 
+    private fun pinningMoves(
+        board: Array<BoardField>,
+        player: Int,
+        dieValues: List<Int>,
+        phase: GamePhase,
+        variant: Variant
+    ): List<Move> {
+        val moves = mutableListOf<Move>()
+        val farthestBack = if (phase == GamePhase.BEARING_OFF) farthestBackReal(board, player, variant) else -1
+
+        for (i in 0 until 24) {
+            // Only the top of a stack moves; a pinned checker never does
+            if (board[i].owner != player || board[i].chipCount <= 0) continue
+            val realPos = PositionMapper.toReal(i, player, variant)
+
+            for (dieValue in dieValues) {
+                val realNext = realPos + dieValue
+                if (realNext > 24) {
+                    bearOffMove(player, i, realPos, dieValue, phase, farthestBack)?.let { moves.add(it) }
+                    continue
+                }
+                val dst = PositionMapper.toMatrix(realNext, player, variant)
+                val target = board[dst]
+                // Blocked: two or more opposing checkers, or a lone one that is itself pinning
+                val open = target.chipCount == 0 || target.owner == player ||
+                        (target.chipCount == 1 && target.pinned == Player.NONE)
+                if (open) moves.add(Move(dieValue = dieValue, from = i, to = dst))
+            }
+        }
+        return moves
+    }
+
     private fun bearOffMove(
         player: Int, from: Int, realPos: Int, dieValue: Int, phase: GamePhase, farthestBack: Int
     ): Move? {
@@ -228,7 +262,7 @@ object BackgammonRules {
     private fun farthestBackReal(board: Array<BoardField>, player: Int, variant: Variant): Int {
         var farthest = Int.MAX_VALUE
         for (i in 0 until 24) {
-            if (board[i].owner == player && board[i].chipCount > 0) {
+            if (board[i].checkersOf(player) > 0) {
                 val real = PositionMapper.toReal(i, player, variant)
                 if (real < farthest) farthest = real
             }
@@ -305,7 +339,7 @@ object BackgammonRules {
     fun winType(board: Array<BoardField>, winner: Int, variant: Variant = Variant.STANDARD): WinType {
         val loser = Player.opponent(winner)
         if (board[GameState.bearOffIndex(loser)].chipCount > 0) return WinType.SINGLE
-        if (variant.family == RuleFamily.RUNNING) return WinType.GAMMON
+        if (variant.family != RuleFamily.HITTING) return WinType.GAMMON
 
         if (board[GameState.barIndex(loser)].chipCount > 0) return WinType.BACKGAMMON
         for (i in 0 until 24) {
@@ -324,8 +358,29 @@ object BackgammonRules {
     @JvmStatic
     fun gameResult(board: Array<BoardField>, variant: Variant): GameResult? {
         val winner = checkWinner(board)
-        if (winner == Player.NONE) return null
+        if (winner == Player.NONE) {
+            return if (variant.family == RuleFamily.PINNING) motherResult(board, variant) else null
+        }
         val type = winType(board, winner, variant)
         return GameResult(winner = winner, winType = type, points = variant.scoring.pointsFor(type))
+    }
+
+    /**
+     * Plakoto mother rule: a player whose last checker on its starting point is pinned loses
+     * double, unless the pinning player still has a checker on its own starting point.
+     * Both mothers pinned is a draw.
+     */
+    private fun motherResult(board: Array<BoardField>, variant: Variant): GameResult? {
+        val whitePinned = board[headIndex(Player.WHITE, variant)].pinned == Player.WHITE
+        val redPinned = board[headIndex(Player.RED, variant)].pinned == Player.RED
+        if (whitePinned && redPinned) return GameResult(Player.NONE, WinType.DRAW, 0)
+        val victim = when {
+            whitePinned -> Player.WHITE
+            redPinned -> Player.RED
+            else -> return null
+        }
+        val pinner = Player.opponent(victim)
+        if (board[headIndex(pinner, variant)].checkersOf(pinner) > 0) return null
+        return GameResult(pinner, WinType.MOTHER_PINNED, variant.scoring.pointsFor(WinType.MOTHER_PINNED))
     }
 }

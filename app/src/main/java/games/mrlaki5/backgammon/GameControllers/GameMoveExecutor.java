@@ -62,6 +62,7 @@ public class GameMoveExecutor {
         }
 
         countHeadMove(srcField);
+        releasePinnedIfUncovered(srcField);
         consumeDice(jump.getJumpNumber());
         boolean hit = placeChecker(dstField);
         return new MoveResult(true, srcField, dstField, hit);
@@ -75,6 +76,7 @@ public class GameMoveExecutor {
         if (board[src].getNumberOfChips() == 0) {
             board[src].setPlayer(0);
         }
+        releasePinnedIfUncovered(src);
 
         countHeadMove(src);
         consumeDice(jump.getJumpNumber());
@@ -108,6 +110,16 @@ public class GameMoveExecutor {
         }
     }
 
+    // Plakoto: once the stack above a pinned checker is gone, that checker is free again
+    private void releasePinnedIfUncovered(int field) {
+        BoardFieldState state = model.getBoardFields()[field];
+        if (state.getNumberOfChips() == 0 && state.getPinnedPlayer() != 0) {
+            state.setNumberOfChips(1);
+            state.setPlayer(state.getPinnedPlayer());
+            state.setPinnedPlayer(0);
+        }
+    }
+
     private void consumeDice(int throwNumber) {
         for (DiceThrow dice : model.getDiceThrows()) {
             if (dice.getThrowNumber() == throwNumber && dice.getAlreadyUsed() == 0) {
@@ -121,7 +133,13 @@ public class GameMoveExecutor {
         BoardFieldState[] board = model.getBoardFields();
         int player = model.getCurrentPlayer();
         int destinationPlayer = board[dstField].getPlayer();
-        boolean hit = board[dstField].getNumberOfChips() == 1 && destinationPlayer != player;
+        boolean lone = board[dstField].getNumberOfChips() == 1 && destinationPlayer != player;
+        if (lone && model.getVariant().getFamily() == RuleFamily.PINNING) {
+            board[dstField].setPinnedPlayer(destinationPlayer);
+            board[dstField].setPlayer(player);
+            return false;
+        }
+        boolean hit = lone;
 
         if (hit) {
             int bar = 23 + destinationPlayer;

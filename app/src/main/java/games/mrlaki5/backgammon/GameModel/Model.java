@@ -89,7 +89,7 @@ public class Model {
         //Create board fields with the variant's starting position
         BoardField[] start=GameState.newGame(variant).getBoard();
         for(int i=0; i<BoardFields.length; i++){
-            BoardFields[i]=new BoardFieldState(start[i].getChipCount(), start[i].getOwner());
+            BoardFields[i]=new BoardFieldState(start[i].getChipCount(), start[i].getOwner(), start[i].getPinned());
         }
     }
 
