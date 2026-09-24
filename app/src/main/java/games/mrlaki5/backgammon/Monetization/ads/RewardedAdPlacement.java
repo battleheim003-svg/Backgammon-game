@@ -11,7 +11,8 @@ public enum RewardedAdPlacement {
     SAVE_STREAK("save_streak", 0, 1, 0),       // 1 per day
     BONUS_CHEST("bonus_chest", 0, 1, 0),       // 1 per day (1 daily challenge)
     THEME_UNLOCK("theme_unlock", 0, 0, 0),     // no cap — permanent unlock
-    THEME_DISCOUNT("theme_discount", 0, 0, 0); // no cap — 50% discount for 1h
+    THEME_DISCOUNT("theme_discount", 0, 0, 0), // no cap — 50% discount for 1h
+    GAME_REVIEW("game_review", 0, 2, 0);       // 2 per day, offered after a post-game review
 
     public final String id;
     public final int maxPerGame;       // 0 = unlimited within game

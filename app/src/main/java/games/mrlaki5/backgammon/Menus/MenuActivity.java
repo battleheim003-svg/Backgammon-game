@@ -45,6 +45,7 @@ import games.mrlaki5.backgammon.Monetization.ads.RewardedAdTracker;
 import games.mrlaki5.backgammon.Monetization.ads.RewardedAdUiHelper;
 import games.mrlaki5.backgammon.Journey.JourneyActivity;
 import games.mrlaki5.backgammon.Challenge.ChallengeCode;
+import games.mrlaki5.backgammon.Challenge.ChallengeHistory;
 import com.royalbackgammon.core.variant.Variant;
 import games.mrlaki5.backgammon.Retention.DailyChallenge;
 import games.mrlaki5.backgammon.Util.DateUtil;
@@ -604,7 +605,8 @@ public class MenuActivity extends AppCompatActivity {
         String[] options = {
                 getString(R.string.challenge_play_today),
                 getString(R.string.challenge_share_code),
-                getString(R.string.challenge_enter_code)
+                getString(R.string.challenge_enter_code),
+                getString(R.string.challenge_results)
         };
         new AlertDialog.Builder(this, R.style.DarkAlertDialogTheme)
                 .setTitle(R.string.challenge_dialog_title)
@@ -613,8 +615,10 @@ public class MenuActivity extends AppCompatActivity {
                         startTodayChallengeGame();
                     } else if (which == 1) {
                         shareChallengeCode();
-                    } else {
+                    } else if (which == 2) {
                         askForChallengeCode();
+                    } else {
+                        showChallengeResults();
                     }
                 })
                 .show();
@@ -666,6 +670,26 @@ public class MenuActivity extends AppCompatActivity {
                     startChallengeGame(parsed.variant, parsed.seed, parsed.matchTarget);
                 })
                 .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void showChallengeResults() {
+        java.util.List<ChallengeHistory.Entry> entries = new ChallengeHistory(this).getEntries();
+        if (entries.isEmpty()) {
+            Toast.makeText(this, R.string.challenge_results_empty, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        StringBuilder text = new StringBuilder();
+        for (ChallengeHistory.Entry entry : entries) {
+            text.append(getString(entry.won ? R.string.challenge_result_won
+                                            : R.string.challenge_result_lost,
+                    entry.code, getString(VariantPicker.nameRes(entry.variant)), entry.points))
+                    .append('\n');
+        }
+        new AlertDialog.Builder(this, R.style.DarkAlertDialogTheme)
+                .setTitle(R.string.challenge_results)
+                .setMessage(text.toString().trim())
+                .setPositiveButton(R.string.cancel, null)
                 .show();
     }
 

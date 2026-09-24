@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 import com.royalbackgammon.core.model.GameResult;
 import com.royalbackgammon.core.scoring.MatchState;
 
+import games.mrlaki5.backgammon.Challenge.ChallengeCode;
+import games.mrlaki5.backgammon.Challenge.ChallengeHistory;
 import games.mrlaki5.backgammon.Journey.JourneyManager;
 import com.royalbackgammon.core.variant.Variant;
 
@@ -976,9 +978,21 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    //Challenge games are logged so the player can compare results with whoever shared the code
+    private void recordChallengeResult(int winningPlayer, @Nullable GameResult result) {
+        if (model.getDiceSeed() == 0 || result == null) {
+            return;
+        }
+        String code = ChallengeCode.encode(model.getVariant(), model.getDiceSeed(),
+                model.getMatch().getTargetPoints());
+        new ChallengeHistory(this).record(new ChallengeHistory.Entry(code, model.getVariant(),
+                winningPlayer == 1, result.getPoints()));
+    }
+
     public void onGameFinished(int winningPlayer, String p1Name, String p2Name, String gameMode,
                                @Nullable GameResult result) {
         checkJourneyCompletion(winningPlayer);
+        recordChallengeResult(winningPlayer, result);
         if (gameOverHandler != null) {
             gameOverHandler.handleGameFinished(winningPlayer, p1Name, p2Name, gameMode,
                     isPassAndPlayMode(), isTutorialMode(), isRematchGame,
@@ -1000,10 +1014,14 @@ public class GameActivity extends AppCompatActivity {
     // Brief reminder of the variant and running match score when it is not a plain single game
     private void showVariantBanner(boolean tutorialMode) {
         MatchState match = model.getMatch();
-        if (tutorialMode || (model.getVariant() == Variant.STANDARD && match.getTargetPoints() <= 1)) {
+        if (tutorialMode || (model.getVariant() == Variant.STANDARD && match.getTargetPoints() <= 1
+                && model.getDiceSeed() == 0)) {
             return;
         }
         String text = getString(VariantPicker.nameRes(model.getVariant()));
+        if (model.getDiceSeed() != 0) {
+            text = getString(R.string.challenge_banner, text);
+        }
         if (match.getTargetPoints() > 1) {
             text += " • " + getString(R.string.game_over_match_score, match.getTargetPoints(),
                     model.getPlayers()[0].getPlayerName(), match.getWhiteScore(),

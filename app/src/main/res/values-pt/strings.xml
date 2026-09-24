@@ -209,4 +209,10 @@
     <string name="challenge_share_text">Play this backgammon challenge with me — code: %1$s</string>
     <string name="challenge_code_hint">e.g. PLA-3F9K2-7</string>
     <string name="challenge_code_invalid">That code is not valid.</string>
+    <string name="challenge_banner">Challenge · %1$s</string>
+    <string name="challenge_results">Challenge results</string>
+    <string name="challenge_results_empty">No challenge games yet.</string>
+    <string name="challenge_result_won">%1$s · %2$s · won %3$d</string>
+    <string name="challenge_result_lost">%1$s · %2$s · lost %3$d</string>
+    <string name="review_reward_button">Watch a video for %1$d coins</string>
 </resources>

@@ -475,4 +475,10 @@
     <string name="challenge_share_text">این چالش تخته‌نرد را با من بازی کن — کد: %1$s</string>
     <string name="challenge_code_hint">مثلاً PLA-3F9K2-7</string>
     <string name="challenge_code_invalid">این کد معتبر نیست.</string>
+    <string name="challenge_banner">چالش · %1$s</string>
+    <string name="challenge_results">نتیجهٔ چالش‌ها</string>
+    <string name="challenge_results_empty">هنوز بازی چالشی انجام نشده.</string>
+    <string name="challenge_result_won">%1$s · %2$s · برد %3$d</string>
+    <string name="challenge_result_lost">%1$s · %2$s · باخت %3$d</string>
+    <string name="review_reward_button">دیدن ویدیو برای %1$d سکه</string>
 </resources>
