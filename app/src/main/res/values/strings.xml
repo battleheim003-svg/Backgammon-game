@@ -456,4 +456,12 @@
     <string name="journey_8_title">The harbour</string>
     <string name="journey_8_flavor">Acey-deucey, the sailors\' game: every checker starts off the board and a 1-2 changes everything.</string>
     <string name="journey_8_opponent">The captain</string>
+    <string name="daily_challenge_line">Today: %1$s (%2$d/%3$d)</string>
+    <string name="daily_challenge_line_done">Today: %1$s — done</string>
+    <string name="challenge_win_games">win %1$d game(s)</string>
+    <string name="challenge_complete_games">play %1$d games</string>
+    <string name="challenge_beat_difficulty">beat the %1$s bot</string>
+    <string name="challenge_win_without_hit">win without being hit</string>
+    <string name="challenge_win_streak">reach a streak of %1$d</string>
+    <string name="challenge_win_variant">win a game of %1$s</string>
 </resources>

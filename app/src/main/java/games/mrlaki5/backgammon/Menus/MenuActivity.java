@@ -44,6 +44,7 @@ import games.mrlaki5.backgammon.Monetization.ads.RewardedAdPlacement;
 import games.mrlaki5.backgammon.Monetization.ads.RewardedAdTracker;
 import games.mrlaki5.backgammon.Monetization.ads.RewardedAdUiHelper;
 import games.mrlaki5.backgammon.Journey.JourneyActivity;
+import games.mrlaki5.backgammon.Retention.DailyChallenge;
 import games.mrlaki5.backgammon.R;
 
 //Activity class for main menu
@@ -67,6 +68,7 @@ public class MenuActivity extends AppCompatActivity {
     public static final String EXTRA_TAVLI="tavliRotation";
     public static final String EXTRA_BOT_DIFFICULTY="botDifficulty";
     public static final String EXTRA_JOURNEY_STAGE="journeyStage";
+    public static final String EXTRA_BOARD_THEME="boardTheme";
     public static final String EXTRA_MATCH_WHITE_SCORE="matchWhiteScore";
     public static final String EXTRA_MATCH_RED_SCORE="matchRedScore";
     public static final String EXTRA_MATCH_GAMES="matchGames";
@@ -269,6 +271,7 @@ public class MenuActivity extends AppCompatActivity {
         super.onResume();
         freeCoinsTickHandler.removeCallbacks(freeCoinsTick);
         freeCoinsTickHandler.post(freeCoinsTick);
+        bindDailyChallenge();
         if (profileManager != null) {
             profileManager.checkAndExpireRentals();
         } else {
@@ -553,6 +556,52 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     //Method called when Journey is chosen from the menu
+    /** Shows today's challenge and its progress under the menu title. */
+    private void bindDailyChallenge() {
+        TextView view = findViewById(R.id.tvDailyChallenge);
+        if (view == null) {
+            return;
+        }
+        DailyChallenge challenge = new DailyChallenge(this);
+        DailyChallenge.Challenge today = challenge.getTodayChallenge();
+        String description = challengeDescription(today, challenge);
+        if (challenge.isCompleted()) {
+            view.setText(getString(R.string.daily_challenge_line_done, description));
+        } else {
+            view.setText(getString(R.string.daily_challenge_line, description,
+                    challenge.getProgress(), today.targetValue));
+        }
+    }
+
+    private String challengeDescription(DailyChallenge.Challenge challenge, DailyChallenge state) {
+        switch (challenge.type) {
+            case WIN_GAMES:
+                return getString(R.string.challenge_win_games, challenge.targetValue);
+            case COMPLETE_GAMES:
+                return getString(R.string.challenge_complete_games, challenge.targetValue);
+            case BEAT_DIFFICULTY:
+                return getString(R.string.challenge_beat_difficulty,
+                        getString(difficultyName(challenge.targetValue)));
+            case WIN_WITHOUT_HIT:
+                return getString(R.string.challenge_win_without_hit);
+            case WIN_STREAK:
+                return getString(R.string.challenge_win_streak, challenge.targetValue);
+            case WIN_IN_VARIANT:
+            default:
+                return getString(R.string.challenge_win_variant,
+                        getString(VariantPicker.nameRes(state.getTodayVariant())));
+        }
+    }
+
+    private static int difficultyName(int difficulty) {
+        switch (difficulty) {
+            case 0: return R.string.difficulty_easy;
+            case 1: return R.string.difficulty_medium;
+            case 3: return R.string.difficulty_royal;
+            default: return R.string.difficulty_hard;
+        }
+    }
+
     public void openJourney(View view) {
         playMenuTap();
         startActivity(new Intent(MenuActivity.this, JourneyActivity.class));

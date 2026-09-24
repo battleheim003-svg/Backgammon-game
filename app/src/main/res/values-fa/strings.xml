@@ -457,4 +457,12 @@
     <string name="journey_8_title">بندر</string>
     <string name="journey_8_flavor">آسی-دیوسی، بازی ملوان‌ها: همهٔ مهره‌ها بیرون از صفحه شروع می‌کنند و یک تاس ۱-۲ همه‌چیز را عوض می‌کند.</string>
     <string name="journey_8_opponent">ناخدا</string>
+    <string name="daily_challenge_line">امروز: %1$s (%2$d/%3$d)</string>
+    <string name="daily_challenge_line_done">امروز: %1$s — انجام شد</string>
+    <string name="challenge_win_games">%1$d دست ببرید</string>
+    <string name="challenge_complete_games">%1$d دست بازی کنید</string>
+    <string name="challenge_beat_difficulty">ربات %1$s را ببرید</string>
+    <string name="challenge_win_without_hit">بدون خورده شدن ببرید</string>
+    <string name="challenge_win_streak">%1$d برد پشت‌سرهم بگیرید</string>
+    <string name="challenge_win_variant">یک دست %1$s ببرید</string>
 </resources>

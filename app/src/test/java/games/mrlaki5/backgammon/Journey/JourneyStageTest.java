@@ -43,6 +43,13 @@ public class JourneyStageTest {
     }
 
     @Test
+    public void everyChapterHasABoardTheme() {
+        for (JourneyStage stage : JourneyStage.values()) {
+            assertTrue(stage.getBoardTheme() >= 0 && stage.getBoardTheme() <= 7);
+        }
+    }
+
+    @Test
     public void onlyTheLastChapterIsATavliMatch() {
         JourneyStage[] stages = JourneyStage.values();
         for (int i = 0; i < stages.length - 1; i++) {

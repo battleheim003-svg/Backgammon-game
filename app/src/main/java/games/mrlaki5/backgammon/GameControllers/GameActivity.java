@@ -335,7 +335,7 @@ public class GameActivity extends AppCompatActivity {
 
         // View Setup
         BoardImage = findViewById(R.id.boardImage);
-        BoardImage.setBoardTheme(GamePreferences.getBoardTheme(this));
+        BoardImage.setBoardTheme(getBoardThemeForGame());
 
         rollDiceButton = findViewById(R.id.rollDiceButton);
         rollDiceButton.setOnClickListener(v -> rollDiceFromButton(v));
@@ -666,7 +666,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void applySelectedBoardTheme() {
-        int themeId = GamePreferences.getBoardTheme(this);
+        int themeId = getBoardThemeForGame();
         BoardTheme theme = BoardThemeFactory.getTheme(themeId);
         android.view.View root = findViewById(R.id.gameRoot);
         android.graphics.drawable.Drawable programmatic = theme.createBackgroundDrawable();
@@ -888,7 +888,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private String getThemeName() {
-        int theme = GamePreferences.getBoardTheme(this);
+        int theme = getBoardThemeForGame();
         switch (theme) {
             case GamePreferences.THEME_POP_ART: return "pop_art";
             case GamePreferences.THEME_CYBERPUNK: return "cyberpunk";
@@ -945,6 +945,12 @@ public class GameActivity extends AppCompatActivity {
             bonusDoubleChoice = value;
             bonusDoubleLock.notifyAll();
         }
+    }
+
+    /** Board theme for this game: a journey chapter may override the player's choice. */
+    public int getBoardThemeForGame() {
+        int override = getIntent().getIntExtra(MenuActivity.EXTRA_BOARD_THEME, -1);
+        return override >= 0 ? override : GamePreferences.getBoardTheme(this);
     }
 
     /** Difficulty for this game: a journey chapter overrides the player's setting. */

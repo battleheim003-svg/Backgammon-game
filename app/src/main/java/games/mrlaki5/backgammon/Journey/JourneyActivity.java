@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import games.mrlaki5.backgammon.Database.PlayerProfileManager;
 import games.mrlaki5.backgammon.GameControllers.GameActivity;
+import games.mrlaki5.backgammon.GamePreferences;
 import games.mrlaki5.backgammon.LocaleHelper;
 import games.mrlaki5.backgammon.Menus.MenuActivity;
 import games.mrlaki5.backgammon.Menus.VariantPicker;
@@ -132,6 +133,9 @@ public class JourneyActivity extends AppCompatActivity {
         intent.putExtra(MenuActivity.EXTRA_TAVLI, stage.isTavliRotation());
         intent.putExtra(MenuActivity.EXTRA_BOT_DIFFICULTY, stage.getDifficulty());
         intent.putExtra(MenuActivity.EXTRA_JOURNEY_STAGE, index);
+        if (GamePreferences.isThemeUnlocked(this, stage.getBoardTheme())) {
+            intent.putExtra(MenuActivity.EXTRA_BOARD_THEME, stage.getBoardTheme());
+        }
         startActivity(intent);
     }
 }

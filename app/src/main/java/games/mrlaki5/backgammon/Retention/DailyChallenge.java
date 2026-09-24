@@ -1,5 +1,7 @@
 package games.mrlaki5.backgammon.Retention;
 
+import com.royalbackgammon.core.variant.Variant;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -42,6 +44,13 @@ public class DailyChallenge {
             new Challenge("win_no_hit", ChallengeType.WIN_WITHOUT_HIT, 1),
             new Challenge("complete_3", ChallengeType.COMPLETE_GAMES, 3),
             new Challenge("streak_2", ChallengeType.WIN_STREAK, 2),
+            new Challenge("win_variant", ChallengeType.WIN_IN_VARIANT, 1),
+    };
+
+    /** Variants the "win in today's variant" challenge rotates through. */
+    public static final Variant[] DAILY_VARIANTS = {
+            Variant.STANDARD, Variant.TAVLA, Variant.PORTES, Variant.PLAKOTO,
+            Variant.FEVGA, Variant.NARDY, Variant.ACEY_DEUCEY
     };
 
     private final SharedPreferences prefs;
@@ -85,6 +94,16 @@ public class DailyChallenge {
     /**
      * Returns the current day's challenge.
      */
+    /** The variant today's "win in this variant" challenge asks for; stable for the whole day. */
+    public static Variant variantOfDay(int dayOfYear) {
+        int index = Math.floorMod(dayOfYear, DAILY_VARIANTS.length);
+        return DAILY_VARIANTS[index];
+    }
+
+    public Variant getTodayVariant() {
+        return variantOfDay(prefs.getInt(KEY_LAST_CHALLENGE_DAY, DateUtil.getDayOfYear()));
+    }
+
     public Challenge getTodayChallenge() {
         int index = prefs.getInt(KEY_CHALLENGE_INDEX, 0);
         return CHALLENGES[index % CHALLENGES.length];
@@ -120,6 +139,12 @@ public class DailyChallenge {
      * @param currentStreak current win streak value
      */
     public void onGameCompleted(boolean won, int difficulty, boolean wasHit, int currentStreak) {
+        onGameCompleted(won, difficulty, wasHit, currentStreak, Variant.STANDARD);
+    }
+
+    /** @param variant the variant that was just played, for the variant-of-the-day challenge */
+    public void onGameCompleted(boolean won, int difficulty, boolean wasHit, int currentStreak,
+                                Variant variant) {
         if (isCompleted()) return;
 
         Challenge challenge = getTodayChallenge();
@@ -141,6 +166,9 @@ public class DailyChallenge {
             case WIN_STREAK:
                 if (currentStreak >= challenge.targetValue) shouldIncrement = true;
                 break;
+            case WIN_IN_VARIANT:
+                if (won && variant == getTodayVariant()) shouldIncrement = true;
+                break;
         }
 
         if (shouldIncrement) {
@@ -151,7 +179,8 @@ public class DailyChallenge {
             if (progress >= challenge.targetValue ||
                     (challenge.type == ChallengeType.BEAT_DIFFICULTY && progress >= 1) ||
                     (challenge.type == ChallengeType.WIN_WITHOUT_HIT && progress >= 1) ||
-                    (challenge.type == ChallengeType.WIN_STREAK && progress >= 1)) {
+                    (challenge.type == ChallengeType.WIN_STREAK && progress >= 1) ||
+                    (challenge.type == ChallengeType.WIN_IN_VARIANT && progress >= 1)) {
                 editor.putBoolean(KEY_CHALLENGE_COMPLETED, true);
                 editor.putInt(KEY_TOTAL_COMPLETED, getTotalCompleted() + 1);
                 GameAnalytics.get().trackMissionCompleted(challenge.id);
@@ -174,7 +203,8 @@ public class DailyChallenge {
         COMPLETE_GAMES,
         BEAT_DIFFICULTY,
         WIN_WITHOUT_HIT,
-        WIN_STREAK
+        WIN_STREAK,
+        WIN_IN_VARIANT
     }
 
     public static class Challenge {

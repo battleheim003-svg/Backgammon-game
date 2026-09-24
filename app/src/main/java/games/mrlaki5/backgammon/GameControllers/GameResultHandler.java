@@ -117,7 +117,7 @@ public class GameResultHandler {
 
             // Update daily challenge
             DailyChallenge dailyChallenge = new DailyChallenge(context, coinManager);
-            dailyChallenge.onGameCompleted(won, difficulty, false, currentStreak);
+            dailyChallenge.onGameCompleted(won, difficulty, false, currentStreak, variant);
 
             // Update weekly challenge
             WeeklyChallenge weeklyChallenge = new WeeklyChallenge(context);
