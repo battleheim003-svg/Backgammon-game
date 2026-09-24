@@ -464,4 +464,14 @@
     <string name="challenge_win_without_hit">win without being hit</string>
     <string name="challenge_win_streak">reach a streak of %1$d</string>
     <string name="challenge_win_variant">win a game of %1$s</string>
+    <string name="challenge_dialog_title">Challenge</string>
+    <string name="challenge_play_today">Play today\'s challenge game</string>
+    <string name="challenge_share_code">Share a code</string>
+    <string name="challenge_enter_code">Enter a friend\'s code</string>
+    <string name="challenge_play_code">Play it now</string>
+    <string name="challenge_your_code">Your challenge code</string>
+    <string name="challenge_code_message">%1$s\n\n%2$s — the same dice for anyone who plays this code.</string>
+    <string name="challenge_share_text">Play this backgammon challenge with me — code: %1$s</string>
+    <string name="challenge_code_hint">e.g. PLA-3F9K2-7</string>
+    <string name="challenge_code_invalid">That code is not valid.</string>
 </resources>

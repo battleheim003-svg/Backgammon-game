@@ -165,6 +165,14 @@ public class ModelLoader {
                         model.setHeadMovesThisTurn(Integer.parseInt(data[1]));
                     }
                     break;
+                //Line 10 (challenge games): diceSeed diceRollsUsed
+                case 10:
+                    data=line.trim().split(" ");
+                    if(data.length==2){
+                        model.setDiceSeed(Long.parseLong(data[0]));
+                        model.setDiceRollsUsed(Integer.parseInt(data[1]));
+                    }
+                    break;
                 //Line 9 (acey-deucey): whiteHitsOnBar redHitsOnBar bonusPending extraTurnPending
                 case 9:
                     data=line.trim().split(" ");
@@ -211,5 +219,6 @@ public class ModelLoader {
         out.append(model.getHitsOnBar(1)+" "+model.getHitsOnBar(2)+" "
                 +(model.isBonusDoublePending() ? "1" : "0")+" "
                 +(model.isExtraTurnPending() ? "1" : "0")+"\n");
+        out.append(model.getDiceSeed()+" "+model.getDiceRollsUsed()+"\n");
     }
 }

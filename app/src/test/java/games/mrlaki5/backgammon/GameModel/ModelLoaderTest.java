@@ -43,6 +43,8 @@ public class ModelLoaderTest {
         assertEquals(0, loaded.getHitsOnBar(2));
         assertTrue(loaded.isBonusDoublePending());
         assertTrue(loaded.isExtraTurnPending());
+        assertEquals(4242L, loaded.getDiceSeed());
+        assertEquals(9, loaded.getDiceRollsUsed());
         assertEquals(3, loaded.getBoardFields()[8].getNumberOfChips());
         assertEquals(1, loaded.getBoardFields()[8].getPlayer());
         assertEquals(2, loaded.getBoardFields()[8].getPinnedPlayer());
@@ -76,6 +78,7 @@ public class ModelLoaderTest {
         assertEquals(0, loaded.getTurnsPlayed());
         assertEquals(0, loaded.getHitsOnBar(1));
         assertTrue(!loaded.isBonusDoublePending());
+        assertEquals(0L, loaded.getDiceSeed());
         assertEquals(5, loaded.getBoardFields()[0].getNumberOfChips());
         assertEquals(0, loaded.getBoardFields()[0].getPinnedPlayer());
     }
@@ -99,6 +102,8 @@ public class ModelLoaderTest {
         model.setHeadMovesThisTurn(1);
         model.setHitsOnBar(1, 2);
         model.setBonusDoublePending(true);
+        model.setDiceSeed(4242L);
+        model.setDiceRollsUsed(9);
         model.setExtraTurnPending(true);
         model.setMatch(new MatchState(Variant.PORTES, Variant.TAVLI_ROTATION, 5, 3, 1, 2));
         return model;

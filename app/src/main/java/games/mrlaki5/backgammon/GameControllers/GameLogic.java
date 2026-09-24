@@ -145,6 +145,10 @@ public class GameLogic {
         return dice;
     }
 
+    private int nextDie(){
+        return model != null ? model.nextDieValue() : (int)(Math.random()*6)+1;
+    }
+
     //Acey-deucey: a 1-2 roll owes a named double and an extra roll
     private void markAceyDeuceyRoll(DiceThrow[] dices){
         if(model==null || !model.getVariant().getAceyDeuceyRoll()){
@@ -164,8 +168,8 @@ public class GameLogic {
         //Create new array for rolled dices
         DiceThrow[] retDices=new DiceThrow[4];
         //Get two numbers, rolled numbers
-        int rollOne=(int)(Math.random()*6)+1;
-        int rollTwo=(int)(Math.random()*6)+1;
+        int rollOne=nextDie();
+        int rollTwo=nextDie();
         //If game state is 0 or 1 (first throws)
         if(model.getState()<2){
             //If first throw save one thrown number other copy from last throws

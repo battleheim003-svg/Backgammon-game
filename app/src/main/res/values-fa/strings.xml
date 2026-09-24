@@ -465,4 +465,14 @@
     <string name="challenge_win_without_hit">بدون خورده شدن ببرید</string>
     <string name="challenge_win_streak">%1$d برد پشت‌سرهم بگیرید</string>
     <string name="challenge_win_variant">یک دست %1$s ببرید</string>
+    <string name="challenge_dialog_title">چالش</string>
+    <string name="challenge_play_today">بازی چالش امروز</string>
+    <string name="challenge_share_code">ساختن کد</string>
+    <string name="challenge_enter_code">وارد کردن کد دوست</string>
+    <string name="challenge_play_code">همین حالا بازی کن</string>
+    <string name="challenge_your_code">کد چالش شما</string>
+    <string name="challenge_code_message">%1$s\n\n%2$s — هر کسی این کد را بازی کند، تاس‌هایش دقیقاً همین است.</string>
+    <string name="challenge_share_text">این چالش تخته‌نرد را با من بازی کن — کد: %1$s</string>
+    <string name="challenge_code_hint">مثلاً PLA-3F9K2-7</string>
+    <string name="challenge_code_invalid">این کد معتبر نیست.</string>
 </resources>

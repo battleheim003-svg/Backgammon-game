@@ -44,7 +44,10 @@ import games.mrlaki5.backgammon.Monetization.ads.RewardedAdPlacement;
 import games.mrlaki5.backgammon.Monetization.ads.RewardedAdTracker;
 import games.mrlaki5.backgammon.Monetization.ads.RewardedAdUiHelper;
 import games.mrlaki5.backgammon.Journey.JourneyActivity;
+import games.mrlaki5.backgammon.Challenge.ChallengeCode;
+import com.royalbackgammon.core.variant.Variant;
 import games.mrlaki5.backgammon.Retention.DailyChallenge;
+import games.mrlaki5.backgammon.Util.DateUtil;
 import games.mrlaki5.backgammon.R;
 
 //Activity class for main menu
@@ -69,6 +72,7 @@ public class MenuActivity extends AppCompatActivity {
     public static final String EXTRA_BOT_DIFFICULTY="botDifficulty";
     public static final String EXTRA_JOURNEY_STAGE="journeyStage";
     public static final String EXTRA_BOARD_THEME="boardTheme";
+    public static final String EXTRA_DICE_SEED="diceSeed";
     public static final String EXTRA_MATCH_WHITE_SCORE="matchWhiteScore";
     public static final String EXTRA_MATCH_RED_SCORE="matchRedScore";
     public static final String EXTRA_MATCH_GAMES="matchGames";
@@ -563,6 +567,7 @@ public class MenuActivity extends AppCompatActivity {
             return;
         }
         DailyChallenge challenge = new DailyChallenge(this);
+        view.setOnClickListener(v -> showChallengeDialog());
         DailyChallenge.Challenge today = challenge.getTodayChallenge();
         String description = challengeDescription(today, challenge);
         if (challenge.isCompleted()) {
@@ -591,6 +596,92 @@ public class MenuActivity extends AppCompatActivity {
                 return getString(R.string.challenge_win_variant,
                         getString(VariantPicker.nameRes(state.getTodayVariant())));
         }
+    }
+
+    /** Challenge games: today's shared game, a code to share, or a friend's code. */
+    private void showChallengeDialog() {
+        playMenuTap();
+        String[] options = {
+                getString(R.string.challenge_play_today),
+                getString(R.string.challenge_share_code),
+                getString(R.string.challenge_enter_code)
+        };
+        new AlertDialog.Builder(this, R.style.DarkAlertDialogTheme)
+                .setTitle(R.string.challenge_dialog_title)
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        startTodayChallengeGame();
+                    } else if (which == 1) {
+                        shareChallengeCode();
+                    } else {
+                        askForChallengeCode();
+                    }
+                })
+                .show();
+    }
+
+    private void startTodayChallengeGame() {
+        DailyChallenge challenge = new DailyChallenge(this);
+        int day = DateUtil.getDayOfYear();
+        startChallengeGame(challenge.getTodayVariant(), day * 7919L, 1);
+    }
+
+    private void shareChallengeCode() {
+        long seed = new java.util.Random().nextInt(Integer.MAX_VALUE);
+        Variant variant = GamePreferences.getVariant(this);
+        int matchTarget = GamePreferences.getMatchLength(this);
+        String code = ChallengeCode.encode(variant, seed, matchTarget);
+
+        new AlertDialog.Builder(this, R.style.DarkAlertDialogTheme)
+                .setTitle(R.string.challenge_your_code)
+                .setMessage(getString(R.string.challenge_code_message, code,
+                        getString(VariantPicker.nameRes(variant))))
+                .setPositiveButton(R.string.challenge_share_code, (d, w) -> {
+                    Intent share = new Intent(Intent.ACTION_SEND);
+                    share.setType("text/plain");
+                    share.putExtra(Intent.EXTRA_TEXT,
+                            getString(R.string.challenge_share_text, code));
+                    startActivity(Intent.createChooser(share, getString(R.string.challenge_share_code)));
+                })
+                .setNeutralButton(R.string.challenge_play_code, (d, w) ->
+                        startChallengeGame(variant, seed, matchTarget))
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void askForChallengeCode() {
+        EditText input = new EditText(this);
+        input.setHint(R.string.challenge_code_hint);
+        input.setTextColor(getResources().getColor(R.color.text_primary));
+        new AlertDialog.Builder(this, R.style.DarkAlertDialogTheme)
+                .setTitle(R.string.challenge_enter_code)
+                .setView(input)
+                .setPositiveButton(R.string.play, (d, w) -> {
+                    ChallengeCode.Challenge parsed =
+                            ChallengeCode.decode(input.getText().toString());
+                    if (parsed == null) {
+                        Toast.makeText(this, R.string.challenge_code_invalid, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    startChallengeGame(parsed.variant, parsed.seed, parsed.matchTarget);
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void startChallengeGame(Variant variant, long seed, int matchTarget) {
+        File save = new File(getFilesDir().getAbsolutePath(), GAME_CONTINUE_SAVE_FILE_NAME);
+        save.delete();
+
+        Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra(EXTRA_PLAYER1_NAME, new PlayerProfileManager(this).getDisplayName());
+        intent.putExtra(EXTRA_PLAYER2_NAME, getString(R.string.bot_player));
+        intent.putExtra(EXTRA_PLAYER1_KIND, "Player");
+        intent.putExtra(EXTRA_PLAYER2_KIND, "Bot");
+        intent.putExtra(EXTRA_VARIANT, variant.name());
+        intent.putExtra(EXTRA_MATCH_TARGET, Math.max(1, matchTarget));
+        intent.putExtra(EXTRA_DICE_SEED, seed);
+        startActivityForResult(intent, REQUEST_CODE_GAME);
     }
 
     private static int difficultyName(int difficulty) {

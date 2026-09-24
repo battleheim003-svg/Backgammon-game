@@ -57,6 +57,10 @@ public class Model {
     private final int[] barHits = new int[2];
     private boolean bonusDoublePending = false;
     private boolean extraTurnPending = false;
+    //Challenge games roll from a seed so that everyone gets the same dice; 0 = normal random
+    private long diceSeed = 0;
+    private int diceRollsUsed = 0;
+    private transient java.util.Random seededRandom;
     //Turn-by-turn history for the post-game review (human turns are the ones analysed)
     private final List<TurnRecord> turnHistory = new ArrayList<>();
     private TurnRecord currentTurnRecord;
@@ -89,6 +93,7 @@ public class Model {
                     extras.getInt(MenuActivity.EXTRA_MATCH_GAMES, 0));
             //In a Tavli match the rotation decides which game is being played
             variant=match.currentVariant();
+            diceSeed=extras.getLong(MenuActivity.EXTRA_DICE_SEED, 0L);
             String p1Name=extras.getString(MenuActivity.EXTRA_PLAYER1_NAME);
             String p2Name=extras.getString(MenuActivity.EXTRA_PLAYER2_NAME);
             if("Player".equals(extras.getString(MenuActivity.EXTRA_PLAYER1_KIND))){
@@ -253,6 +258,39 @@ public class Model {
 
     public void setHeadMovesThisTurn(int headMovesThisTurn) {
         this.headMovesThisTurn = headMovesThisTurn;
+    }
+
+    public long getDiceSeed() {
+        return diceSeed;
+    }
+
+    public void setDiceSeed(long diceSeed) {
+        this.diceSeed = diceSeed;
+        this.seededRandom = null;
+    }
+
+    public int getDiceRollsUsed() {
+        return diceRollsUsed;
+    }
+
+    public void setDiceRollsUsed(int diceRollsUsed) {
+        this.diceRollsUsed = diceRollsUsed;
+        this.seededRandom = null;
+    }
+
+    /** Next die value: seeded and reproducible in challenge games, random otherwise. */
+    public int nextDieValue() {
+        if (diceSeed == 0) {
+            return (int) (Math.random() * 6) + 1;
+        }
+        if (seededRandom == null) {
+            seededRandom = new java.util.Random(diceSeed);
+            for (int i = 0; i < diceRollsUsed; i++) {
+                seededRandom.nextInt(6);
+            }
+        }
+        diceRollsUsed++;
+        return seededRandom.nextInt(6) + 1;
     }
 
     public MatchState getMatch() {
