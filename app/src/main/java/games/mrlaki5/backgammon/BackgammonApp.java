@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.os.Looper;
 import android.os.Handler;
 import android.util.Log;
 
 import games.mrlaki5.backgammon.Analytics.AnalyticsProvider;
+import games.mrlaki5.backgammon.Diagnostics.Connectivity;
+import games.mrlaki5.backgammon.Diagnostics.StartupWatchdog;
 import games.mrlaki5.backgammon.Analytics.CrashReporter;
 import games.mrlaki5.backgammon.Analytics.FirebaseAnalyticsProvider;
 import games.mrlaki5.backgammon.Analytics.FirebaseCrashReporter;
@@ -46,6 +49,17 @@ public class BackgammonApp extends Application {
     public void onCreate() {
         super.onCreate();
 
+        if (BuildConfig.DEBUG) {
+            // Debug builds report what blocks the main thread instead of just freezing
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectDiskReads()
+                    .detectDiskWrites()
+                    .detectNetwork()
+                    .penaltyLog()
+                    .build());
+            StartupWatchdog.start();
+        }
+
         // Ads are initialized after the first frame, and never at the cost of startup:
         // on a slow or filtered network this SDK call can stall the main thread (ANR).
         new Handler(Looper.getMainLooper()).postDelayed(this::initializeAds, ADS_INIT_DELAY_MS);
@@ -63,6 +77,10 @@ public class BackgammonApp extends Application {
                     // first frame and never let it break startup.
                     new Handler(Looper.getMainLooper()).post(() -> {
                         try {
+                            if (!Connectivity.isOnline(activity)) {
+                                Log.d(TAG, "No connection — analytics stays on the stub provider");
+                                return;
+                            }
                             initializeAnalytics(activity);
                         } catch (Throwable t) {
                             Log.w(TAG, "Analytics initialization threw", t);
@@ -96,6 +114,11 @@ public class BackgammonApp extends Application {
     }
 
     private void initializeAds() {
+        if (!Connectivity.isOnline(this)) {
+            // Offline: starting the ad SDK would only risk a stall
+            Log.d(TAG, "No connection — skipping ad SDK initialization");
+            return;
+        }
         try {
             TapsellPlus.setDebugMode(Log.DEBUG);
             TapsellPlus.initialize(this, BuildConfig.TAPSELL_APP_KEY, new TapsellPlusInitListener() {

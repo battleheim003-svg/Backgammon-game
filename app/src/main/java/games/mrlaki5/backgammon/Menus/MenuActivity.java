@@ -213,6 +213,9 @@ public class MenuActivity extends AppCompatActivity {
         new android.os.Handler(android.os.Looper.getMainLooper())
                 .postDelayed(() -> {
                     try {
+                        if (!games.mrlaki5.backgammon.Diagnostics.Connectivity.isOnline(this)) {
+                            return;
+                        }
                         adManager.preloadAds();
                     } catch (Throwable t) {
                         android.util.Log.w("MenuActivity", "Ad preload failed", t);
@@ -276,7 +279,9 @@ public class MenuActivity extends AppCompatActivity {
         updateCoinDisplay();
 
         // Start menu background music
-        MenuAudioManager.get().startMenuMusic(this);
+        // Decoding the music track is not worth a stutter on the first frame
+        new android.os.Handler(android.os.Looper.getMainLooper())
+                .postDelayed(() -> MenuAudioManager.get().startMenuMusic(this), 600L);
     }
 
     @Override
