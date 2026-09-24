@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Looper;
+import android.os.Handler;
 import android.util.Log;
 
 import games.mrlaki5.backgammon.Analytics.AnalyticsProvider;
@@ -34,6 +36,9 @@ public class BackgammonApp extends Application {
     private static final String PREFS_NAME = "app_prefs";
     private static final String KEY_FIRST_LAUNCH = "first_launch_done";
 
+    private static final long ADS_INIT_DELAY_MS = 1500L;
+    private static volatile boolean adsReady = false;
+
     private boolean analyticsInitialized = false;
     private int activeActivityCount = 0;
 
@@ -41,19 +46,9 @@ public class BackgammonApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-        // Initialize TapsellPlus SDK
-        TapsellPlus.setDebugMode(Log.DEBUG);
-        TapsellPlus.initialize(this, BuildConfig.TAPSELL_APP_KEY, new TapsellPlusInitListener() {
-            @Override
-            public void onInitializeSuccess(AdNetworks adNetworks) {
-                Log.d(TAG, "TapsellPlus initialized successfully");
-            }
-
-            @Override
-            public void onInitializeFailed(AdNetworks adNetworks, AdNetworkError adNetworkError) {
-                Log.w(TAG, "TapsellPlus init failed: " + adNetworkError.getErrorMessage());
-            }
-        });
+        // Ads are initialized after the first frame, and never at the cost of startup:
+        // on a slow or filtered network this SDK call can stall the main thread (ANR).
+        new Handler(Looper.getMainLooper()).postDelayed(this::initializeAds, ADS_INIT_DELAY_MS);
 
         // Initialize menu audio (click + music)
         MenuAudioManager.get().init(this);
@@ -63,8 +58,16 @@ public class BackgammonApp extends Application {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                 if (!analyticsInitialized) {
-                    initializeAnalytics(activity);
                     analyticsInitialized = true;
+                    // Analytics/Crashlytics setup also touches the network; keep it off the
+                    // first frame and never let it break startup.
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        try {
+                            initializeAnalytics(activity);
+                        } catch (Throwable t) {
+                            Log.w(TAG, "Analytics initialization threw", t);
+                        }
+                    });
                 }
             }
 
@@ -90,6 +93,32 @@ public class BackgammonApp extends Application {
             @Override public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
             @Override public void onActivityDestroyed(Activity activity) {}
         });
+    }
+
+    private void initializeAds() {
+        try {
+            TapsellPlus.setDebugMode(Log.DEBUG);
+            TapsellPlus.initialize(this, BuildConfig.TAPSELL_APP_KEY, new TapsellPlusInitListener() {
+                @Override
+                public void onInitializeSuccess(AdNetworks adNetworks) {
+                    adsReady = true;
+                    Log.d(TAG, "TapsellPlus initialized successfully");
+                }
+
+                @Override
+                public void onInitializeFailed(AdNetworks adNetworks, AdNetworkError adNetworkError) {
+                    Log.w(TAG, "TapsellPlus init failed: " + adNetworkError.getErrorMessage());
+                }
+            });
+        } catch (Throwable t) {
+            // The game must start even when the ad SDK cannot
+            Log.w(TAG, "TapsellPlus initialization threw", t);
+        }
+    }
+
+    /** True once the ad SDK reported success; ad calls before that are skipped. */
+    public static boolean areAdsReady() {
+        return adsReady;
     }
 
     private void initializeAnalytics(Activity activity) {

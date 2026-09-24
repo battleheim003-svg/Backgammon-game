@@ -208,8 +208,16 @@ public class MenuActivity extends AppCompatActivity {
                         games.mrlaki5.backgammon.Monetization.ads.AdConfig.ZONE_INTERSTITIAL,
                         games.mrlaki5.backgammon.Monetization.ads.AdConfig.ZONE_REWARDED));
         adManager.initialize(this);
-        adManager.preloadAds();
         sharedAdManager = adManager;
+        // Preloading talks to the network; do it after the menu is on screen
+        new android.os.Handler(android.os.Looper.getMainLooper())
+                .postDelayed(() -> {
+                    try {
+                        adManager.preloadAds();
+                    } catch (Throwable t) {
+                        android.util.Log.w("MenuActivity", "Ad preload failed", t);
+                    }
+                }, 2500L);
         //Load preferences
         SharedPreferences preferences = getSharedPreferences("Settings", 0);
         //If values in preferences dont exist (on first start), create them
