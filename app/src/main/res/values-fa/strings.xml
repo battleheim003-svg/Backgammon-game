@@ -481,4 +481,11 @@
     <string name="challenge_result_won">%1$s · %2$s · برد %3$d</string>
     <string name="challenge_result_lost">%1$s · %2$s · باخت %3$d</string>
     <string name="review_reward_button">دیدن ویدیو برای %1$d سکه</string>
+    <!-- Journey screen, royal layout -->
+    <string name="journey_progress_label">فصل‌های تمام‌شده</string>
+    <string name="journey_opponent_line">حریف: %1$s</string>
+    <string name="journey_reward_line">%1$d سکه</string>
+    <string name="journey_hint_current">فصل بعدی: %1$s</string>
+    <string name="journey_hint_complete">تمام راه را پشت سر گذاشتی. هر فصلی را خواستی دوباره بازی کن.</string>
+    <string name="journey_chapter_number">%1$d</string>
 </resources>

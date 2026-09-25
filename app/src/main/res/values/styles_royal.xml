@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Type scale for the royal screens. Vazirmatn carries Persian and Latin in one
+    family, so a Persian and an English build look like the same product.
+
+    app:fontFamily (not android:fontFamily) is deliberate: AppCompat resolves it
+    back to API 14, while the framework attribute needs API 26.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="RoyalText">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textColor">@color/ink_parchment</item>
+    </style>
+
+    <!-- Screen title: the one piece of gold at the top of a screen -->
+    <style name="RoyalText.Display" parent="RoyalText">
+        <item name="fontFamily">@font/vazirmatn_extrabold</item>
+        <item name="android:textSize">21sp</item>
+        <item name="android:textColor">@color/gold_bright</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:shadowColor">@color/royal_night</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">6</item>
+    </style>
+
+    <!-- Card heading -->
+    <style name="RoyalText.Title" parent="RoyalText">
+        <item name="fontFamily">@font/vazirmatn_semibold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- Body copy inside cards -->
+    <style name="RoyalText.Body" parent="RoyalText">
+        <item name="fontFamily">@font/vazirmatn_regular</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/ink_soft</item>
+        <item name="android:lineSpacingMultiplier">1.25</item>
+    </style>
+
+    <!-- The quiet line: flavour text, hints, locked messages -->
+    <style name="RoyalText.Caption" parent="RoyalText">
+        <item name="fontFamily">@font/vazirmatn_regular</item>
+        <item name="android:textSize">11.5sp</item>
+        <item name="android:textColor">@color/ink_muted</item>
+        <item name="android:lineSpacingMultiplier">1.25</item>
+    </style>
+
+    <!-- Fact chips: variant, match length, reward -->
+    <style name="RoyalText.Chip" parent="RoyalText">
+        <item name="fontFamily">@font/vazirmatn_semibold</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/gold_bright</item>
+        <item name="android:background">@drawable/bg_chip_royal</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <!-- The chapter number inside its seal -->
+    <style name="RoyalText.Seal" parent="RoyalText">
+        <item name="fontFamily">@font/vazirmatn_extrabold</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/ink_on_gold</item>
+        <item name="android:gravity">center</item>
+    </style>
+</resources>

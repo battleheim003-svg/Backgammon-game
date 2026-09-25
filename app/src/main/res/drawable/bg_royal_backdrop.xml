@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The ground every royal screen sits on: a night-blue sweep that lifts toward the
+    top-left, with one large shamsa watermarked into the corner so the surface has
+    an origin instead of being an empty rectangle.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="135"
+                android:startColor="@color/royal_panel"
+                android:centerColor="@color/royal_deep"
+                android:endColor="@color/royal_night"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <item
+        android:width="320dp"
+        android:height="320dp"
+        android:top="-96dp"
+        android:end="-104dp"
+        android:gravity="top|end">
+        <rotate
+            android:fromDegrees="12"
+            android:toDegrees="12"
+            android:pivotX="50%"
+            android:pivotY="50%">
+            <bitmap android:src="@drawable/ic_shamsa" android:alpha="0.06" />
+        </rotate>
+    </item>
+
+    <item
+        android:width="240dp"
+        android:height="240dp"
+        android:bottom="-88dp"
+        android:start="-72dp"
+        android:gravity="bottom|start">
+        <bitmap android:src="@drawable/ic_shamsa_ring" android:alpha="0.07" />
+    </item>
+</layer-list>

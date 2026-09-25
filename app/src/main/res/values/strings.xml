@@ -480,4 +480,11 @@
     <string name="challenge_result_won">%1$s · %2$s · won %3$d</string>
     <string name="challenge_result_lost">%1$s · %2$s · lost %3$d</string>
     <string name="review_reward_button">Watch a video for %1$d coins</string>
+    <!-- Journey screen, royal layout -->
+    <string name="journey_progress_label">Chapters completed</string>
+    <string name="journey_opponent_line">Opponent: %1$s</string>
+    <string name="journey_reward_line">%1$d coins</string>
+    <string name="journey_hint_current">Next: %1$s</string>
+    <string name="journey_hint_complete">The whole road is behind you. Play any chapter again whenever you like.</string>
+    <string name="journey_chapter_number">%1$d</string>
 </resources>
