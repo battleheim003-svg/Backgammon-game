@@ -42,6 +42,19 @@ public class BackgammonApp extends Application {
     private static final long ADS_INIT_DELAY_MS = 1500L;
     private static volatile boolean adsReady = false;
 
+    /**
+     * Every SDK hand-off happens here, never on the main thread. A reachable network is
+     * not the same thing as a reachable server: on a filtered or throttled connection the
+     * device reports itself online while the SDK's first request hangs for tens of
+     * seconds. On the main thread that is an ANR; on this thread it costs nothing.
+     */
+    private final java.util.concurrent.ExecutorService sdkExecutor =
+            java.util.concurrent.Executors.newSingleThreadExecutor(runnable -> {
+                Thread thread = new Thread(runnable, "sdk-init");
+                thread.setPriority(Thread.MIN_PRIORITY);
+                return thread;
+            });
+
     private boolean analyticsInitialized = false;
     private int activeActivityCount = 0;
 
@@ -62,7 +75,8 @@ public class BackgammonApp extends Application {
 
         // Ads are initialized after the first frame, and never at the cost of startup:
         // on a slow or filtered network this SDK call can stall the main thread (ANR).
-        new Handler(Looper.getMainLooper()).postDelayed(this::initializeAds, ADS_INIT_DELAY_MS);
+        new Handler(Looper.getMainLooper())
+                .postDelayed(() -> sdkExecutor.execute(this::initializeAds), ADS_INIT_DELAY_MS);
 
         // Initialize menu audio (click + music)
         MenuAudioManager.get().init(this);
@@ -75,13 +89,13 @@ public class BackgammonApp extends Application {
                     analyticsInitialized = true;
                     // Analytics/Crashlytics setup also touches the network; keep it off the
                     // first frame and never let it break startup.
-                    new Handler(Looper.getMainLooper()).post(() -> {
+                    sdkExecutor.execute(() -> {
                         try {
-                            if (!Connectivity.isOnline(activity)) {
+                            if (!Connectivity.isOnline(BackgammonApp.this)) {
                                 Log.d(TAG, "No connection — analytics stays on the stub provider");
                                 return;
                             }
-                            initializeAnalytics(activity);
+                            initializeAnalytics(BackgammonApp.this);
                         } catch (Throwable t) {
                             Log.w(TAG, "Analytics initialization threw", t);
                         }
@@ -144,7 +158,7 @@ public class BackgammonApp extends Application {
         return adsReady;
     }
 
-    private void initializeAnalytics(Activity activity) {
+    private void initializeAnalytics(android.content.Context context) {
         // Use Firebase Analytics as the real provider
         // Falls back gracefully if google-services.json is missing
         AnalyticsProvider provider;
@@ -164,7 +178,7 @@ public class BackgammonApp extends Application {
             crashReporter = new StubCrashReporter();
         }
 
-        GameAnalytics.init(activity, provider, crashReporter);
+        GameAnalytics.init(context, provider, crashReporter);
 
         // Track app open
         GameAnalytics.get().trackAppOpen();

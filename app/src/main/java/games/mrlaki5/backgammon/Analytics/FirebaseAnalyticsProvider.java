@@ -1,6 +1,5 @@
 package games.mrlaki5.backgammon.Analytics;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,9 +26,9 @@ public class FirebaseAnalyticsProvider implements AnalyticsProvider {
     private long sessionStartTime;
 
     @Override
-    public void initialize(Activity activity) {
+    public void initialize(Context context) {
         try {
-            firebaseAnalytics = FirebaseAnalytics.getInstance(activity);
+            firebaseAnalytics = FirebaseAnalytics.getInstance(context);
             // Enable analytics collection (can be toggled for GDPR if needed)
             firebaseAnalytics.setAnalyticsCollectionEnabled(true);
             Log.d(TAG, "Firebase Analytics initialized");

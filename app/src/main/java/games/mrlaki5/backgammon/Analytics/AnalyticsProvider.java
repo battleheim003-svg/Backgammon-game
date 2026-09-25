@@ -1,6 +1,6 @@
 package games.mrlaki5.backgammon.Analytics;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 
 /**
@@ -18,7 +18,7 @@ public interface AnalyticsProvider {
     /**
      * Initializes the analytics SDK. Call once at app startup.
      */
-    void initialize(Activity activity);
+    void initialize(Context context);
 
     /**
      * Logs an event with the given name and parameters.

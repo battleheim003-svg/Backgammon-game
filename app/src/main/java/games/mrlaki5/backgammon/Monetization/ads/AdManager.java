@@ -22,6 +22,7 @@ public class AdManager {
     private final AdProvider adProvider;
     private final SharedPreferences prefs;
     private final RewardedAdTracker rewardedAdTracker;
+    private final Context appContext;
     private boolean adsRemoved = false;
 
     public AdManager(Context context, AdProvider adProvider) {
@@ -32,6 +33,8 @@ public class AdManager {
         this.adProvider = adProvider;
         this.prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         this.rewardedAdTracker = rewardedAdTracker;
+        Context application = context.getApplicationContext();
+        this.appContext = application != null ? application : context;
     }
 
     public RewardedAdTracker getRewardedAdTracker() {
@@ -39,11 +42,12 @@ public class AdManager {
     }
 
     /**
-     * Initializes the ad SDK.
+     * Initializes the ad SDK. Does NOT preload: preloading touches the network and
+     * must never run on the frame that builds the first screen. Callers schedule
+     * {@link #preloadAds()} themselves once their UI is visible.
      */
     public void initialize(Activity activity) {
         adProvider.initialize(activity);
-        preloadAds();
     }
 
     /**
@@ -190,6 +194,14 @@ public class AdManager {
      * Preloads ads for next use.
      */
     public void preloadAds() {
+        if (!games.mrlaki5.backgammon.Diagnostics.Connectivity.isOnline(appContext)) {
+            return;
+        }
+        if (!games.mrlaki5.backgammon.BackgammonApp.areAdsReady()) {
+            // Requesting before the SDK reports success makes the request wait on
+            // initialization — on the main thread. Later call sites retry.
+            return;
+        }
         if (!adsRemoved) {
             adProvider.loadAd(AdType.INTERSTITIAL, null);
         }

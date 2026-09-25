@@ -1,6 +1,6 @@
 package games.mrlaki5.backgammon.Analytics;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -14,7 +14,7 @@ public class StubAnalyticsProvider implements AnalyticsProvider {
     private long sessionStartTime;
 
     @Override
-    public void initialize(Activity activity) {
+    public void initialize(Context context) {
         Log.d(TAG, "Analytics initialized (stub)");
     }
 

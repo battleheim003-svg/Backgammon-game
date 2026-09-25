@@ -1,6 +1,6 @@
 package games.mrlaki5.backgammon.Analytics;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 
 /**
@@ -23,12 +23,12 @@ public class GameAnalytics {
 
     private GameAnalytics() {}
 
-    public static void init(Activity activity, AnalyticsProvider analytics, CrashReporter crashReporter) {
+    public static void init(Context context, AnalyticsProvider analytics, CrashReporter crashReporter) {
         instance = new GameAnalytics();
         instance.analytics = analytics;
         instance.crashReporter = crashReporter;
-        analytics.initialize(activity);
-        crashReporter.initialize(activity);
+        analytics.initialize(context);
+        crashReporter.initialize(context);
     }
 
     public static GameAnalytics get() {
