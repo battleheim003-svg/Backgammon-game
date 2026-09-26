@@ -207,7 +207,7 @@
     <string name="daily_login_claim">Claim</string>
     <string name="daily_login_claimed">Claimed!</string>
     <string name="daily_login_day">Day %1$d</string>
-    <string name="free_coins">🎬 Free Coins</string>
+    <string name="free_coins">Free coins</string>
     <string name="watch_ad_for_coins">🎬 Watch video for %1$d coins</string>
     <string name="double_reward">Double Coins</string>
     <string name="double_reward_desc">Watch a video to double your reward!</string>
@@ -228,7 +228,7 @@
     <string name="weekly_endurance">Endurance</string>
     <string name="weekly_progress">%1$d / %2$d</string>
     <string name="undo_move">↺ Undo</string>
-    <string name="coin_shop">🛍️ Shop</string>
+    <string name="coin_shop">Shop</string>
     <string name="avatar_frames">Avatar Frames</string>
     <string name="dice_skins">Dice Skins</string>
     <string name="profile_titles">Titles</string>
@@ -249,7 +249,7 @@
     <string name="shop_locked_short">Locked</string>
     <string name="shop_rental_button">Rent %1$d 🪙</string>
     <string name="shop_rental_active">Rented</string>
-    <string name="elo_rating_format">🏅 ELO %1$d</string>
+    <string name="elo_rating_format">ELO %1$d</string>
     <string name="elo_delta_positive">+%1$d ELO</string>
     <string name="elo_delta_negative">%1$d ELO</string>
     <string name="coins_breakdown">Coins Earned</string>
@@ -376,7 +376,7 @@
     <string name="stats_achievements_label">Achievements</string>
 
     <!-- Coin Shop Free Coins -->
-    <string name="free_coins_shop_button">Free Coins 📺</string>
+    <string name="free_coins_shop_button">Free coins</string>
     <string name="free_coins_cooldown">%d min until next free coins</string>
 
     <!-- Variants & matches -->

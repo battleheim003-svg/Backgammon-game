@@ -208,7 +208,7 @@
     <string name="daily_login_claim">دریافت</string>
     <string name="daily_login_claimed">دریافت شد!</string>
     <string name="daily_login_day">روز %1$d</string>
-    <string name="free_coins">🎬 سکه رایگان</string>
+    <string name="free_coins">سکهٔ رایگان</string>
     <string name="watch_ad_for_coins">🎬 تماشای ویدئو برای %1$d سکه</string>
     <string name="double_reward">سکه دوبرابر</string>
     <string name="double_reward_desc">تماشای ویدئو برای دوبرابر شدن پاداش!</string>
@@ -229,7 +229,7 @@
     <string name="weekly_endurance">استقامت</string>
     <string name="weekly_progress">%1$d / %2$d</string>
     <string name="undo_move">↺ برگشت</string>
-    <string name="coin_shop">🛍️ فروشگاه</string>
+    <string name="coin_shop">فروشگاه</string>
     <string name="avatar_frames">فریم آواتار</string>
     <string name="dice_skins">طرح تاس</string>
     <string name="profile_titles">عنوانها</string>
@@ -250,7 +250,7 @@
     <string name="shop_locked_short">قفل</string>
     <string name="shop_rental_button">اجاره %1$d 🪙</string>
     <string name="shop_rental_active">در حال اجاره</string>
-    <string name="elo_rating_format">🏅 امتیاز: %1$d</string>
+    <string name="elo_rating_format">امتیاز %1$d</string>
     <string name="elo_delta_positive">+%1$d رتبه</string>
     <string name="elo_delta_negative">%1$d رتبه</string>
     <string name="coins_breakdown">سکه‌های کسب شده</string>
@@ -376,7 +376,7 @@
     <string name="stats_achievements_label">دستاوردها</string>
 
     <!-- Coin Shop Free Coins -->
-    <string name="free_coins_shop_button">سکه رایگان 📺</string>
+    <string name="free_coins_shop_button">سکهٔ رایگان</string>
     <string name="free_coins_cooldown">%d دقیقه تا سکه رایگان بعدی</string>
 
     <!-- Variants & matches -->

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The quieter sibling of the gold button: glazed lapis inside a gold rim. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="13dp" />
+            <gradient
+                android:angle="270"
+                android:startColor="@color/gold_hairline"
+                android:endColor="#66000000"
+                android:type="linear" />
+        </shape>
+    </item>
+    <item
+        android:top="1.2dp"
+        android:bottom="2dp"
+        android:start="1.2dp"
+        android:end="1.2dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="11dp" />
+            <gradient
+                android:angle="270"
+                android:startColor="@color/royal_panel_high"
+                android:endColor="#20140B"
+                android:type="linear" />
+        </shape>
+    </item>
+    <item
+        android:top="1.2dp"
+        android:bottom="2dp"
+        android:start="1.2dp"
+        android:end="1.2dp">
+        <bitmap
+            android:src="@drawable/tex_kashi_panel"
+            android:tileMode="repeat"
+            android:tint="@color/gold" />
+    </item>
+</layer-list>

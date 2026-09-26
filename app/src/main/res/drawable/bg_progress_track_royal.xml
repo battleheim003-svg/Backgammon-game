@@ -3,7 +3,7 @@
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
             <corners android:radius="999dp" />
-            <solid android:color="#141A36" />
+            <solid android:color="#231609" />
             <stroke android:width="0.8dp" android:color="@color/gold_hairline" />
         </shape>
     </item>

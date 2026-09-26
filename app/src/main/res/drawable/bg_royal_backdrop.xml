@@ -1,43 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    The ground every royal screen sits on: a night-blue sweep that lifts toward the
-    top-left, with one large shamsa watermarked into the corner so the surface has
-    an origin instead of being an empty rectangle.
+    The ground every royal screen sits on. It is the menu's own wood panel, so the
+    journey, the game and the menu read as one room rather than three apps: the
+    board art, a kashi field tiled over it, and a wash that keeps text legible.
+
+    The tile's opacity is baked into the PNG, because android:alpha on <bitmap>
+    only exists from API 31 and this app ships to 21.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <bitmap
+            android:src="@drawable/meny_background"
+            android:gravity="fill" />
+    </item>
+
+    <item>
+        <bitmap
+            android:src="@drawable/tex_kashi"
+            android:tileMode="repeat"
+            android:tint="@color/gold" />
+    </item>
 
     <item>
         <shape android:shape="rectangle">
             <gradient
                 android:angle="135"
-                android:startColor="@color/royal_panel"
-                android:centerColor="@color/royal_deep"
-                android:endColor="@color/royal_night"
+                android:startColor="#B3150D06"
+                android:centerColor="#73150D06"
+                android:endColor="#CC150D06"
                 android:type="linear" />
         </shape>
-    </item>
-
-    <item
-        android:width="320dp"
-        android:height="320dp"
-        android:top="-96dp"
-        android:end="-104dp"
-        android:gravity="top|end">
-        <rotate
-            android:fromDegrees="12"
-            android:toDegrees="12"
-            android:pivotX="50%"
-            android:pivotY="50%">
-            <bitmap android:src="@drawable/ic_shamsa" android:alpha="0.06" />
-        </rotate>
-    </item>
-
-    <item
-        android:width="240dp"
-        android:height="240dp"
-        android:bottom="-88dp"
-        android:start="-72dp"
-        android:gravity="bottom|start">
-        <bitmap android:src="@drawable/ic_shamsa_ring" android:alpha="0.07" />
     </item>
 </layer-list>

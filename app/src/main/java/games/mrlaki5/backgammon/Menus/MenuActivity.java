@@ -315,7 +315,7 @@ public class MenuActivity extends AppCompatActivity {
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_daily_login, null);
         TextView tvCoins = view.findViewById(R.id.dlgCoins);
         if (tvCoins != null) {
-            tvCoins.setText("+" + result.coinsEarned + " 🪙");
+            tvCoins.setText(getString(R.string.journey_reward_line, result.coinsEarned));
         }
         LinearLayout dayRow = view.findViewById(R.id.dlgDayRow);
         if (dayRow != null) {
@@ -439,6 +439,7 @@ public class MenuActivity extends AppCompatActivity {
         int[] buttonIds = {
                 R.id.playGame,
                 R.id.passAndPlay,
+                R.id.journey,
                 R.id.tutorial,
                 R.id.scores,
                 R.id.settings,
