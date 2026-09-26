@@ -314,6 +314,43 @@ def wood_plaque(w=260, h=104, radius=26, bevel=10, inlay=7, pressed=False,
                                 blur=3.0, opacity=0.0 if pressed else 0.5))
 
 
+def vector_mask(name, size):
+    """
+    Coverage of one of the app's vector drawables. android:pathData is SVG path
+    syntax, so the drawable can be wrapped in an <svg> and rasterised; the alpha
+    that comes back is the mask this renderer needs.
+    """
+    import io
+    import re
+
+    import cairosvg
+
+    source = (RES / "drawable" / f"{name}.xml").read_text()
+    paths = re.findall(r'android:pathData="([^"]+)"', source)
+    viewport = re.search(r'android:viewportWidth="([\d.]+)"', source)
+    box = float(viewport.group(1)) if viewport else 24.0
+    body = "".join(f'<path d="{d}" fill="#FFFFFF"/>' for d in paths)
+    svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {box} {box}">{body}</svg>')
+    png = cairosvg.svg2png(bytestring=svg.encode(), output_width=size, output_height=size)
+    icon = Image.open(io.BytesIO(png)).convert("RGBA")
+    return np.asarray(icon.getchannel("A"), dtype=np.float64) / 255.0
+
+
+def gold_icon(name, size=96):
+    """
+    An icon as a small struck object rather than a flat silhouette. Same light,
+    same metal and same bevel as the buttons it sits on, so an icon reads as
+    part of the same made thing instead of a symbol printed on top of it.
+    """
+    mask = vector_mask(name, size)
+    albedo, dents = hammered_gold(size, size, seed=31)
+    height = bevel_height(mask, max(size * 0.075, 2.0)) + dents * mask
+    rgba = shade(height, albedo, mask, relief=3.6, ambient=0.50,
+                 key=0.68, spec_strength=0.78, spec_power=22)
+    rgba = add_rim(rgba, mask, colour=(0.24, 0.13, 0.03), width=1.5)
+    return to_image(drop_shadow(rgba, offset=2, blur=2.2, opacity=0.5))
+
+
 def title_plate(text, font_path, size_px, *, pad=26, outline=5):
     """
     A title struck in gold rather than typed in gold.
@@ -418,7 +455,7 @@ def main():
         w, h = surface.size
         save(name, nine_patch(surface,
                               stretch=((w // 2 - 2, w // 2 + 2), (h // 2 - 2, h // 2 + 2)),
-                              padding=((34, w - 34), (24, h - 30))))
+                              padding=((12, w - 12), (10, h - 14))))
 
     # The panel: a larger, quieter wood field with the same inlay frame.
     # Quiet figure and wide bands: this surface has a menu printed on it.
@@ -431,7 +468,7 @@ def main():
     save("bg_royal_panel.9.png", nine_patch(
         panel,
         stretch=((pw // 2 - 2, pw // 2 + 2), (ph // 2 - 2, ph // 2 + 2)),
-        padding=((30, pw - 30), (26, ph - 32))))
+        padding=((16, pw - 16), (14, ph - 20))))
 
     # Nine chapter emblems: a different fold count and a different enamel for
     # each, so the nine seals are nine marks rather than nine numbered circles.
@@ -449,6 +486,13 @@ def main():
     for index, enamel in enumerate(enamels):
         save(f"emblem_chapter_{index + 1}.png",
              rosette(112, 6 + index, seed=40 + index * 7, enamel_rgb=enamel))
+
+    for icon in ("ic_royal_play", "ic_royal_duel", "ic_royal_road", "ic_royal_book",
+                 "ic_royal_trophy", "ic_royal_gear", "ic_royal_coin", "ic_royal_medal",
+                 "ic_royal_shop", "ic_royal_crown", "ic_royal_lock", "ic_royal_back",
+                 "ic_royal_chevron", "ic_royal_pause", "ic_royal_restart",
+                 "ic_royal_exit", "ic_royal_sound", "ic_royal_dice"):
+        save(icon.replace("ic_royal_", "gold_") + ".png", gold_icon(icon))
 
     # Struck titles, one per language.
     for language, strings in TITLES.items():

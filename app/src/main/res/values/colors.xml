@@ -24,8 +24,8 @@
     <color name="color_lock_overlay">#CC000000</color>
     <color name="color_player_name_text">#E0E0E0</color>
     <color name="color_player_name_hint">#555555</color>
-    <color name="color_difficulty_text_normal">#AAAAAA</color>
-    <color name="color_difficulty_text_selected">#E6A100</color>
+    <color name="color_difficulty_text_normal">#F7D488</color>
+    <color name="color_difficulty_text_selected">#231504</color>
     <color name="color_cancel_button_text">#BBBBBB</color>
     <color name="color_play_button_text">#0E1721</color>
     <color name="color_play_button_text_dark">#1A1A1A</color>

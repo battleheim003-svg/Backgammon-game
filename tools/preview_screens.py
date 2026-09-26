@@ -211,18 +211,19 @@ def menu_screen():
     canvas.alpha_composite(icon, (int(gx + label_w + dp(9)), cursor + (hero_h - icon.height) // 2))
     cursor += hero_h + dp(12)
 
-    tiles = [("دو نفره", "ic_royal_duel"), ("سفر", "ic_royal_road"),
-             ("آموزش", "ic_royal_book"), ("امتیازها", "ic_royal_trophy"),
-             ("تنظیمات", "ic_royal_gear")]
-    gap, tile_h = dp(7), dp(60)
+    tiles = [("دو نفره", "gold_duel"), ("سفر", "gold_road"),
+             ("آموزش", "gold_book"), ("امتیازها", "gold_trophy"),
+             ("تنظیمات", "gold_gear")]
+    gap, tile_h = dp(7), dp(66)
     tile_w = (pw - dp(44) - gap * 4) // 5
     for i, (label, icon_name) in enumerate(reversed(tiles)):
         tx = px + dp(22) + i * (tile_w + gap)
         canvas.alpha_composite(nine_patch_stretch(XHDPI / "btn_wood.9.png", tile_w, tile_h), (tx, cursor))
-        icon = vector_icon(icon_name, GOLD, (dp(21), dp(21)))
+        icon = Image.open(XHDPI / f"{icon_name}.png").convert("RGBA")
+        icon = icon.resize((dp(25), dp(25)), Image.LANCZOS)
         canvas.alpha_composite(icon, (tx + (tile_w - icon.width) // 2, cursor + dp(9)))
-        centred(draw, (tx, cursor + tile_h - dp(22), tx + tile_w, cursor + tile_h - dp(5)),
-                fa(label), font("display", 11), GOLD_BRIGHT)
+        centred(draw, (tx, cursor + tile_h - dp(24), tx + tile_w, cursor + tile_h - dp(5)),
+                fa(label), font("display", 11.5), GOLD_BRIGHT)
 
     # Crest on the trailing edge.
     logo = Image.open(NODPI / "royal_backgammon_logo.webp").convert("RGBA")
