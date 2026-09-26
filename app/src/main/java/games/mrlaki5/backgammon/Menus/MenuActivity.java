@@ -442,6 +442,7 @@ public class MenuActivity extends AppCompatActivity {
                 R.id.journey,
                 R.id.tutorial,
                 R.id.scores,
+                R.id.btnShop,
                 R.id.settings,
                 R.id.languageToggle
         };
@@ -461,6 +462,25 @@ public class MenuActivity extends AppCompatActivity {
                     .setInterpolator(new OvershootInterpolator(0.72F))
                     .start();
         }
+        // Gold does not sit still: a highlight crosses the primary action every
+        // few seconds, and it breathes just enough to read as the live one.
+        View glint = findViewById(R.id.playGameGlint);
+        if (glint != null) {
+            RoyalMotion.shimmer(glint);
+        }
+        View hero = findViewById(R.id.playGameFrame);
+        if (hero != null) {
+            RoyalMotion.breathe(hero);
+        }
+        View crest = findViewById(R.id.royalLogo);
+        if (crest != null) {
+            RoyalMotion.settleIn(crest, 120L);
+        }
+        View title = findViewById(R.id.menuTitle);
+        if (title != null) {
+            RoyalMotion.settleIn(title, 60L);
+        }
+
         View panel = findViewById(R.id.menuPanel);
         if (panel != null) {
             panel.setScaleX(0.985F);

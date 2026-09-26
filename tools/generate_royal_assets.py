@@ -398,6 +398,18 @@ def title_plate(text, font_path, size_px, *, pad=26, outline=5):
     return to_image(drop_shadow(out, offset=3, blur=4.0, opacity=0.55))
 
 
+def flanked(plate, gap=18):
+    """Set a small rosette either side of a title, as an illuminated heading is."""
+    ornament = rosette(int(plate.height * 0.52), 8, seed=77, enamel_rgb=(0x2E, 0x9E, 0x8C))
+    width = plate.width + (ornament.width + gap) * 2
+    canvas = Image.new("RGBA", (width, plate.height), (0, 0, 0, 0))
+    middle = (plate.height - ornament.height) // 2
+    canvas.alpha_composite(ornament, (0, middle))
+    canvas.alpha_composite(plate, (ornament.width + gap, 0))
+    canvas.alpha_composite(ornament, (width - ornament.width, middle))
+    return canvas
+
+
 def rosette(size, points, seed, enamel_rgb):
     """
     A chapter emblem. Each chapter gets a different fold count, so nine seals
@@ -499,8 +511,10 @@ def main():
         folder = OUT if language is None else RES / f"drawable-{language}-xhdpi"
         folder.mkdir(parents=True, exist_ok=True)
         for name, text in strings.items():
-            plate = title_plate(text, FONTS / "lalezar_regular.ttf",
-                                96 if name == "title_app" else 84)
+            plate = title_plate(text, FONTS / "mirza_bold.ttf",
+                                112 if name == "title_app" else 96)
+            if name == "title_app":
+                plate = flanked(plate)
             path = folder / f"{name}.png"
             plate.save(path, optimize=True)
             written.append((f"{folder.name}/{name}.png", path.stat().st_size))

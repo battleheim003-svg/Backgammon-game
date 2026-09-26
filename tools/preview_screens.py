@@ -188,7 +188,7 @@ def menu_screen():
     canvas.alpha_composite(crown, (px + pw // 2 - dp(13), cursor))
     cursor += dp(30)
 
-    title = plate("title_app", 42)
+    title = plate("title_app", 44)
     canvas.alpha_composite(title, (px + (pw - title.width) // 2, cursor))
     cursor += dp(50)
     centred(draw, (px, cursor, px + pw, cursor + dp(20)),

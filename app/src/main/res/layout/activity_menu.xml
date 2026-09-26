@@ -185,34 +185,50 @@
             android:maxLines="2"
             android:textColor="@color/turquoise" />
 
-        <!-- The one action the screen exists for -->
-        <LinearLayout
-            android:id="@+id/playGame"
+        <!-- The one action the screen exists for. The frame clips the glint
+             that slides across the gold every few seconds. -->
+        <FrameLayout
+            android:id="@+id/playGameFrame"
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/bg_gold_button"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:onClick="openPlayOptions"
-            android:orientation="horizontal">
+            android:clipChildren="true"
+            android:clipToPadding="true">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_royal_play" />
+            <LinearLayout
+                android:id="@+id/playGame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_gold_button"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:onClick="openPlayOptions"
+                android:orientation="horizontal">
 
-            <TextView
-                style="@style/RoyalText.Display"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="@string/play_game"
-                android:textColor="@color/ink_on_gold"
-                android:textSize="20sp" />
-        </LinearLayout>
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_royal_play" />
+
+                <TextView
+                    style="@style/RoyalText.Display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/play_game"
+                    android:textColor="@color/ink_on_gold"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/playGameGlint"
+                android:layout_width="56dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_glint"
+                android:visibility="invisible" />
+        </FrameLayout>
 
         <!-- Six equals, three to a row, icon beside label -->
         <LinearLayout
