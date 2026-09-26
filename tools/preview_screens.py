@@ -48,13 +48,26 @@ def fa(text):
     return text
 
 
+FA_XHDPI = RES / "drawable-fa-xhdpi"
+
+
 def font(weight, size_sp):
     path = {
         "regular": FONTS / "vazirmatn_regular.ttf",
         "semibold": FONTS / "vazirmatn_semibold.ttf",
         "extrabold": FONTS / "vazirmatn_extrabold.ttf",
+        "display": FONTS / "lalezar_regular.ttf",
+        "story": FONTS / "amiri_bold.ttf",
     }[weight]
     return ImageFont.truetype(str(path), dp(size_sp))
+
+
+def plate(name, height_dp):
+    """A struck title, scaled to the height the layout gives it."""
+    art = Image.open(FA_XHDPI / f"{name}.png").convert("RGBA")
+    height = dp(height_dp)
+    width = max(1, round(art.width * height / art.height))
+    return art.resize((width, height), Image.LANCZOS)
 
 
 def nine_patch_stretch(path, width, height):
@@ -150,6 +163,7 @@ PARCHMENT = (244, 233, 208)
 INK_SOFT = (226, 207, 172)
 INK_MUTED = (169, 143, 108)
 INK_ON_GOLD = (35, 21, 4)
+TURQUOISE = (52, 197, 172)
 
 
 def centred(draw, box, text, fnt, fill):
@@ -174,14 +188,14 @@ def menu_screen():
     canvas.alpha_composite(crown, (px + pw // 2 - dp(13), cursor))
     cursor += dp(30)
 
-    centred(draw, (px, cursor, px + pw, cursor + dp(34)),
-            fa("تخته‌نرد سلطنتی"), font("extrabold", 27), GOLD_BRIGHT)
-    cursor += dp(38)
+    title = plate("title_app", 46)
+    canvas.alpha_composite(title, (px + (pw - title.width) // 2, cursor))
+    cursor += dp(50)
     centred(draw, (px, cursor, px + pw, cursor + dp(20)),
-            fa("کلاسیک، اما امروزی"), font("regular", 13), INK_SOFT)
+            fa("کلاسیک، اما امروزی"), font("story", 14), INK_SOFT)
     cursor += dp(26)
     centred(draw, (px, cursor, px + pw, cursor + dp(18)),
-            fa("چالش امروز: پلاکوتو"), font("regular", 11.5), GOLD_BRIGHT)
+            fa("چالش امروز: پلاکوتو"), font("regular", 11.5), TURQUOISE)
     cursor += dp(24)
 
     hero_w, hero_h = dp(232), dp(58)
@@ -208,7 +222,7 @@ def menu_screen():
         icon = vector_icon(icon_name, GOLD, (dp(21), dp(21)))
         canvas.alpha_composite(icon, (tx + (tile_w - icon.width) // 2, cursor + dp(9)))
         centred(draw, (tx, cursor + tile_h - dp(22), tx + tile_w, cursor + tile_h - dp(5)),
-                fa(label), font("semibold", 10.5), GOLD_BRIGHT)
+                fa(label), font("display", 11), GOLD_BRIGHT)
 
     # Crest on the trailing edge.
     logo = Image.open(NODPI / "royal_backgammon_logo.webp").convert("RGBA")
@@ -236,8 +250,8 @@ def journey_screen():
     canvas.alpha_composite(scrim, (W - panel_w, 0))
 
     right = W - dp(18)
-    draw.text((right - draw.textlength(fa("سفر"), font=font("extrabold", 25)), dp(56)),
-              fa("سفر"), font=font("extrabold", 25), fill=GOLD_BRIGHT)
+    journey_title = plate("title_journey", 38)
+    canvas.alpha_composite(journey_title, (right - journey_title.width, dp(50)))
     draw.text((right - draw.textlength(fa("فصل‌های تمام‌شده"), font=font("regular", 13)), dp(150)),
               fa("فصل‌های تمام‌شده"), font=font("regular", 13), fill=INK_MUTED)
     draw.text((right - draw.textlength(fa("فصل بعدی: آتن"), font=font("regular", 13)), dp(210)),
@@ -271,7 +285,7 @@ def journey_screen():
 
         ty = y + dp(60)
         for text, weight, size, colour in (
-            (title, "semibold", 16, PARCHMENT if state != "locked" else INK_MUTED),
+            (title, "display", 17, PARCHMENT if state != "locked" else INK_MUTED),
             (opponent, "regular", 13, INK_SOFT if state != "locked" else INK_MUTED),
         ):
             fnt = font(weight, size)

@@ -28,10 +28,25 @@ import math
 import pathlib
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 from scipy import ndimage
 
-OUT = pathlib.Path(__file__).resolve().parent.parent / "app/src/main/res/drawable-xhdpi"
+RES = pathlib.Path(__file__).resolve().parent.parent / "app/src/main/res"
+OUT = RES / "drawable-xhdpi"
+FONTS = RES / "font"
+
+# Titles are art, so they are rendered per language and dropped into the
+# matching resource folder. English falls back to the default folder.
+TITLES = {
+    None: {
+        "title_app": "Royal Backgammon",
+        "title_journey": "Journey",
+    },
+    "fa": {
+        "title_app": "تخته‌نرد سلطنتی",
+        "title_journey": "سفر",
+    },
+}
 SS = 4  # supersampling for the mask, so edges are not stair-stepped
 
 # One key light, upper left, slightly in front. Everything is lit by this, which
@@ -299,6 +314,53 @@ def wood_plaque(w=260, h=104, radius=26, bevel=10, inlay=7, pressed=False,
                                 blur=3.0, opacity=0.0 if pressed else 0.5))
 
 
+def title_plate(text, font_path, size_px, *, pad=26, outline=5):
+    """
+    A title struck in gold rather than typed in gold.
+
+    The same renderer that lights the buttons is pointed at letterforms: the
+    glyph coverage becomes the mask, the distance into the glyph becomes the
+    bevel, and the shared key light falls across the strokes. A dark outline is
+    dilated behind the letters so the title holds on any ground, the way a
+    stamped plate sits proud of the surface it is struck into.
+
+    Localised: one file per language, because the rendered strokes are the art.
+    """
+    font = ImageFont.truetype(str(font_path), size_px)
+    probe = Image.new("L", (8, 8))
+    box = ImageDraw.Draw(probe).textbbox((0, 0), text, font=font)
+    w = box[2] - box[0] + pad * 2
+    h = box[3] - box[1] + pad * 2
+
+    glyphs = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(glyphs).text((pad - box[0], pad - box[1]), text, font=font, fill=255)
+    mask = np.asarray(glyphs, dtype=np.float64) / 255.0
+
+    albedo, dents = hammered_gold(h, w, seed=17)
+    height = bevel_height(mask, max(size_px * 0.17, 4.0)) + dents * mask
+    rgba = shade(height, albedo, mask, relief=4.4, ambient=0.46,
+                 key=0.70, spec_strength=0.85, spec_power=20)
+    rgba = add_rim(rgba, mask, colour=(0.28, 0.16, 0.03), width=1.8)
+
+    # The dark plate the letters stand on, grown out from the glyph shapes.
+    grown = ndimage.gaussian_filter(mask, outline * 0.26)
+    plate_alpha = np.clip(grown * 6.0, 0, 1)
+    plate = np.zeros_like(rgba)
+    plate[..., :3] = np.array([0.07, 0.04, 0.02])
+    plate[..., 3] = plate_alpha * 0.92
+
+    out = np.zeros_like(rgba)
+    src_a = rgba[..., 3:4]
+    out[..., 3] = np.clip(rgba[..., 3] + plate[..., 3] * (1 - rgba[..., 3]), 0, 1)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        out[..., :3] = np.where(
+            out[..., 3:4] > 0,
+            (rgba[..., :3] * src_a
+             + plate[..., :3] * plate[..., 3:4] * (1 - src_a)) / np.maximum(out[..., 3:4], 1e-6),
+            0)
+    return to_image(drop_shadow(out, offset=3, blur=4.0, opacity=0.55))
+
+
 def rosette(size, points, seed, enamel_rgb):
     """
     A chapter emblem. Each chapter gets a different fold count, so nine seals
@@ -387,6 +449,17 @@ def main():
     for index, enamel in enumerate(enamels):
         save(f"emblem_chapter_{index + 1}.png",
              rosette(112, 6 + index, seed=40 + index * 7, enamel_rgb=enamel))
+
+    # Struck titles, one per language.
+    for language, strings in TITLES.items():
+        folder = OUT if language is None else RES / f"drawable-{language}-xhdpi"
+        folder.mkdir(parents=True, exist_ok=True)
+        for name, text in strings.items():
+            plate = title_plate(text, FONTS / "lalezar_regular.ttf",
+                                96 if name == "title_app" else 84)
+            path = folder / f"{name}.png"
+            plate.save(path, optimize=True)
+            written.append((f"{folder.name}/{name}.png", path.stat().st_size))
 
     total = sum(size for _, size in written)
     for name, size in written:

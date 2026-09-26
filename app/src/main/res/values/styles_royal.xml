@@ -13,9 +13,11 @@
         <item name="android:textColor">@color/ink_parchment</item>
     </style>
 
-    <!-- Screen title: the one piece of gold at the top of a screen -->
+    <!-- Screen title: the one piece of gold at the top of a screen.
+         Lalezar is a poster face out of Iranian signage — it has the character
+         a game title needs, which a UI sans never will. -->
     <style name="RoyalText.Display" parent="RoyalText">
-        <item name="fontFamily">@font/vazirmatn_extrabold</item>
+        <item name="fontFamily">@font/lalezar_regular</item>
         <item name="android:textSize">21sp</item>
         <item name="android:textColor">@color/gold_bright</item>
         <item name="android:letterSpacing">0.01</item>
@@ -27,8 +29,17 @@
 
     <!-- Card heading -->
     <style name="RoyalText.Title" parent="RoyalText">
-        <item name="fontFamily">@font/vazirmatn_semibold</item>
-        <item name="android:textSize">16sp</item>
+        <item name="fontFamily">@font/lalezar_regular</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <!-- The story lines: chapter flavour, the voice of the manuscript.
+         Amiri is a classical Naskh, so these read as written rather than set. -->
+    <style name="RoyalText.Story" parent="RoyalText">
+        <item name="fontFamily">@font/amiri_bold</item>
+        <item name="android:textSize">13.5sp</item>
+        <item name="android:textColor">@color/ink_soft</item>
+        <item name="android:lineSpacingMultiplier">1.15</item>
     </style>
 
     <!-- Body copy inside cards -->
@@ -80,6 +91,7 @@
     </style>
 
     <style name="RoyalButton.Gold" parent="RoyalButton">
+        <item name="fontFamily">@font/lalezar_regular</item>
         <item name="android:background">@drawable/bg_gold_button</item>
         <item name="android:textColor">@color/ink_on_gold</item>
         <item name="android:textSize">15sp</item>
@@ -92,6 +104,7 @@
     </style>
 
     <style name="RoyalButton.Wood" parent="RoyalButton">
+        <item name="fontFamily">@font/lalezar_regular</item>
         <item name="android:background">@drawable/bg_wood_button</item>
         <item name="android:textColor">@color/gold_bright</item>
         <item name="android:textSize">15sp</item>

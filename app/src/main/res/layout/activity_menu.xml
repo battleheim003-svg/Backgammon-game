@@ -168,7 +168,7 @@
         android:paddingStart="22dp"
         android:paddingTop="18dp"
         android:paddingEnd="22dp"
-        android:paddingBottom="18dp">
+        android:paddingBottom="22dp">
 
         <ImageView
             android:layout_width="26dp"
@@ -176,19 +176,21 @@
             android:contentDescription="@null"
             android:src="@drawable/ic_royal_crown" />
 
-        <TextView
+        <!-- The title is artwork: struck gold, lit by the same key light as the
+             buttons. Rendered per language, so Persian and English each get
+             letterforms cut for them rather than one bitmap stretched. -->
+        <ImageView
             android:id="@+id/menuTitle"
-            style="@style/RoyalText.Display"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:gravity="center"
-            android:text="@string/app_name"
-            android:textSize="27sp" />
+            android:layout_width="wrap_content"
+            android:layout_height="46dp"
+            android:layout_marginTop="4dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/title_app" />
 
         <TextView
             android:id="@+id/menuSubtitle"
-            style="@style/RoyalText.Body"
+            style="@style/RoyalText.Story"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -210,7 +212,7 @@
             android:layout_marginTop="6dp"
             android:gravity="center"
             android:maxLines="2"
-            android:textColor="@color/gold_bright" />
+            android:textColor="@color/turquoise" />
 
         <!-- The one action the screen exists for -->
         <LinearLayout
@@ -232,13 +234,13 @@
                 android:src="@drawable/ic_royal_play" />
 
             <TextView
-                style="@style/RoyalText.Title"
+                style="@style/RoyalText.Display"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="9dp"
                 android:text="@string/play_game"
                 android:textColor="@color/ink_on_gold"
-                android:textSize="18sp" />
+                android:textSize="20sp" />
         </LinearLayout>
 
         <!-- Five equals. Same size, same structure, no column spans. -->

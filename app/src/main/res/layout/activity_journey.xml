@@ -55,17 +55,17 @@
         app:layout_constraintTop_toTopOf="@id/tvJourneyTitle"
         app:layout_constraintBottom_toBottomOf="@id/tvJourneyTitle" />
 
-    <TextView
+    <ImageView
         android:id="@+id/tvJourneyTitle"
-        style="@style/RoyalText.Display"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="18dp"
-        android:text="@string/journey_title"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/journey_title"
+        android:src="@drawable/title_journey"
         app:layout_constraintStart_toEndOf="@id/journeyCrown"
-        app:layout_constraintEnd_toEndOf="@id/journeyPanelGuide"
         app:layout_constraintTop_toBottomOf="@id/btnJourneyBack" />
 
     <ImageView
