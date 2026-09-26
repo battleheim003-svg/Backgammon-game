@@ -179,14 +179,15 @@ def menu_screen():
     draw = ImageDraw.Draw(canvas)
 
     # Panel on the leading edge, which in Persian is the right.
-    pw, ph = dp(404), dp(336)
+    pw, ph = dp(404), dp(344)
     px, py = W - pw - dp(40), (H - ph) // 2
     canvas.alpha_composite(nine_patch_stretch(XHDPI / "bg_royal_panel.9.png", pw, ph), (px, py))
 
-    cursor = py + dp(16)
-    crown = vector_icon("ic_royal_crown", GOLD_BRIGHT, (dp(26), dp(26)))
-    canvas.alpha_composite(crown, (px + pw // 2 - dp(13), cursor))
-    cursor += dp(30)
+    cursor = py + dp(14)
+    cornice = Image.open(XHDPI / "muqarnas_cornice.png").convert("RGBA")
+    cornice = cornice.resize((pw - dp(48), dp(34)), Image.LANCZOS)
+    canvas.alpha_composite(cornice, (px + dp(24), cursor - dp(6)))
+    cursor += dp(32)
 
     title = plate("title_app", 44)
     canvas.alpha_composite(title, (px + (pw - title.width) // 2, cursor))

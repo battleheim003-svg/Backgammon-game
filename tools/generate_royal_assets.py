@@ -499,6 +499,8 @@ def main():
         save(f"emblem_chapter_{index + 1}.png",
              rosette(112, 6 + index, seed=40 + index * 7, enamel_rgb=enamel))
 
+    save("muqarnas_cornice.png", muqarnas())
+
     for icon in ("ic_royal_play", "ic_royal_duel", "ic_royal_road", "ic_royal_book",
                  "ic_royal_trophy", "ic_royal_gear", "ic_royal_coin", "ic_royal_medal",
                  "ic_royal_shop", "ic_royal_crown", "ic_royal_lock", "ic_royal_back",
@@ -524,6 +526,99 @@ def main():
         print(f"{name:26} {size / 1024:6.1f} KB")
     print(f"{'total':26} {total / 1024:6.1f} KB")
 
+
+
+
+# ── muqarnas ─────────────────────────────────────────────────────────────────
+
+def pointed_arch(shape_hw, cx, base_y, half_width, sharpness=0.78):
+    """
+    A two-centred pointed arch, drawn the way a mason strikes one: two arcs of
+    equal radius whose centres sit on the springing line, inside each other's
+    circle. Their intersection above that line is the arch, and it comes to a
+    real point rather than the rounded top an ellipse gives.
+
+    Returns (mask, apex height).
+    """
+    h, w = shape_hw
+    # r = 1.6a strikes the arch Persian masons use: tall, clearly pointed, and
+    # still wide enough at the springing to read as a niche rather than a spike.
+    radius = half_width * 1.6
+    offset = radius - half_width
+    apex = math.sqrt(max(radius * radius - offset * offset, 0.0))
+
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float64)
+    left = np.hypot(xx - (cx - offset), yy - base_y) <= radius
+    right = np.hypot(xx - (cx + offset), yy - base_y) <= radius
+    return (left & right & (yy <= base_y) & (yy >= base_y - apex)), apex
+
+
+def muqarnas(width=880, tiers=4, base_cell=118, seed=3):
+    """
+    A muqarnas cornice — the stalactite vaulting over a doorway in Persian
+    architecture, and the richest thing in this visual language that can be
+    built rather than painted.
+
+    It is honest geometry. Each tier is a row of pointed niches; each niche is
+    concave, so its head falls away into shadow while its lower lip catches the
+    key light — which is exactly how the real thing reads. Tiers step inward and
+    are offset by half a cell, so the niches nest into the row above and the
+    whole thing corbels out as it descends.
+
+    The concavity comes from the distance transform of each niche: depth grows
+    with distance from the niche's own edge, so the bowl follows the arch
+    instead of being a sphere pasted inside it.
+    """
+    # Tall enough for every tier: each contributes most of its own apex.
+    half0 = base_cell * 0.5
+    height = int(sum(half0 * (0.82 ** k) * 1.48 * 0.72 for k in range(tiers)) + half0 * 0.9)
+    field = np.zeros((height, width))
+    mask = np.zeros((height, width))
+
+    base_y = float(height - 2)
+    for tier in range(tiers):
+        half = base_cell * 0.5 * (0.82 ** tier)
+        step = half * 2.0
+        offset = half if tier % 2 else 0.0
+        # Each tier is shallower than the one below it.
+        relief_scale = 1.0 - tier * 0.13
+
+        apex_used = 0.0
+        columns = int(width / step) + 3
+        for index in range(-1, columns):
+            cx = index * step + offset + half
+            niche, apex = pointed_arch((height, width), cx, base_y, half)
+            if not niche.any():
+                continue
+            apex_used = apex
+
+            inside = ndimage.distance_transform_edt(niche)
+            reach = max(inside.max(), 1e-6)
+            bowl = inside / reach
+
+            # Sunk in the middle, with the arch edge standing proud as its rim.
+            depth = (bowl ** 0.55) * 1.9 * relief_scale
+            rim = np.clip(1.0 - inside / 3.0, 0, 1) * niche * 1.1 * relief_scale
+
+            cell = depth + rim + tier * 0.18
+            field = np.where(niche, np.maximum(field, cell), field)
+            mask = np.where(niche, 1.0, mask)
+
+        base_y -= apex_used * 0.72
+
+    # Behind the cells sits the ground they are corbelled off, set well back so
+    # it reads as the shadow between stalactites rather than as a hole.
+    carved = mask > 0.5
+    field = np.where(carved, field, -1.6)
+    mask = np.ones((height, width))
+
+    albedo, dents = hammered_gold(height, width, seed=seed)
+    albedo = np.where(carved[..., None], albedo, albedo * 0.45)
+    field = ndimage.gaussian_filter(field, 0.7) + dents * mask
+    rgba = shade(field, albedo, mask, relief=4.2, ambient=0.34,
+                 key=0.84, spec_strength=0.58, spec_power=14)
+    rgba = add_rim(rgba, mask, colour=(0.18, 0.10, 0.02), width=1.4)
+    return to_image(drop_shadow(rgba, offset=3, blur=3.0, opacity=0.55))
 
 if __name__ == "__main__":
     main()
