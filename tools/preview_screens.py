@@ -179,7 +179,7 @@ def menu_screen():
     draw = ImageDraw.Draw(canvas)
 
     # Panel on the leading edge, which in Persian is the right.
-    pw, ph = dp(372), dp(268)
+    pw, ph = dp(404), dp(336)
     px, py = W - pw - dp(40), (H - ph) // 2
     canvas.alpha_composite(nine_patch_stretch(XHDPI / "bg_royal_panel.9.png", pw, ph), (px, py))
 
@@ -188,7 +188,7 @@ def menu_screen():
     canvas.alpha_composite(crown, (px + pw // 2 - dp(13), cursor))
     cursor += dp(30)
 
-    title = plate("title_app", 46)
+    title = plate("title_app", 42)
     canvas.alpha_composite(title, (px + (pw - title.width) // 2, cursor))
     cursor += dp(50)
     centred(draw, (px, cursor, px + pw, cursor + dp(20)),
@@ -198,7 +198,7 @@ def menu_screen():
             fa("چالش امروز: پلاکوتو"), font("regular", 11.5), TURQUOISE)
     cursor += dp(24)
 
-    hero_w, hero_h = dp(232), dp(58)
+    hero_w, hero_h = dp(236), dp(54)
     hx = px + (pw - hero_w) // 2
     canvas.alpha_composite(nine_patch_stretch(XHDPI / "btn_gold.9.png", hero_w, hero_h), (hx, cursor))
     label = fa("بازی")
@@ -211,23 +211,32 @@ def menu_screen():
     canvas.alpha_composite(icon, (int(gx + label_w + dp(9)), cursor + (hero_h - icon.height) // 2))
     cursor += hero_h + dp(12)
 
-    tiles = [("دو نفره", "gold_duel"), ("سفر", "gold_road"),
-             ("آموزش", "gold_book"), ("امتیازها", "gold_trophy"),
-             ("تنظیمات", "gold_gear")]
-    gap, tile_h = dp(7), dp(66)
-    tile_w = (pw - dp(44) - gap * 4) // 5
-    for i, (label, icon_name) in enumerate(reversed(tiles)):
-        tx = px + dp(22) + i * (tile_w + gap)
-        canvas.alpha_composite(nine_patch_stretch(XHDPI / "btn_wood.9.png", tile_w, tile_h), (tx, cursor))
-        icon = Image.open(XHDPI / f"{icon_name}.png").convert("RGBA")
-        icon = icon.resize((dp(25), dp(25)), Image.LANCZOS)
-        canvas.alpha_composite(icon, (tx + (tile_w - icon.width) // 2, cursor + dp(9)))
-        centred(draw, (tx, cursor + tile_h - dp(24), tx + tile_w, cursor + tile_h - dp(5)),
-                fa(label), font("display", 11.5), GOLD_BRIGHT)
+    rows = [
+        [("دو نفره", "gold_duel"), ("سفر", "gold_road"), ("آموزش", "gold_book")],
+        [("امتیازها", "gold_trophy"), ("فروشگاه", "gold_shop"), ("تنظیمات", "gold_gear")],
+    ]
+    gap, tile_h = dp(9), dp(48)
+    tile_w = (pw - dp(48) - gap * 2) // 3
+    for row in rows:
+        for i, (label, icon_name) in enumerate(reversed(row)):
+            tx = px + dp(24) + i * (tile_w + gap)
+            canvas.alpha_composite(nine_patch_stretch(XHDPI / "btn_wood.9.png", tile_w, tile_h),
+                                   (tx, cursor))
+            icon = Image.open(XHDPI / f"{icon_name}.png").convert("RGBA")
+            icon = icon.resize((dp(23), dp(23)), Image.LANCZOS)
+            # Persian reads right to left, so the icon sits on the right.
+            canvas.alpha_composite(icon, (tx + tile_w - dp(8) - icon.width,
+                                          cursor + (tile_h - icon.height) // 2))
+            fnt = font("display", 13)
+            draw.text((tx + tile_w - dp(8) - icon.width - dp(8)
+                       - draw.textlength(fa(label), font=fnt),
+                       cursor + tile_h / 2 - dp(9)),
+                      fa(label), font=fnt, fill=GOLD_BRIGHT)
+        cursor += tile_h + gap
 
     # Crest on the trailing edge.
     logo = Image.open(NODPI / "royal_backgammon_logo.webp").convert("RGBA")
-    logo.thumbnail((dp(184), dp(168)), Image.LANCZOS)
+    logo.thumbnail((dp(176), dp(162)), Image.LANCZOS)
     canvas.alpha_composite(logo, (dp(40), (H - logo.height) // 2))
 
     # Top bar badges.

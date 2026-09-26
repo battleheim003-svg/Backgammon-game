@@ -110,34 +110,38 @@
         <item name="android:textSize">15sp</item>
     </style>
 
-    <!-- The five secondary menu actions: identical boxes, icon over label -->
+    <!-- The six secondary menu actions: identical plaques, icon beside label -->
     <style name="RoyalMenuTile">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">66dp</item>
+        <item name="android:layout_height">48dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:background">@drawable/bg_wood_button</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:gravity">center</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingBottom">6dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
     </style>
 
     <style name="RoyalMenuTile.Icon">
-        <item name="android:layout_width">25dp</item>
-        <item name="android:layout_height">25dp</item>
+        <item name="android:layout_width">23dp</item>
+        <item name="android:layout_height">23dp</item>
         <item name="android:contentDescription">@null</item>
     </style>
 
-    <style name="RoyalMenuTile.Label" parent="RoyalText.Caption">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">4dp</item>
-        <item name="android:gravity">center</item>
+    <style name="RoyalMenuTile.Label" parent="RoyalText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="fontFamily">@font/lalezar_regular</item>
+        <item name="android:gravity">center_vertical|start</item>
         <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
         <item name="android:textColor">@color/gold_bright</item>
-        <item name="android:textSize">11.5sp</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">9sp</item>
+        <item name="autoSizeMaxTextSize">14sp</item>
+        <item name="autoSizeStepGranularity">0.5sp</item>
     </style>
 </resources>
