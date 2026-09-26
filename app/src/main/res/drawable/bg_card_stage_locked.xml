@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Locked: no illumination at all. Flat, cold, clearly out of reach. -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <corners android:radius="18dp" />
-    <solid android:color="#2A1D12" />
-    <stroke android:width="1dp" android:color="#4A3722" />
-</shape>
+<!-- Locked: the plaque in shadow. Nothing here catches the light. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/btn_wood" />
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="13dp" />
+            <solid android:color="#A6150D06" />
+        </shape>
+    </item>
+</layer-list>

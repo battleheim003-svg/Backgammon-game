@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    A pennant planted at the end of a road. A literal winding road turns to mush
+    at tile size; a flag on a staff stays readable and still says "a place you
+    travel to".
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
     android:viewportWidth="24" android:viewportHeight="24"
     android:tint="@color/gold">
-    <path android:fillColor="#FFFFFFFF" android:pathData="M4.4,20.4l2.3,-16.8h2.4l-0.5,3.6h2.1l0.5,-3.6h2.4l-0.5,3.6h2.1l0.5,-3.6h2.4l-2.3,16.8h-2.4l0.6,-4.2h-2.1l-0.6,4.2H6.8l0.6,-4.2H5.3L4.4,20.4zM9.3,9.8L9,12.2h2.1l0.3,-2.4H9.3zM8.4,14.2l-0.2,1.8h2.1l0.2,-1.8H8.4z" />
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M5.4,2.4h2.2v19.2H5.4V2.4z" />
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M8.8,3.6h10.4l-2.6,3.9l2.6,3.9H8.8V3.6z" />
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M9.6,17.4h9.6v2.1H9.6V17.4zM11.6,14.2h7.6v2.1h-7.6V14.2z" />
 </vector>

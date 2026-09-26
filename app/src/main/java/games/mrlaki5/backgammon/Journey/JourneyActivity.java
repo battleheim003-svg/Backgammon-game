@@ -34,6 +34,15 @@ import games.mrlaki5.backgammon.R;
  */
 public class JourneyActivity extends AppCompatActivity {
 
+    /** One struck seal per chapter, rendered by tools/generate_royal_assets.py. */
+    private static final int[] CHAPTER_EMBLEMS = {
+            R.drawable.emblem_chapter_1, R.drawable.emblem_chapter_2,
+            R.drawable.emblem_chapter_3, R.drawable.emblem_chapter_4,
+            R.drawable.emblem_chapter_5, R.drawable.emblem_chapter_6,
+            R.drawable.emblem_chapter_7, R.drawable.emblem_chapter_8,
+            R.drawable.emblem_chapter_9,
+    };
+
     /** Width of the link drawn between two chapter cards. */
     private static final int ROAD_SEGMENT_WIDTH_DP = 30;
     /** Each card enters a beat after the one before it. */
@@ -155,12 +164,13 @@ public class JourneyActivity extends AppCompatActivity {
         TextView matchChip = card.findViewById(R.id.stageMatchChip);
         TextView flavor = card.findViewById(R.id.stageFlavor);
         TextView reward = card.findViewById(R.id.stageReward);
-        View seal = card.findViewById(R.id.stageSeal);
+        ImageView emblem = card.findViewById(R.id.stageEmblem);
         ImageView badge = card.findViewById(R.id.stageBadge);
         ImageView go = card.findViewById(R.id.stageGo);
         ImageView coin = card.findViewById(R.id.stageCoinIcon);
 
         number.setText(getString(R.string.journey_chapter_number, index + 1));
+        emblem.setImageResource(CHAPTER_EMBLEMS[index % CHAPTER_EMBLEMS.length]);
         title.setText(stage.getTitleRes());
         opponent.setText(getString(R.string.journey_opponent_line,
                 getString(stage.getOpponentRes())));
@@ -173,19 +183,18 @@ public class JourneyActivity extends AppCompatActivity {
 
         if (completed) {
             card.setBackgroundResource(R.drawable.bg_card_stage_done);
-            seal.setBackgroundResource(R.drawable.bg_medallion_done);
             badge.setImageResource(R.drawable.ic_royal_seal_check);
             badge.setVisibility(View.VISIBLE);
             matchChip.setBackgroundResource(R.drawable.bg_chip_turquoise);
         } else if (unlocked) {
             card.setBackgroundResource(R.drawable.bg_card_stage_current);
-            seal.setBackgroundResource(R.drawable.bg_medallion_current);
             badge.setVisibility(View.GONE);
         } else {
             card.setBackgroundResource(R.drawable.bg_card_stage_locked);
-            seal.setBackgroundResource(R.drawable.bg_medallion_locked);
             badge.setImageResource(R.drawable.ic_royal_lock);
             badge.setVisibility(View.VISIBLE);
+            // The seal has not been struck yet: show it in cold metal.
+            emblem.setColorFilter(greyscale());
             number.setTextColor(getResources().getColor(R.color.ink_muted));
             title.setTextColor(getResources().getColor(R.color.ink_muted));
             go.setVisibility(View.INVISIBLE);
@@ -206,6 +215,13 @@ public class JourneyActivity extends AppCompatActivity {
                     Toast.makeText(this, R.string.journey_locked, Toast.LENGTH_SHORT).show());
         }
         return card;
+    }
+
+    /** Drains the colour from a locked chapter's seal without dimming its relief. */
+    private static android.graphics.ColorMatrixColorFilter greyscale() {
+        android.graphics.ColorMatrix matrix = new android.graphics.ColorMatrix();
+        matrix.setSaturation(0.12f);
+        return new android.graphics.ColorMatrixColorFilter(matrix);
     }
 
     private void animateIn(View card, int index) {

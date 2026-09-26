@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A finished chapter: the gold cools to turquoise so progress reads at a glance. -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <corners android:radius="18dp" />
-    <gradient
-        android:angle="270"
-        android:startColor="#28463F"
-        android:endColor="@color/royal_deep"
-        android:type="linear" />
-    <stroke android:width="1.2dp" android:color="@color/turquoise_deep" />
-</shape>
+<!-- Finished: a turquoise glaze over the plaque, so progress reads down the road. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/btn_wood" />
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="13dp" />
+            <solid android:color="#1A2E9E8C" />
+        </shape>
+    </item>
+</layer-list>
