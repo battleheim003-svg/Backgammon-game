@@ -643,6 +643,11 @@ def main():
                  "ic_royal_exit", "ic_royal_sound", "ic_royal_dice"):
         save(icon.replace("ic_royal_", "gold_") + ".png", gold_icon(icon))
 
+    # One seal per season, in that season's own metal.
+    for number, material in ((1, "ebony"), (2, "turquoise"),
+                             (3, "nacre"), (4, "agate")):
+        save(f"seal_season_{number}.png", season_seal(number, material))
+
     # Checker sets, named for what they are made of.
     for name, material in (("walnut", "walnut"), ("bone", "bone"),
                            ("khatam", "ebony"), ("nacre", "nacre"),
@@ -882,6 +887,52 @@ def rarity_plaque(material, w=280, h=150, radius=22, bevel=9):
                  key=0.64, spec_strength=0.42, spec_power=20)
     rgba = add_rim(rgba, mask, colour=(0.12, 0.07, 0.03), width=1.8)
     return to_image(drop_shadow(rgba, offset=3, blur=3.0, opacity=0.5))
+
+
+def season_seal(number, material, size=150, seed=53):
+    """
+    The seal stamped on anything from a season: a scalloped wax stamp with the
+    season's number struck into it.
+
+    It is what makes a retired item worth owning — a piece from a closed season
+    carries a mark nobody can earn any more, and a mark has to look pressed into
+    the thing rather than printed on it, so the number is sunk, not raised.
+    """
+    s = size * SS
+    art = Image.new("L", (s, s), 0)
+    artist = ImageDraw.Draw(art)
+    cx = cy = s / 2
+    outer = s * 0.45
+
+    # A scalloped edge, the way wax spreads under a stamp.
+    lobes = 12
+    points = []
+    for step in range(lobes * 24):
+        angle = 2 * math.pi * step / (lobes * 24)
+        radius = outer * (0.92 + 0.08 * math.cos(angle * lobes))
+        points.append((cx + radius * math.cos(angle), cy + radius * math.sin(angle)))
+    artist.polygon(points, fill=255)
+    mask = np.asarray(art.resize((size, size), Image.LANCZOS), dtype=np.float64) / 255.0
+
+    albedo, dents = hammered(size, size, material, seed=seed)
+    height = bevel_height(mask, size * 0.09) + dents * mask
+    height = engrave(height, mask, inset=size * 0.11, width=size * 0.018, depth=0.4)
+
+    # The number, pressed in.
+    font = ImageFont.truetype(str(FONTS / "lalezar_regular.ttf"), int(size * 0.42))
+    glyphs = Image.new("L", (size, size), 0)
+    drawer = ImageDraw.Draw(glyphs)
+    text = str(number)
+    box = drawer.textbbox((0, 0), text, font=font)
+    drawer.text(((size - (box[2] - box[0])) / 2 - box[0],
+                 (size - (box[3] - box[1])) / 2 - box[1]), text, font=font, fill=255)
+    pressed = np.asarray(glyphs, dtype=np.float64) / 255.0 * mask
+    height = height - bevel_height(pressed, size * 0.025) * pressed * 0.9
+
+    rgba = shade(height, albedo, mask, relief=3.6, ambient=0.46,
+                 key=0.72, spec_strength=0.68, spec_power=22)
+    rgba = add_rim(rgba, mask, colour=(0.16, 0.09, 0.03), width=1.6)
+    return to_image(drop_shadow(rgba, offset=3, blur=2.8, opacity=0.5))
 
 
 def muqarnas(width=880, tiers=4, base_cell=118, seed=3):

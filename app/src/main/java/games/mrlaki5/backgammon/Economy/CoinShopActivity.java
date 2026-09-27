@@ -46,6 +46,7 @@ public class CoinShopActivity extends AppCompatActivity {
     private RecyclerView rvShopItems;
     private ShopAdapter shopAdapter;
     private ShopItem.Category selectedCategory = ShopItem.Category.ALL;
+    private SeasonManager seasonManager;
     private Button btnFreeCoinsShop;
 
     private final List<ShopItem> allItems = new ArrayList<>();
@@ -143,6 +144,7 @@ public class CoinShopActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        bindSeason();
         bindCollection();
         freeCoinsTickHandler.removeCallbacks(freeCoinsTick);
         freeCoinsTickHandler.post(freeCoinsTick);
@@ -235,6 +237,113 @@ public class CoinShopActivity extends AppCompatActivity {
      * A list of prices is a catalogue; a count of what you own turns the same
      * list into a set worth completing, which is the whole point of collections.
      */
+    /**
+     * The season's set: what it is, what it costs, and how long it is still here.
+     *
+     * Nothing else in the shop can be missed, which is exactly why this one can.
+     */
+    private void bindSeason() {
+        View card = findViewById(R.id.seasonBundle);
+        if (card == null) {
+            return;
+        }
+        if (seasonManager == null) {
+            seasonManager = new SeasonManager(this);
+        }
+        Season season = seasonManager.current();
+
+        ((android.widget.ImageView) findViewById(R.id.seasonSeal))
+                .setImageResource(season.sealDrawable());
+        ((android.widget.TextView) findViewById(R.id.seasonName)).setText(season.nameRes);
+        ((android.widget.TextView) findViewById(R.id.seasonStory)).setText(season.storyRes);
+
+        int remaining = seasonManager.daysRemaining();
+        ((android.widget.TextView) findViewById(R.id.seasonCountdown)).setText(
+                remaining <= 1
+                        ? getString(R.string.season_last_day)
+                        : getString(R.string.season_days_left, remaining));
+
+        // The pieces of the set, as their own artwork.
+        LinearLayout contents = findViewById(R.id.seasonContents);
+        contents.removeAllViews();
+        for (String id : season.itemIds()) {
+            ShopItem piece = findItem(id);
+            if (piece == null) {
+                continue;
+            }
+            android.widget.ImageView art = new android.widget.ImageView(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(38), dp(38));
+            lp.setMarginEnd(dp(8));
+            art.setLayoutParams(lp);
+            art.setImageResource(piece.getIconRes() != 0
+                    ? piece.getIconRes()
+                    : ShopArt.medallion(piece.getCategory(), piece.getRarity()));
+            contents.addView(art);
+        }
+
+        android.widget.TextView full = findViewById(R.id.seasonFullPrice);
+        Button buy = findViewById(R.id.seasonBuy);
+        int separately = seasonManager.bundleFullPrice(allItems);
+
+        if (seasonManager.ownsWholeBundle()) {
+            full.setText("");
+            buy.setText(R.string.season_bundle_owned);
+            buy.setEnabled(false);
+        } else {
+            full.setText(getString(R.string.season_bundle_saving, separately));
+            buy.setText(getString(R.string.season_bundle_price, season.bundlePrice));
+            buy.setEnabled(true);
+            buy.setOnClickListener(v -> {
+                if (!coinManager.spend(season.bundlePrice, "season_bundle")) {
+                    android.widget.Toast.makeText(this, R.string.not_enough_coins,
+                            android.widget.Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                seasonManager.grantBundle();
+                refreshCoinBalance();
+                bindSeason();
+                bindCollection();
+                if (shopAdapter != null) {
+                    shopAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+        seasonManager.markSeen();
+    }
+
+    /**
+     * Takes last season's set off the shelves.
+     *
+     * Anything the player already bought stays in the list so they can still see
+     * and equip it; anything they did not is gone, and does not come back. That
+     * is what makes the seal on a retired piece worth anything.
+     */
+    private void withdrawClosedSeasons() {
+        if (seasonManager == null) {
+            seasonManager = new SeasonManager(this);
+        }
+        games.mrlaki5.backgammon.Database.PlayerProfileManager profile =
+                games.mrlaki5.backgammon.Database.PlayerProfileManager.getInstance(this);
+
+        java.util.Iterator<ShopItem> iterator = allItems.iterator();
+        while (iterator.hasNext()) {
+            ShopItem item = iterator.next();
+            if (!seasonManager.isOffered(item.getId())
+                    && !profile.isItemPurchased(item.getId())) {
+                iterator.remove();
+            }
+        }
+    }
+
+    private ShopItem findItem(String id) {
+        for (ShopItem item : allItems) {
+            if (item.getId().equals(id)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     private void bindCollection() {
         android.widget.TextView label = findViewById(R.id.tvShopCollectionLabel);
         android.widget.TextView count = findViewById(R.id.tvShopCollectionCount);
@@ -460,6 +569,8 @@ public class CoinShopActivity extends AppCompatActivity {
         allItems.add(ShopItem.withUnlock(
             "title_unbeaten", getString(R.string.title_unbeaten_title), getString(R.string.title_unbeaten_desc),
             4000, ShopItem.Category.TITLE, ShopItem.Rarity.LEGENDARY, "", 150));
+
+        withdrawClosedSeasons();
 
     }
 }

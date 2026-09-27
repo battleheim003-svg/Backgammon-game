@@ -533,4 +533,25 @@
     <string name="title_plakoto_desc">جایی که مهره را نمی‌زنند، حبس می‌کنند — و مادر تصمیم می‌گیرد.</string>
     <string name="title_unbeaten_title">بی‌باخت</string>
     <string name="title_unbeaten_desc">تا وقتی درست است، مال توست.</string>
+    <!-- فصل‌ها: یک کارگاه، یک هنر، شش هفته، بعد بسته -->
+    <string name="season_isfahan_name">فصل یکم — اصفهان</string>
+    <string name="season_isfahan_story">کارگاه‌های خاتم، جایی که یک ستاره از هزار تراشهٔ آبنوس و استخوان ساخته می‌شود.</string>
+    <string name="season_isfahan_bundle">دستِ اصفهان</string>
+    <string name="season_neyshabur_name">فصل دوم — نیشابور</string>
+    <string name="season_neyshabur_story">بالای شهر، معدن‌هایی که این رنگ نامش را از آن‌ها دارد. سنگ خوب هیچ‌وقت از ولایت بیرون نمی‌رود.</string>
+    <string name="season_neyshabur_bundle">دستِ نیشابور</string>
+    <string name="season_harbour_name">فصل سوم — بندر</string>
+    <string name="season_harbour_story">آنچه غواص‌ها بالا می‌آوردند، و آنچه کارگاه‌های لنگرگاه از آن می‌ساختند.</string>
+    <string name="season_harbour_bundle">دستِ بندر</string>
+    <string name="season_caravan_name">فصل چهارم — راه کاروان</string>
+    <string name="season_caravan_story">عقیق با کاروان‌ها به شمال می‌آمد؛ رگه‌دار، و از شتری که حملش می‌کرد گران‌تر.</string>
+    <string name="season_caravan_bundle">دستِ کاروان</string>
+
+    <string name="season_limited">نسخهٔ محدود</string>
+    <string name="season_days_left">%1$d روز مانده</string>
+    <string name="season_last_day">آخرین روز</string>
+    <string name="season_bundle_price">کل دست — %1$d سکه</string>
+    <string name="season_bundle_saving">جدا جدا %1$d</string>
+    <string name="season_bundle_owned">این دست را داری</string>
+    <string name="season_retires">با بسته شدن فصل، این دست جمع می‌شود و دیگر عرضه نخواهد شد.</string>
 </resources>

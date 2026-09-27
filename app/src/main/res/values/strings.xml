@@ -532,4 +532,25 @@
     <string name="title_plakoto_desc">Where nothing is hit, only pinned — and the mother decides.</string>
     <string name="title_unbeaten_title">Unbeaten</string>
     <string name="title_unbeaten_desc">Held only while it is true.</string>
+    <!-- Seasons: one workshop, one craft, six weeks, then closed -->
+    <string name="season_isfahan_name">Season One — Isfahan</string>
+    <string name="season_isfahan_story">The marquetry workshops, where a star is built from a thousand slivers of ebony and bone.</string>
+    <string name="season_isfahan_bundle">The Isfahan Set</string>
+    <string name="season_neyshabur_name">Season Two — Neyshabur</string>
+    <string name="season_neyshabur_story">Above the town, the mines that gave the colour its name. The best stone never leaves the province.</string>
+    <string name="season_neyshabur_bundle">The Neyshabur Set</string>
+    <string name="season_harbour_name">Season Three — The Harbour</string>
+    <string name="season_harbour_story">What the divers brought up, and what the workshops on the quay made of it.</string>
+    <string name="season_harbour_bundle">The Harbour Set</string>
+    <string name="season_caravan_name">Season Four — The Caravan Road</string>
+    <string name="season_caravan_story">Agate came north with the caravans, already banded, already worth more than the camel that carried it.</string>
+    <string name="season_caravan_bundle">The Caravan Set</string>
+
+    <string name="season_limited">Limited edition</string>
+    <string name="season_days_left">%1$d days left</string>
+    <string name="season_last_day">Last day</string>
+    <string name="season_bundle_price">Whole set — %1$d coins</string>
+    <string name="season_bundle_saving">Separately %1$d</string>
+    <string name="season_bundle_owned">You own this set</string>
+    <string name="season_retires">When the season closes, this set is withdrawn and is not sold again.</string>
 </resources>
