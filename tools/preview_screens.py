@@ -28,9 +28,16 @@ NODPI = RES / "drawable-nodpi"
 FONTS = RES / "font"
 OUT = ROOT / "build/previews"
 
-# A common landscape phone at xhdpi, which is what 1dp = 2px assumes below.
-W, H = 1280, 720
-DP = 2
+# Defaults are a common landscape phone at xhdpi. Override to proof a specific
+# handset — a layout that fits 640x360dp can still overflow a shorter one, and
+# that is a class of bug only a second size catches.
+#   RB_W / RB_H  device pixels, landscape
+#   RB_DP        density (px per dp)
+import os
+
+W = int(os.environ.get("RB_W", 1280))
+H = int(os.environ.get("RB_H", 720))
+DP = float(os.environ.get("RB_DP", 2))
 
 
 def dp(value):
@@ -179,13 +186,13 @@ def menu_screen():
     draw = ImageDraw.Draw(canvas)
 
     # Panel on the leading edge, which in Persian is the right.
-    pw, ph = dp(404), dp(344)
-    px, py = W - pw - dp(40), (H - ph) // 2
+    pw, ph = dp(404), dp(330)
+    px, py = W - pw - dp(30), H - ph - dp(10)
     canvas.alpha_composite(nine_patch_stretch(XHDPI / "bg_royal_panel.9.png", pw, ph), (px, py))
 
     cursor = py + dp(14)
     cornice = Image.open(XHDPI / "muqarnas_cornice.png").convert("RGBA")
-    cornice = cornice.resize((pw - dp(48), dp(34)), Image.LANCZOS)
+    cornice = cornice.resize((pw - dp(48), dp(30)), Image.LANCZOS)
     canvas.alpha_composite(cornice, (px + dp(24), cursor - dp(6)))
     cursor += dp(32)
 
@@ -199,7 +206,7 @@ def menu_screen():
             fa("چالش امروز: پلاکوتو"), font("regular", 11.5), TURQUOISE)
     cursor += dp(24)
 
-    hero_w, hero_h = dp(236), dp(54)
+    hero_w, hero_h = dp(236), dp(50)
     hx = px + (pw - hero_w) // 2
     canvas.alpha_composite(nine_patch_stretch(XHDPI / "btn_gold.9.png", hero_w, hero_h), (hx, cursor))
     label = fa("بازی")
@@ -245,8 +252,8 @@ def menu_screen():
     for text, width in ((fa("۱٬۲۴۰"), dp(92)), (fa("سکهٔ رایگان"), dp(104))):
         x -= width
         art = "btn_wood.9.png" if "۱" in text else "btn_gold.9.png"
-        canvas.alpha_composite(nine_patch_stretch(XHDPI / art, width, dp(34)), (x, dp(12)))
-        centred(draw, (x, dp(12), x + width, dp(46)), text, font("semibold", 12),
+        canvas.alpha_composite(nine_patch_stretch(XHDPI / art, width, dp(32)), (x, dp(8)))
+        centred(draw, (x, dp(8), x + width, dp(40)), text, font("semibold", 12),
                 GOLD_BRIGHT if art.startswith("btn_wood") else INK_ON_GOLD)
         x -= dp(8)
     return canvas
