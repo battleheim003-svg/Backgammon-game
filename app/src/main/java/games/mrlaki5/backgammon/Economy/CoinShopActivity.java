@@ -187,22 +187,27 @@ public class CoinShopActivity extends AppCompatActivity {
 
         ShopItem.Category[] cats = {
                 ShopItem.Category.ALL,
+                ShopItem.Category.CHECKERS,
+                ShopItem.Category.DICE_SKIN,
+                ShopItem.Category.TITLE,
                 ShopItem.Category.COSMETIC,
                 ShopItem.Category.CONSUMABLE,
                 ShopItem.Category.BUNDLE
         };
         int[] labelRes = {
                 R.string.shop_category_all,
+                R.string.shop_category_checkers,
+                R.string.shop_category_dice,
+                R.string.shop_category_title,
                 R.string.shop_category_cosmetic,
                 R.string.shop_category_consumable,
                 R.string.shop_category_bundle
         };
-        String[] icons = {"🛍️", "💎", "🎯", "🎁"};
 
         for (int i = 0; i < cats.length; i++) {
             final ShopItem.Category cat = cats[i];
             Button btn = new Button(new ContextThemeWrapper(this, R.style.ShopCategoryTabButton), null, 0);
-            btn.setText(icons[i] + " " + getString(labelRes[i]));
+            btn.setText(getString(labelRes[i]));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
             lp.setMarginEnd(4);
@@ -300,6 +305,56 @@ public class CoinShopActivity extends AppCompatActivity {
         allItems.add(ShopItem.hintPack3(this));
         allItems.add(ShopItem.hintPack10(this));
         allItems.add(ShopItem.undoPack3(this));
+
+        // ═══════════════════════════════════════════
+        // CHECKERS — the pieces the player actually touches
+        //
+        // Named for what a real set is made of rather than for a tier: a
+        // bronze/silver/gold/diamond ladder belongs to every mobile game, and
+        // walnut, camel bone, Isfahan khatam and Neyshabur turquoise belong to
+        // this one. Each has its own rendered artwork.
+        // ═══════════════════════════════════════════
+        allItems.add(ShopItem.crafted(
+            "checkers_walnut", getString(R.string.checkers_walnut_title),
+            getString(R.string.checkers_walnut_desc), 0,
+            ShopItem.Category.CHECKERS, ShopItem.Rarity.COMMON,
+            R.drawable.checkers_walnut, 0));
+
+        allItems.add(ShopItem.crafted(
+            "checkers_bone", getString(R.string.checkers_bone_title),
+            getString(R.string.checkers_bone_desc), 300,
+            ShopItem.Category.CHECKERS, ShopItem.Rarity.COMMON,
+            R.drawable.checkers_bone, 0));
+
+        allItems.add(ShopItem.crafted(
+            "checkers_khatam", getString(R.string.checkers_khatam_title),
+            getString(R.string.checkers_khatam_desc), 800,
+            ShopItem.Category.CHECKERS, ShopItem.Rarity.RARE,
+            R.drawable.checkers_khatam, 15));
+
+        allItems.add(ShopItem.crafted(
+            "checkers_nacre", getString(R.string.checkers_nacre_title),
+            getString(R.string.checkers_nacre_desc), 1100,
+            ShopItem.Category.CHECKERS, ShopItem.Rarity.RARE,
+            R.drawable.checkers_nacre, 25));
+
+        allItems.add(ShopItem.crafted(
+            "checkers_turquoise", getString(R.string.checkers_turquoise_title),
+            getString(R.string.checkers_turquoise_desc), 2000,
+            ShopItem.Category.CHECKERS, ShopItem.Rarity.EPIC,
+            R.drawable.checkers_turquoise, 50));
+
+        allItems.add(ShopItem.crafted(
+            "checkers_agate", getString(R.string.checkers_agate_title),
+            getString(R.string.checkers_agate_desc), 2800,
+            ShopItem.Category.CHECKERS, ShopItem.Rarity.EPIC,
+            R.drawable.checkers_agate, 80));
+
+        allItems.add(ShopItem.crafted(
+            "checkers_gold", getString(R.string.checkers_gold_title),
+            getString(R.string.checkers_gold_desc), 6000,
+            ShopItem.Category.CHECKERS, ShopItem.Rarity.LEGENDARY,
+            R.drawable.checkers_gold, 200));
 
         // ═══════════════════════════════════════════
         // AVATAR FRAMES — 8 items

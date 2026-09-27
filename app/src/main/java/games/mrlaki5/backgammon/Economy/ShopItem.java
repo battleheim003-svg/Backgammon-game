@@ -8,6 +8,7 @@ public class ShopItem {
 
     public enum Category {
         ALL,
+        CHECKERS,
         AVATAR_FRAME,
         DICE_SKIN,
         TITLE,
@@ -81,6 +82,17 @@ public class ShopItem {
                     int unlockRequirement, String badge) {
         this(id, title, description, price, category, rarity, iconEmoji,
                 0, 0, unlockRequirement, badge, 0, category == Category.CONSUMABLE);
+    }
+
+    /**
+     * A product with its own rendered artwork rather than a rarity medallion —
+     * used where the thing itself is worth showing, like a set of checkers.
+     */
+    public static ShopItem crafted(String id, String title, String description, int price,
+                                   Category category, Rarity rarity, int iconRes,
+                                   int unlockRequirement) {
+        return new ShopItem(id, title, description, price, category, rarity, "",
+                iconRes, 0, unlockRequirement, null, 0, false);
     }
 
     public static ShopItem permanent(String id, String title, String description, int price,

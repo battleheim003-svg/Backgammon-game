@@ -489,4 +489,22 @@
     <string name="journey_chapter_number">%1$d</string>
     <string name="shop_collection_label">Your collection</string>
     <string name="shop_collection_count">%1$d of %2$d</string>
+    <!-- Checker sets, named for the craft they come from -->
+    <string name="shop_category_checkers">Checkers</string>
+    <string name="shop_category_dice">Dice</string>
+    <string name="shop_category_title">Titles</string>
+    <string name="checkers_walnut_title">Walnut</string>
+    <string name="checkers_walnut_desc">Turned from a single block. The set everyone learns on.</string>
+    <string name="checkers_bone_title">Camel bone</string>
+    <string name="checkers_bone_desc">Warm, close-grained, and heavier in the hand than it looks.</string>
+    <string name="checkers_khatam_title">Isfahan khatam</string>
+    <string name="checkers_khatam_desc">Ebony inlaid in the marquetry of Isfahan, star within star.</string>
+    <string name="checkers_nacre_title">Mother-of-pearl</string>
+    <string name="checkers_nacre_desc">The inside of the shell, which changes colour as the board turns.</string>
+    <string name="checkers_turquoise_title">Neyshabur turquoise</string>
+    <string name="checkers_turquoise_desc">The blue Persia is known for, from the mines above Neyshabur.</string>
+    <string name="checkers_agate_title">Yemeni agate</string>
+    <string name="checkers_agate_desc">Banded carnelian, cut and polished like a seal stone.</string>
+    <string name="checkers_gold_title">Gold leaf</string>
+    <string name="checkers_gold_desc">A set for a table nobody plays on. Play on it anyway.</string>
 </resources>

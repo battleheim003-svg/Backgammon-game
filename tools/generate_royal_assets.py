@@ -182,6 +182,32 @@ MATERIALS = {
         (0.52, (0x34, 0xC5, 0xAC)), (0.82, (0x18, 0x7E, 0x6E)),
         (1.00, (0x0C, 0x4C, 0x42)),
     ],
+    # The materials a real set is made of, rather than a tier ladder.
+    "bone": [
+        (0.00, (0xFF, 0xFB, 0xF0)), (0.20, (0xF3, 0xE7, 0xCF)),
+        (0.55, (0xDD, 0xCC, 0xAA)), (0.84, (0xB3, 0x9E, 0x79)),
+        (1.00, (0x8A, 0x77, 0x56)),
+    ],
+    "walnut": [
+        (0.00, (0x9A, 0x6C, 0x42)), (0.22, (0x7A, 0x50, 0x2C)),
+        (0.58, (0x5A, 0x39, 0x1E)), (0.86, (0x3B, 0x25, 0x13)),
+        (1.00, (0x26, 0x17, 0x0C)),
+    ],
+    "nacre": [
+        (0.00, (0xFF, 0xFF, 0xFF)), (0.16, (0xE8, 0xF4, 0xFF)),
+        (0.40, (0xF6, 0xE4, 0xFF)), (0.64, (0xDE, 0xF7, 0xEC)),
+        (0.84, (0xB9, 0xC6, 0xD8)), (1.00, (0x8A, 0x95, 0xA6)),
+    ],
+    "agate": [
+        (0.00, (0xFF, 0xD9, 0xCE)), (0.20, (0xE0, 0x84, 0x6C)),
+        (0.55, (0xA8, 0x36, 0x2C)), (0.84, (0x6E, 0x1E, 0x1A)),
+        (1.00, (0x42, 0x10, 0x0E)),
+    ],
+    "ebony": [
+        (0.00, (0x6B, 0x66, 0x63)), (0.22, (0x44, 0x40, 0x3E)),
+        (0.58, (0x2A, 0x27, 0x26)), (0.86, (0x18, 0x16, 0x15)),
+        (1.00, (0x0C, 0x0B, 0x0B)),
+    ],
 }
 
 
@@ -551,6 +577,13 @@ def main():
                  "ic_royal_exit", "ic_royal_sound", "ic_royal_dice"):
         save(icon.replace("ic_royal_", "gold_") + ".png", gold_icon(icon))
 
+    # Checker sets, named for what they are made of.
+    for name, material in (("walnut", "walnut"), ("bone", "bone"),
+                           ("khatam", "ebony"), ("nacre", "nacre"),
+                           ("turquoise", "turquoise"), ("agate", "agate"),
+                           ("gold", "gold")):
+        save(f"checkers_{name}.png", checker_stack(material))
+
     # Struck titles, one per language.
     for language, strings in TITLES.items():
         folder = OUT if language is None else RES / f"drawable-{language}-xhdpi"
@@ -624,6 +657,52 @@ def product_medallion(icon_name, material, size=160):
                  key=0.70, spec_strength=0.72, spec_power=22)
     rgba = add_rim(rgba, mask, colour=(0.18, 0.11, 0.03), width=1.8)
     return to_image(drop_shadow(rgba, offset=3, blur=3.0, opacity=0.5))
+
+
+def checker_stack(material, motif="ic_shamsa", size=170, seed=29):
+    """
+    A pair of playing pieces, which is what a backgammon game should be selling
+    and was not. A checker is a turned disc with a motif cut into its face, so it
+    is exactly what this renderer is for: the same lighting, a different metal or
+    wood, and the shamsa sunk into the top.
+
+    Two of them, the back one offset, because a single disc reads as a coin.
+    """
+    canvas = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    disc_size = int(size * 0.70)
+
+    def one(scale, dim):
+        s = disc_size
+        art = Image.new("L", (s * SS, s * SS), 0)
+        pad = s * SS * 0.03
+        ImageDraw.Draw(art).ellipse([pad, pad, s * SS - pad, s * SS - pad], fill=255)
+        mask = np.asarray(art.resize((s, s), Image.LANCZOS), dtype=np.float64) / 255.0
+
+        albedo, grain_field = hammered(s, s, material, seed=seed)
+        albedo = albedo * dim
+        height = bevel_height(mask, s * 0.10) + grain_field * mask
+        # The turned rings of a lathe, and the seat the motif sits in.
+        height = engrave(height, mask, inset=s * 0.10, width=s * 0.018, depth=0.45)
+        height = engrave(height, mask, inset=s * 0.16, width=s * 0.012, depth=0.25)
+
+        glyph = vector_mask(motif, int(s * 0.44))
+        inset = (s - glyph.shape[0]) // 2
+        cut = np.zeros_like(mask)
+        cut[inset:inset + glyph.shape[0], inset:inset + glyph.shape[1]] = glyph
+        cut = cut * mask
+        # Sunk, not raised: an inlay is set into the face.
+        height = height - bevel_height(cut, s * 0.025) * cut * 0.7
+
+        rgba = shade(height, albedo, mask, relief=3.6, ambient=0.46,
+                     key=0.70, spec_strength=0.66, spec_power=24)
+        rgba = add_rim(rgba, mask, colour=(0.14, 0.09, 0.04), width=1.6)
+        return to_image(drop_shadow(rgba, offset=3, blur=3.0, opacity=0.5))
+
+    back = one(1.0, 0.72)
+    front = one(1.0, 1.0)
+    canvas.alpha_composite(back, (int(size * 0.28), int(size * 0.04)))
+    canvas.alpha_composite(front, (int(size * 0.02), int(size * 0.26)))
+    return canvas
 
 
 def rarity_plaque(material, w=280, h=150, radius=22, bevel=9):

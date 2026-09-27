@@ -490,4 +490,22 @@
     <string name="journey_chapter_number">%1$d</string>
     <string name="shop_collection_label">مجموعهٔ شما</string>
     <string name="shop_collection_count">%1$d از %2$d</string>
+    <!-- مهره‌ها، به نام هنری که از آن می‌آیند -->
+    <string name="shop_category_checkers">مهره‌ها</string>
+    <string name="shop_category_dice">تاس‌ها</string>
+    <string name="shop_category_title">القاب</string>
+    <string name="checkers_walnut_title">گردو</string>
+    <string name="checkers_walnut_desc">از یک قطعه چوب تراشیده شده. همان دستی که همه با آن یاد می‌گیرند.</string>
+    <string name="checkers_bone_title">استخوان شتر</string>
+    <string name="checkers_bone_desc">گرم، ریزبافت، و در دست سنگین‌تر از آنچه به نظر می‌رسد.</string>
+    <string name="checkers_khatam_title">خاتم اصفهان</string>
+    <string name="checkers_khatam_desc">آبنوس با خاتم‌کاری اصفهان؛ ستاره در ستاره.</string>
+    <string name="checkers_nacre_title">صدف</string>
+    <string name="checkers_nacre_desc">درون صدف، که با چرخاندن تخته رنگ عوض می‌کند.</string>
+    <string name="checkers_turquoise_title">فیروزهٔ نیشابور</string>
+    <string name="checkers_turquoise_desc">همان آبی که ایران به آن شناخته می‌شود، از معدن‌های بالای نیشابور.</string>
+    <string name="checkers_agate_title">عقیق یمن</string>
+    <string name="checkers_agate_desc">عقیق رگه‌دار، تراشیده و صیقلی مثل نگین انگشتر.</string>
+    <string name="checkers_gold_title">زرورق</string>
+    <string name="checkers_gold_desc">دستی برای میزی که کسی رویش بازی نمی‌کند. تو بازی کن.</string>
 </resources>
