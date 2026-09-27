@@ -35,9 +35,9 @@
 
     <ImageButton
         android:id="@+id/btnJourneyBack"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_margin="14dp"
+        android:layout_width="@dimen/control_md"
+        android:layout_height="@dimen/control_md"
+        android:layout_margin="@dimen/space_m"
         android:background="@drawable/bg_round_button_royal"
         android:contentDescription="@string/review_back"
         android:src="@drawable/ic_royal_back"
@@ -46,9 +46,9 @@
 
     <ImageView
         android:id="@+id/journeyCrown"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="18dp"
+        android:layout_width="@dimen/icon_md"
+        android:layout_height="@dimen/icon_md"
+        android:layout_marginStart="@dimen/space_l"
         android:contentDescription="@null"
         android:src="@drawable/ic_royal_crown"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,10 +58,10 @@
     <ImageView
         android:id="@+id/tvJourneyTitle"
         android:layout_width="wrap_content"
-        android:layout_height="38dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="18dp"
+        android:layout_height="@dimen/control_sm"
+        android:layout_marginStart="@dimen/space_s"
+        android:layout_marginTop="@dimen/space_s"
+        android:layout_marginEnd="@dimen/space_l"
         android:adjustViewBounds="true"
         android:contentDescription="@string/journey_title"
         android:src="@drawable/title_journey"
@@ -71,10 +71,10 @@
     <ImageView
         android:id="@+id/journeyRule"
         android:layout_width="0dp"
-        android:layout_height="14dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="24dp"
+        android:layout_height="@dimen/space_m"
+        android:layout_marginStart="@dimen/space_l"
+        android:layout_marginTop="@dimen/space_xs"
+        android:layout_marginEnd="@dimen/space_xl"
         android:contentDescription="@null"
         android:scaleType="fitXY"
         android:src="@drawable/ic_arabesque_divider"
@@ -86,10 +86,10 @@
 
     <FrameLayout
         android:id="@+id/journeyProgressSeal"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="14dp"
+        android:layout_width="@dimen/art_lg"
+        android:layout_height="@dimen/art_lg"
+        android:layout_marginStart="@dimen/space_l"
+        android:layout_marginTop="@dimen/space_m"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/journeyRule">
 
@@ -105,7 +105,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:textSize="17sp" />
+            android:textSize="@dimen/text_title" />
     </FrameLayout>
 
     <TextView
@@ -113,8 +113,8 @@
         style="@style/RoyalText.Caption"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="@dimen/space_m"
+        android:layout_marginEnd="@dimen/screen_margin"
         android:text="@string/journey_progress_label"
         app:layout_constraintStart_toEndOf="@id/journeyProgressSeal"
         app:layout_constraintEnd_toEndOf="@id/journeyPanelGuide"
@@ -125,9 +125,9 @@
         android:id="@+id/journeyProgressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
-        android:layout_height="8dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="20dp"
+        android:layout_height="@dimen/space_s"
+        android:layout_marginStart="@dimen/space_m"
+        android:layout_marginEnd="@dimen/screen_margin"
         android:max="100"
         android:progressDrawable="@drawable/bg_progress_track_royal"
         app:layout_constraintStart_toEndOf="@id/journeyProgressSeal"
@@ -141,9 +141,9 @@
         style="@style/RoyalText.Caption"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginStart="@dimen/space_l"
+        android:layout_marginTop="@dimen/space_m"
+        android:layout_marginEnd="@dimen/space_xl"
         android:maxLines="3"
         android:ellipsize="end"
         app:layout_constraintStart_toStartOf="parent"
@@ -157,8 +157,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingStart="18dp"
-        android:paddingEnd="18dp"
+        android:paddingStart="@dimen/space_l"
+        android:paddingEnd="@dimen/space_l"
         android:scrollbars="none"
         app:layout_constraintStart_toEndOf="@id/journeyPanelGuide"
         app:layout_constraintEnd_toEndOf="parent"

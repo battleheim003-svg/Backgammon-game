@@ -32,23 +32,23 @@
         android:layout_gravity="top"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="18dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="18dp">
+        android:paddingStart="@dimen/space_l"
+        android:paddingTop="@dimen/space_s"
+        android:paddingEnd="@dimen/space_l">
 
         <LinearLayout
             android:id="@+id/coinBalanceContainer"
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
+            android:layout_height="@dimen/control_sm"
             android:background="@drawable/bg_royal_pill"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="11dp"
-            android:paddingEnd="14dp">
+            android:paddingStart="@dimen/space_m"
+            android:paddingEnd="@dimen/space_m">
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="@dimen/icon_sm"
+                android:layout_height="@dimen/icon_sm"
                 android:contentDescription="@null"
                 android:src="@drawable/gold_coin" />
 
@@ -57,20 +57,20 @@
                 style="@style/RoyalText.Chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="7dp"
+                android:layout_marginStart="@dimen/space_s"
                 android:background="@null"
                 android:paddingStart="0dp"
                 android:paddingEnd="0dp"
                 android:text="0"
-                android:textSize="13sp" />
+                android:textSize="@dimen/text_body" />
         </LinearLayout>
 
         <Button
             android:id="@+id/btnFreeCoins"
             style="@style/RoyalButton.Gold.Small"
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginStart="9dp"
+            android:layout_height="@dimen/control_sm"
+            android:layout_marginStart="@dimen/space_s"
             android:onClick="onFreeCoinsClicked"
             android:text="@string/free_coins" />
 
@@ -81,19 +81,19 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
+            android:layout_height="@dimen/control_sm"
             android:background="@drawable/bg_royal_pill"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical"
             android:onClick="openPlayerStats"
             android:orientation="horizontal"
-            android:paddingStart="11dp"
-            android:paddingEnd="14dp">
+            android:paddingStart="@dimen/space_m"
+            android:paddingEnd="@dimen/space_m">
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="@dimen/icon_sm"
+                android:layout_height="@dimen/icon_sm"
                 android:contentDescription="@null"
                 android:src="@drawable/gold_medal" />
 
@@ -102,11 +102,11 @@
                 style="@style/RoyalText.Chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="7dp"
+                android:layout_marginStart="@dimen/space_s"
                 android:background="@null"
                 android:paddingStart="0dp"
                 android:paddingEnd="0dp"
-                android:textSize="13sp" />
+                android:textSize="@dimen/text_body" />
         </LinearLayout>
     </LinearLayout>
 
@@ -114,11 +114,11 @@
 
     <ImageView
         android:id="@+id/royalLogo"
-        android:layout_width="176dp"
+        android:layout_width="@dimen/art_lg"
         android:layout_height="162dp"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="14dp"
+        android:layout_marginEnd="@dimen/space_xxl"
+        android:layout_marginBottom="@dimen/space_m"
         android:adjustViewBounds="true"
         android:contentDescription="@string/app_name"
         android:elevation="6dp"
@@ -130,26 +130,26 @@
 
     <LinearLayout
         android:id="@+id/menuPanel"
-        android:layout_width="404dp"
+        android:layout_width="@dimen/panel_menu_width"
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
-        android:layout_marginStart="30dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginStart="@dimen/space_xxl"
+        android:layout_marginBottom="@dimen/space_s"
         android:background="@drawable/bg_royal_panel"
         android:elevation="18dp"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingStart="24dp"
-        android:paddingTop="12dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="16dp">
+        android:paddingStart="@dimen/space_xl"
+        android:paddingTop="@dimen/space_m"
+        android:paddingEnd="@dimen/space_xl"
+        android:paddingBottom="@dimen/space_l">
 
         <!-- Muqarnas: the stalactite vaulting over a Persian doorway, built
              from two-centred arches rather than painted. It crowns the panel,
              which is why the crown icon it replaced came out. -->
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="@dimen/icon_lg"
             android:layout_marginTop="-5dp"
             android:contentDescription="@null"
             android:scaleType="fitXY"
@@ -158,8 +158,8 @@
         <ImageView
             android:id="@+id/menuTitle"
             android:layout_width="wrap_content"
-            android:layout_height="42dp"
-            android:layout_marginTop="3dp"
+            android:layout_height="@dimen/control_md"
+            android:layout_marginTop="@dimen/space_xs"
             android:adjustViewBounds="true"
             android:contentDescription="@string/app_name"
             android:src="@drawable/title_app" />
@@ -174,8 +174,8 @@
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="14dp"
-            android:layout_marginTop="6dp"
+            android:layout_height="@dimen/space_m"
+            android:layout_marginTop="@dimen/space_xs"
             android:contentDescription="@null"
             android:scaleType="fitXY"
             android:src="@drawable/ic_arabesque_divider" />
@@ -185,7 +185,7 @@
             style="@style/RoyalText.Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="@dimen/space_xs"
             android:gravity="center"
             android:maxLines="2"
             android:textColor="@color/turquoise" />
@@ -195,8 +195,8 @@
         <FrameLayout
             android:id="@+id/playGameFrame"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="10dp"
+            android:layout_height="@dimen/control_lg"
+            android:layout_marginTop="@dimen/space_s"
             android:clipChildren="true"
             android:clipToPadding="true">
 
@@ -212,8 +212,8 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="@dimen/icon_md"
+                    android:layout_height="@dimen/icon_md"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_royal_play" />
 
@@ -221,15 +221,15 @@
                     style="@style/RoyalText.Display"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="@dimen/space_s"
                     android:text="@string/play_game"
                     android:textColor="@color/ink_on_gold"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/text_display" />
             </LinearLayout>
 
             <View
                 android:id="@+id/playGameGlint"
-                android:layout_width="56dp"
+                android:layout_width="@dimen/art_md"
                 android:layout_height="match_parent"
                 android:background="@drawable/bg_glint"
                 android:visibility="invisible" />
@@ -239,7 +239,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="9dp"
+            android:layout_marginTop="@dimen/space_s"
             android:baselineAligned="false"
             android:orientation="horizontal">
 
@@ -258,7 +258,7 @@
             <LinearLayout
                 android:id="@+id/journey"
                 style="@style/RoyalMenuTile"
-                android:layout_marginStart="9dp"
+                android:layout_marginStart="@dimen/space_s"
                 android:onClick="openJourney">
 
                 <ImageView style="@style/RoyalMenuTile.Icon" android:src="@drawable/gold_road" />
@@ -271,7 +271,7 @@
             <LinearLayout
                 android:id="@+id/tutorial"
                 style="@style/RoyalMenuTile"
-                android:layout_marginStart="9dp"
+                android:layout_marginStart="@dimen/space_s"
                 android:onClick="startTutorial">
 
                 <ImageView style="@style/RoyalMenuTile.Icon" android:src="@drawable/gold_book" />
@@ -285,7 +285,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="9dp"
+            android:layout_marginTop="@dimen/space_s"
             android:baselineAligned="false"
             android:orientation="horizontal">
 
@@ -304,7 +304,7 @@
             <LinearLayout
                 android:id="@+id/btnShop"
                 style="@style/RoyalMenuTile"
-                android:layout_marginStart="9dp"
+                android:layout_marginStart="@dimen/space_s"
                 android:onClick="openCoinShop">
 
                 <ImageView style="@style/RoyalMenuTile.Icon" android:src="@drawable/gold_shop" />
@@ -317,7 +317,7 @@
             <LinearLayout
                 android:id="@+id/settings"
                 style="@style/RoyalMenuTile"
-                android:layout_marginStart="9dp"
+                android:layout_marginStart="@dimen/space_s"
                 android:onClick="OpenSettings">
 
                 <ImageView style="@style/RoyalMenuTile.Icon" android:src="@drawable/gold_gear" />
@@ -333,10 +333,10 @@
         android:id="@+id/languageToggle"
         style="@style/RoyalButton.Wood"
         android:layout_width="124dp"
-        android:layout_height="44dp"
+        android:layout_height="@dimen/control_md"
         android:layout_gravity="end|bottom"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="18dp"
+        android:layout_marginEnd="@dimen/space_xxl"
+        android:layout_marginBottom="@dimen/space_l"
         android:elevation="8dp"
         android:onClick="toggleLanguage"
         android:text="@string/language_toggle" />

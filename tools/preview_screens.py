@@ -187,12 +187,12 @@ def menu_screen():
 
     # Panel on the leading edge, which in Persian is the right.
     pw, ph = dp(404), dp(330)
-    px, py = W - pw - dp(30), H - ph - dp(10)
+    px, py = W - pw - dp(20), H - ph - dp(12)
     canvas.alpha_composite(nine_patch_stretch(XHDPI / "bg_royal_panel.9.png", pw, ph), (px, py))
 
     cursor = py + dp(14)
     cornice = Image.open(XHDPI / "muqarnas_cornice.png").convert("RGBA")
-    cornice = cornice.resize((pw - dp(48), dp(30)), Image.LANCZOS)
+    cornice = cornice.resize((pw - dp(48), dp(32)), Image.LANCZOS)
     canvas.alpha_composite(cornice, (px + dp(24), cursor - dp(6)))
     cursor += dp(32)
 
@@ -206,7 +206,7 @@ def menu_screen():
             fa("چالش امروز: پلاکوتو"), font("regular", 11.5), TURQUOISE)
     cursor += dp(24)
 
-    hero_w, hero_h = dp(236), dp(50)
+    hero_w, hero_h = dp(240), dp(56)
     hx = px + (pw - hero_w) // 2
     canvas.alpha_composite(nine_patch_stretch(XHDPI / "btn_gold.9.png", hero_w, hero_h), (hx, cursor))
     label = fa("بازی")
@@ -223,7 +223,7 @@ def menu_screen():
         [("دو نفره", "gold_duel"), ("سفر", "gold_road"), ("آموزش", "gold_book")],
         [("امتیازها", "gold_trophy"), ("فروشگاه", "gold_shop"), ("تنظیمات", "gold_gear")],
     ]
-    gap, tile_h = dp(9), dp(48)
+    gap, tile_h = dp(8), dp(44)
     tile_w = (pw - dp(48) - gap * 2) // 3
     for row in rows:
         for i, (label, icon_name) in enumerate(reversed(row)):
@@ -244,7 +244,7 @@ def menu_screen():
 
     # Crest on the trailing edge.
     logo = Image.open(NODPI / "royal_backgammon_logo.webp").convert("RGBA")
-    logo.thumbnail((dp(176), dp(162)), Image.LANCZOS)
+    logo.thumbnail((dp(176), dp(160)), Image.LANCZOS)
     canvas.alpha_composite(logo, (dp(40), (H - logo.height) // 2))
 
     # Top bar badges.

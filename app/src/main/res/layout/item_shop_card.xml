@@ -13,7 +13,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp">
+    android:padding="@dimen/space_xs">
 
     <LinearLayout
         android:id="@+id/shopCardBody"
@@ -22,10 +22,10 @@
         android:background="@drawable/card_common"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingStart="12dp"
-        android:paddingTop="12dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="12dp">
+        android:paddingStart="@dimen/space_m"
+        android:paddingTop="@dimen/space_m"
+        android:paddingEnd="@dimen/space_m"
+        android:paddingBottom="@dimen/space_m">
 
         <!-- Kept for older layouts that still bind it; hidden by the adapter. -->
         <View
@@ -35,13 +35,13 @@
             android:visibility="gone" />
 
         <FrameLayout
-            android:layout_width="62dp"
-            android:layout_height="62dp">
+            android:layout_width="@dimen/art_md"
+            android:layout_height="@dimen/art_md">
 
             <TextView
                 android:id="@+id/tvShopItemIcon"
-                android:layout_width="62dp"
-                android:layout_height="62dp"
+                android:layout_width="@dimen/art_md"
+                android:layout_height="@dimen/art_md"
                 android:background="@drawable/medal_shop_common"
                 android:gravity="center" />
 
@@ -51,11 +51,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
-                android:textSize="9.5sp"
+                android:paddingStart="@dimen/space_xs"
+                android:paddingEnd="@dimen/space_xs"
+                android:paddingTop="@dimen/space_xs"
+                android:paddingBottom="@dimen/space_xs"
+                android:textSize="@dimen/text_micro"
                 android:visibility="gone" />
         </FrameLayout>
 
@@ -64,44 +64,44 @@
             style="@style/RoyalText.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="@dimen/space_xs"
             android:letterSpacing="0.06"
-            android:textSize="9.5sp" />
+            android:textSize="@dimen/text_micro" />
 
         <TextView
             android:id="@+id/tvShopItemTitle"
             style="@style/RoyalText.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="@dimen/space_xs"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
-            android:textSize="14sp" />
+            android:textSize="@dimen/text_body" />
 
         <TextView
             android:id="@+id/tvShopItemDesc"
             style="@style/RoyalText.Story"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="@dimen/space_xs"
             android:gravity="center"
             android:maxLines="2"
-            android:textSize="11.5sp" />
+            android:textSize="@dimen/text_caption" />
 
         <LinearLayout
             android:id="@+id/layoutShopItemUnlock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="@dimen/space_xs"
             android:gravity="center"
             android:orientation="horizontal"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/ivShopItemLock"
-                android:layout_width="14dp"
-                android:layout_height="14dp"
+                android:layout_width="@dimen/space_m"
+                android:layout_height="@dimen/space_m"
                 android:contentDescription="@null"
                 android:src="@drawable/gold_lock" />
 
@@ -110,18 +110,18 @@
                 style="@style/RoyalText.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="@dimen/space_xs"
                 android:gravity="center"
                 android:textColor="@color/terracotta"
-                android:textSize="10sp" />
+                android:textSize="@dimen/text_micro" />
         </LinearLayout>
 
         <ProgressBar
             android:id="@+id/shopItemUnlockProgress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="6dp"
-            android:layout_marginTop="5dp"
+            android:layout_height="@dimen/space_s"
+            android:layout_marginTop="@dimen/space_xs"
             android:max="100"
             android:progressDrawable="@drawable/bg_progress_track_royal"
             android:visibility="gone" />
@@ -130,11 +130,11 @@
             android:id="@+id/btnShopItemAction"
             style="@style/RoyalButton.Gold"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="10dp"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
-            android:textSize="13sp" />
+            android:layout_height="@dimen/control_md"
+            android:layout_marginTop="@dimen/space_s"
+            android:paddingStart="@dimen/space_xs"
+            android:paddingEnd="@dimen/space_xs"
+            android:textSize="@dimen/text_body" />
 
     </LinearLayout>
 
@@ -144,13 +144,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:layout_margin="4dp"
+        android:layout_margin="@dimen/space_xs"
         android:background="@drawable/bg_chip_turquoise"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"
+        android:paddingStart="@dimen/space_s"
+        android:paddingEnd="@dimen/space_s"
+        android:paddingTop="@dimen/space_xs"
+        android:paddingBottom="@dimen/space_xs"
         android:textColor="@color/turquoise"
-        android:textSize="9sp"
+        android:textSize="@dimen/text_micro"
         android:visibility="gone" />
 </FrameLayout>
