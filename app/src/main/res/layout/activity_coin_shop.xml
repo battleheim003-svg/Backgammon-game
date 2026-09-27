@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/meny_background"
+    android:background="@drawable/bg_royal_backdrop"
     android:orientation="vertical"
     android:layoutDirection="locale"
     tools:context=".Economy.CoinShopActivity">
@@ -24,10 +24,9 @@
             android:id="@+id/btnShopBack"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/bg_pause_button"
-            android:contentDescription="Back"
-            android:src="@android:drawable/ic_menu_revert"
-            app:tint="@color/accent_gold" />
+            android:background="@drawable/bg_round_button_royal"
+            android:contentDescription="@string/review_back"
+            android:src="@drawable/gold_back" />
 
         <TextView
             android:layout_width="0dp"
@@ -105,7 +104,63 @@
         android:background="@drawable/bg_pause_button" />
 
     <!-- Grid / List of Items via RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
+        <!-- What the player is collecting, not just what is for sale. A shelf of
+         prices is a catalogue; a count of what you hold turns it into a set. -->
+    <LinearLayout
+        android:id="@+id/shopCollectionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_royal_well"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="14dp"
+        android:paddingTop="9dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="9dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@null"
+            android:src="@drawable/gold_trophy" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvShopCollectionLabel"
+                style="@style/RoyalText.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1" />
+
+            <ProgressBar
+                android:id="@+id/shopCollectionProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="5dp"
+                android:max="100"
+                android:progressDrawable="@drawable/bg_progress_track_royal" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvShopCollectionCount"
+            style="@style/RoyalText.Display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+<androidx.recyclerview.widget.RecyclerView
         android:id="@+id/shopRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"

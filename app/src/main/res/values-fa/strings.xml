@@ -488,4 +488,6 @@
     <string name="journey_hint_current">فصل بعدی: %1$s</string>
     <string name="journey_hint_complete">تمام راه را پشت سر گذاشتی. هر فصلی را خواستی دوباره بازی کن.</string>
     <string name="journey_chapter_number">%1$d</string>
+    <string name="shop_collection_label">مجموعهٔ شما</string>
+    <string name="shop_collection_count">%1$d از %2$d</string>
 </resources>

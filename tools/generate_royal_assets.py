@@ -157,15 +157,37 @@ def walnut(h, w, seed=11, *, contrast=1.0, scale=1.0):
     return albedo, (rings * 0.035 + fibre * 0.045) * contrast
 
 
-def hammered_gold(h, w, seed=5):
-    """Gold leaf over a hammered ground: a warm gradient plus shallow dents."""
-    albedo = vertical_gradient(h, w, [
-        (0.00, (0xFF, 0xF0, 0xC8)),
-        (0.16, (0xF7, 0xD4, 0x88)),
-        (0.52, (0xDF, 0xAD, 0x4B)),
-        (0.80, (0xB5, 0x7E, 0x28)),
+# Rarity is a material, not a coloured bar. A common thing is cast in bronze, a
+# rare one in silver, an epic one glazed in Persian turquoise and a legendary one
+# struck in gold — so what a player owns is legible from across the screen, and
+# it is legible in this game's own terms rather than in a stock palette's.
+MATERIALS = {
+    "gold": [
+        (0.00, (0xFF, 0xF0, 0xC8)), (0.16, (0xF7, 0xD4, 0x88)),
+        (0.52, (0xDF, 0xAD, 0x4B)), (0.80, (0xB5, 0x7E, 0x28)),
         (1.00, (0x8C, 0x5D, 0x1A)),
-    ])
+    ],
+    "bronze": [
+        (0.00, (0xF4, 0xD3, 0xAE)), (0.18, (0xD8, 0xA2, 0x6A)),
+        (0.55, (0xA9, 0x70, 0x2F)), (0.82, (0x7B, 0x4C, 0x1E)),
+        (1.00, (0x51, 0x30, 0x12)),
+    ],
+    "silver": [
+        (0.00, (0xFF, 0xFF, 0xFF)), (0.18, (0xE6, 0xEC, 0xF2)),
+        (0.52, (0xBD, 0xC7, 0xD3)), (0.82, (0x84, 0x90, 0x9E)),
+        (1.00, (0x57, 0x61, 0x6D)),
+    ],
+    "turquoise": [
+        (0.00, (0xDC, 0xFA, 0xF2)), (0.18, (0x8C, 0xE6, 0xD6)),
+        (0.52, (0x34, 0xC5, 0xAC)), (0.82, (0x18, 0x7E, 0x6E)),
+        (1.00, (0x0C, 0x4C, 0x42)),
+    ],
+}
+
+
+def hammered(h, w, material="gold", seed=5):
+    """A metal over a hammered ground: its gradient plus shallow dents."""
+    albedo = vertical_gradient(h, w, MATERIALS[material])
     dents = grain(h, w, 9, seed, blur=1.1) * 0.5 + grain(h, w, 3.2, seed + 1, blur=0.6) * 0.3
 
     # A slow diagonal swell across the face. Polished metal is never evenly
@@ -175,6 +197,11 @@ def hammered_gold(h, w, seed=5):
     albedo = np.clip(albedo * (0.93 + 0.14 * sweep[..., None]), 0, 1)
 
     return albedo, dents * 0.10 + sweep * 0.05
+
+
+def hammered_gold(h, w, seed=5):
+    """The gold case, kept as its own name because most callers want only gold."""
+    return hammered(h, w, "gold", seed)
 
 
 def engrave(height, mask, inset, width=2.2, depth=0.42):
@@ -501,6 +528,22 @@ def main():
 
     save("muqarnas_cornice.png", muqarnas())
 
+    # Rarity, cast four ways. The card and the medallion share a material, so a
+    # legendary item is gold all the way through rather than gold-labelled.
+    for rarity, material in (("common", "bronze"), ("rare", "silver"),
+                             ("epic", "turquoise"), ("legendary", "gold")):
+        plaque = rarity_plaque(material)
+        pw, ph = plaque.size
+        save(f"card_{rarity}.9.png", nine_patch(
+            plaque,
+            stretch=((pw // 2 - 2, pw // 2 + 2), (ph // 2 - 2, ph // 2 + 2)),
+            padding=((14, pw - 14), (12, ph - 16))))
+
+        for mark in ("ic_royal_crown", "ic_royal_dice", "ic_royal_trophy",
+                     "ic_royal_shop", "ic_royal_medal", "ic_royal_book"):
+            save(f"medal_{mark.replace('ic_royal_', '')}_{rarity}.png",
+                 product_medallion(mark, material))
+
     for icon in ("ic_royal_play", "ic_royal_duel", "ic_royal_road", "ic_royal_book",
                  "ic_royal_trophy", "ic_royal_gear", "ic_royal_coin", "ic_royal_medal",
                  "ic_royal_shop", "ic_royal_crown", "ic_royal_lock", "ic_royal_back",
@@ -551,6 +594,63 @@ def pointed_arch(shape_hw, cx, base_y, half_width, sharpness=0.78):
     left = np.hypot(xx - (cx - offset), yy - base_y) <= radius
     right = np.hypot(xx - (cx + offset), yy - base_y) <= radius
     return (left & right & (yy <= base_y) & (yy >= base_y - apex)), apex
+
+
+def product_medallion(icon_name, material, size=160):
+    """
+    A shop product as a struck medallion: the item's own mark raised on a disc
+    cast in the material its rarity earns. This replaces the emoji the shop used
+    to show, which rendered differently on every handset and matched nothing.
+    """
+    disc = Image.new("L", (size * SS, size * SS), 0)
+    pad = size * SS * 0.04
+    ImageDraw.Draw(disc).ellipse([pad, pad, size * SS - pad, size * SS - pad], fill=255)
+    mask = np.asarray(disc.resize((size, size), Image.LANCZOS), dtype=np.float64) / 255.0
+
+    albedo, dents = hammered(size, size, material, seed=13)
+    height = bevel_height(mask, size * 0.075) + dents * mask
+    # A rim standing around the field, as a struck coin has.
+    height = engrave(height, mask, inset=size * 0.13, width=size * 0.022, depth=0.5)
+
+    # The mark itself, raised out of the field.
+    glyph = vector_mask(icon_name, int(size * 0.56))
+    inset = (size - glyph.shape[0]) // 2
+    raised = np.zeros_like(mask)
+    raised[inset:inset + glyph.shape[0], inset:inset + glyph.shape[1]] = glyph
+    raised = raised * mask
+    height = height + bevel_height(raised, size * 0.03) * raised * 0.85
+
+    rgba = shade(height, albedo, mask, relief=3.4, ambient=0.48,
+                 key=0.70, spec_strength=0.72, spec_power=22)
+    rgba = add_rim(rgba, mask, colour=(0.18, 0.11, 0.03), width=1.8)
+    return to_image(drop_shadow(rgba, offset=3, blur=3.0, opacity=0.5))
+
+
+def rarity_plaque(material, w=280, h=150, radius=22, bevel=9):
+    """The card a product sits on, cast in the same material as its medallion."""
+    mask = rounded_mask(w, h, radius)
+    metal, dents = hammered(h, w, material, seed=21)
+    # Quiet field: the product is what should be looked at, not the grain.
+    wood, figure = walnut(h, w, contrast=0.28, scale=2.2)
+    wood = wood * 0.72
+
+    # A metal frame around a wood field: the product is mounted, not printed.
+    inlay = 6
+    inner = rounded_mask(w - 2 * inlay, h - 2 * inlay, max(radius - inlay, 2))
+    inner_full = np.zeros_like(mask)
+    inner_full[inlay:h - inlay, inlay:w - inlay] = inner
+    frame = np.clip(mask - inner_full, 0, 1)
+    frame_band = ndimage.gaussian_filter(frame, 0.6)
+
+    albedo = wood * (1 - frame_band[..., None]) + metal * frame_band[..., None]
+    height = bevel_height(mask, bevel) + figure * mask
+    height = height + frame_band * 0.6 + dents * frame_band
+    height = engrave(height, mask, inset=inlay + 4, width=1.8, depth=0.26)
+
+    rgba = shade(height, albedo, mask, relief=3.0, ambient=0.46,
+                 key=0.64, spec_strength=0.42, spec_power=20)
+    rgba = add_rim(rgba, mask, colour=(0.12, 0.07, 0.03), width=1.8)
+    return to_image(drop_shadow(rgba, offset=3, blur=3.0, opacity=0.5))
 
 
 def muqarnas(width=880, tiers=4, base_cell=118, seed=3):

@@ -487,4 +487,6 @@
     <string name="journey_hint_current">Next: %1$s</string>
     <string name="journey_hint_complete">The whole road is behind you. Play any chapter again whenever you like.</string>
     <string name="journey_chapter_number">%1$d</string>
+    <string name="shop_collection_label">Your collection</string>
+    <string name="shop_collection_count">%1$d of %2$d</string>
 </resources>

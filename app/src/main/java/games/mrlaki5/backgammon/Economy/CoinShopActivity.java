@@ -143,6 +143,7 @@ public class CoinShopActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        bindCollection();
         freeCoinsTickHandler.removeCallbacks(freeCoinsTick);
         freeCoinsTickHandler.post(freeCoinsTick);
     }
@@ -217,8 +218,51 @@ public class CoinShopActivity extends AppCompatActivity {
                     shopAdapter.filter(cat);
                 }
                 updateTabSelection(tabs, btn);
+                bindCollection();
             });
             tabs.addView(btn);
+        }
+    }
+
+    /**
+     * How much of the current shelf the player already holds.
+     *
+     * A list of prices is a catalogue; a count of what you own turns the same
+     * list into a set worth completing, which is the whole point of collections.
+     */
+    private void bindCollection() {
+        android.widget.TextView label = findViewById(R.id.tvShopCollectionLabel);
+        android.widget.TextView count = findViewById(R.id.tvShopCollectionCount);
+        android.widget.ProgressBar bar = findViewById(R.id.shopCollectionProgress);
+        if (label == null || count == null || bar == null || allItems == null) {
+            return;
+        }
+
+        games.mrlaki5.backgammon.Database.PlayerProfileManager profile =
+                games.mrlaki5.backgammon.Database.PlayerProfileManager.getInstance(this);
+
+        int total = 0;
+        int owned = 0;
+        for (ShopItem item : allItems) {
+            if (item.isConsumable()) {
+                continue;  // stock, not something you collect
+            }
+            if (selectedCategory != ShopItem.Category.ALL
+                    && item.getCategory() != selectedCategory) {
+                continue;
+            }
+            total++;
+            if (item.isFree() || profile.isItemPurchased(item.getId())) {
+                owned++;
+            }
+        }
+
+        label.setText(getString(R.string.shop_collection_label));
+        count.setText(getString(R.string.shop_collection_count, owned, total));
+        bar.setProgress(total == 0 ? 0 : Math.round(owned * 100F / total));
+        View container = findViewById(R.id.shopCollectionBar);
+        if (container != null) {
+            container.setVisibility(total == 0 ? View.GONE : View.VISIBLE);
         }
     }
 

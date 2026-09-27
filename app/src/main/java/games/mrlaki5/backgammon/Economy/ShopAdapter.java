@@ -105,15 +105,18 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
             holder.ivLock.setImageResource(R.drawable.ic_lock_theme);
         }
 
-        // Icon & Drawables
-        if (item.getIconRes() != 0) {
-            holder.tvIcon.setText("");
-            holder.tvIcon.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-            holder.tvIcon.setBackgroundResource(item.getIconRes());
-        } else {
-            holder.tvIcon.setBackgroundResource(R.drawable.bg_pause_button);
-            holder.tvIcon.setText(item.getIconEmoji());
-        }
+        // The product is a struck medallion in the metal its rarity earns. The
+        // emoji this used to show rendered differently on every handset and
+        // matched nothing else on the screen.
+        holder.tvIcon.setText("");
+        holder.tvIcon.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        holder.tvIcon.setBackgroundResource(item.getIconRes() != 0
+                ? item.getIconRes()
+                : ShopArt.medallion(item.getCategory(), item.getRarity()));
+
+        // The card is cast in that same metal, so the two are one object.
+        holder.itemView.findViewById(R.id.shopCardBody)
+                .setBackgroundResource(ShopArt.card(item.getRarity()));
 
         holder.tvTitle.setText(item.getTitle());
         holder.tvDesc.setText(item.getDescription());
@@ -131,12 +134,9 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
         holder.tvRarity.setText(item.getRarity().label(context));
         holder.tvRarity.setTextColor(rarityColor);
         if (holder.rarityBar != null) {
-            Drawable bg = holder.rarityBar.getBackground();
-            if (bg instanceof GradientDrawable) {
-                ((GradientDrawable) bg.mutate()).setColor(rarityColor);
-            } else {
-                holder.rarityBar.setBackgroundColor(rarityColor);
-            }
+            // The frame already carries the material, so the bar would only
+            // repeat it; it stays for the older layouts that still use one.
+            holder.rarityBar.setVisibility(View.GONE);
         }
 
         // Badge (NEW, HOT, etc.)

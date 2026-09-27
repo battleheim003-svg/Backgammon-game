@@ -22,11 +22,12 @@ public class ShopItem {
 
         public String hexColor() {
             switch (this) {
-                case COMMON:    return "#9E9E9E";
-                case RARE:      return "#2196F3";
-                case EPIC:      return "#9C27B0";
-                case LEGENDARY: return "#FFB300";
-                default:        return "#9E9E9E";
+                // Each is its material's lit edge: bronze, silver, turquoise, gold.
+                case COMMON:    return "#D8A26A";
+                case RARE:      return "#E6ECF2";
+                case EPIC:      return "#8CE6D6";
+                case LEGENDARY: return "#F7D488";
+                default:        return "#D8A26A";
             }
         }
 

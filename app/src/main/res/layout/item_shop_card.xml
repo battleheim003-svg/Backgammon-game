@@ -1,179 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    One shop product.
+
+    The card itself is the rarity: bronze, silver, turquoise glaze or gold, cast
+    as a metal frame around a quiet wood field, and the medallion mounted on it
+    is struck in that same metal. A legendary item is gold all the way through
+    rather than labelled legendary, which is what makes the shelf readable at a
+    glance — and readable in this game's terms rather than a stock palette's.
+
+    The background is set in code (ShopArt.card) because rarity is data.
+-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="5dp">
 
-    <!-- Card background -->
     <LinearLayout
+        android:id="@+id/shopCardBody"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_pause_dialog"
-        android:elevation="4dp"
+        android:background="@drawable/card_common"
+        android:gravity="center"
         android:orientation="vertical"
-        android:padding="3dp">
+        android:paddingStart="12dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="12dp">
 
-        <!-- Rarity color bar (top) -->
+        <!-- Kept for older layouts that still bind it; hidden by the adapter. -->
         <View
             android:id="@+id/viewRarityBar"
             android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:background="@drawable/shape_rarity_bar" />
+            android:layout_height="0dp"
+            android:visibility="gone" />
 
-        <!-- Card body -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="10dp">
+        <FrameLayout
+            android:layout_width="62dp"
+            android:layout_height="62dp">
 
-            <!-- Icon Frame with Quantity Badge -->
-            <FrameLayout
-                android:layout_width="56dp"
-                android:layout_height="56dp">
-
-                <TextView
-                    android:id="@+id/tvShopItemIcon"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:background="@drawable/bg_pause_button"
-                    android:gravity="center"
-                    android:text="🖼️"
-                    android:textSize="28sp" />
-
-                <!-- Quantity Badge for Consumables -->
-                <TextView
-                    android:id="@+id/tvShopItemQuantityBadge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:background="@drawable/bg_badge_blue"
-                    android:fontFamily="sans-serif-black"
-                    android:paddingStart="4dp"
-                    android:paddingTop="1dp"
-                    android:paddingEnd="4dp"
-                    android:paddingBottom="1dp"
-                    android:textColor="#FFFFFF"
-                    android:textSize="9sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-            </FrameLayout>
-
-            <!-- Rarity label -->
             <TextView
-                android:id="@+id/tvShopItemRarity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="sans-serif-medium"
-                android:letterSpacing="0.05"
-                android:text="معمولی"
-                android:textColor="#9E9E9E"
-                android:textSize="9sp"
-                android:textAllCaps="false" />
+                android:id="@+id/tvShopItemIcon"
+                android:layout_width="62dp"
+                android:layout_height="62dp"
+                android:background="@drawable/medal_shop_common"
+                android:gravity="center" />
 
-            <!-- Title -->
             <TextView
-                android:id="@+id/tvShopItemTitle"
+                android:id="@+id/tvShopItemQuantityBadge"
+                style="@style/RoyalText.Chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:fontFamily="sans-serif-medium"
-                android:gravity="center"
-                android:maxLines="1"
-                android:textColor="@color/text_primary"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <!-- Description -->
-            <TextView
-                android:id="@+id/tvShopItemDesc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:gravity="center"
-                android:maxLines="2"
-                android:textColor="@color/accent_slate"
-                android:textSize="10sp" />
-
-            <!-- Unlock requirement (hidden when not needed) -->
-            <LinearLayout
-                android:id="@+id/layoutShopItemUnlock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <ImageView
-                    android:id="@+id/ivShopItemLock"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:src="@drawable/ic_lock_theme" />
-
-                <TextView
-                    android:id="@+id/tvShopItemUnlock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
-                    android:gravity="center"
-                    android:textColor="#FF7043"
-                    android:textSize="10sp" />
-            </LinearLayout>
-
-            <!-- Unlock Progress Bar -->
-            <ProgressBar
-                android:id="@+id/shopItemUnlockProgress"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_marginTop="4dp"
-                android:visibility="gone"
-                android:max="100"
-                android:progressTint="@color/color_gold_primary"
-                android:progressBackgroundTint="@color/text_muted" />
-
-            <!-- Buy / Equip button -->
-            <Button
-                android:id="@+id/btnShopItemAction"
-                android:layout_width="match_parent"
-                android:layout_height="34dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/neuro_primary_button"
-                android:fontFamily="sans-serif-medium"
-                android:minHeight="0dp"
+                android:layout_gravity="bottom|end"
                 android:paddingStart="6dp"
                 android:paddingEnd="6dp"
-                android:text="200 🪙"
-                android:textAllCaps="false"
-                android:textColor="@color/surface_base"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:textSize="9.5sp"
+                android:visibility="gone" />
+        </FrameLayout>
 
+        <TextView
+            android:id="@+id/tvShopItemRarity"
+            style="@style/RoyalText.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:letterSpacing="0.06"
+            android:textSize="9.5sp" />
+
+        <TextView
+            android:id="@+id/tvShopItemTitle"
+            style="@style/RoyalText.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvShopItemDesc"
+            style="@style/RoyalText.Story"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:maxLines="2"
+            android:textSize="11.5sp" />
+
+        <LinearLayout
+            android:id="@+id/layoutShopItemUnlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ivShopItemLock"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:contentDescription="@null"
+                android:src="@drawable/gold_lock" />
+
+            <TextView
+                android:id="@+id/tvShopItemUnlock"
+                style="@style/RoyalText.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:gravity="center"
+                android:textColor="@color/terracotta"
+                android:textSize="10sp" />
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/shopItemUnlockProgress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_marginTop="5dp"
+            android:max="100"
+            android:progressDrawable="@drawable/bg_progress_track_royal"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnShopItemAction"
+            style="@style/RoyalButton.Gold"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:textSize="13sp" />
+
     </LinearLayout>
 
-    <!-- Badge overlay (top-right corner) -->
     <TextView
         android:id="@+id/tvShopItemBadge"
+        style="@style/RoyalText.Chip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:layout_margin="3dp"
-        android:background="@drawable/bg_badge_orange"
-        android:fontFamily="sans-serif-black"
-        android:paddingStart="5dp"
-        android:paddingTop="2dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="2dp"
-        android:text="جدید"
-        android:textColor="#FFFFFF"
-        android:textSize="8sp"
-        android:textStyle="bold"
+        android:layout_margin="4dp"
+        android:background="@drawable/bg_chip_turquoise"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:textColor="@color/turquoise"
+        android:textSize="9sp"
         android:visibility="gone" />
-
-    <!-- tvShopItemRentalExpiry REMOVED — rental system eliminated -->
-
 </FrameLayout>
