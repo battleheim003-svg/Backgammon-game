@@ -508,4 +508,29 @@
     <string name="checkers_agate_desc">عقیق رگه‌دار، تراشیده و صیقلی مثل نگین انگشتر.</string>
     <string name="checkers_gold_title">زرورق</string>
     <string name="checkers_gold_desc">دستی برای میزی که کسی رویش بازی نمی‌کند. تو بازی کن.</string>
+    <!-- تاس‌ها، از سنگ واقعی -->
+    <string name="dice_bone_title">استخوان</string>
+    <string name="dice_bone_desc">همان جفتی که هر تخته با آن شروع می‌شود. سبک، پرصدا، صادق.</string>
+    <string name="dice_ebony_title">آبنوس</string>
+    <string name="dice_ebony_desc">تقریباً سیاه، و آن‌قدر سنگین که همان‌جا بیفتد که انداختی.</string>
+    <string name="dice_turquoise_title">فیروزه</string>
+    <string name="dice_turquoise_desc">رگه‌دار از سنگی که در آن روییده. هیچ دو وجهی شبیه هم نیست.</string>
+    <string name="dice_agate_title">عقیق</string>
+    <string name="dice_agate_desc">سرتاسر رگه‌رگه؛ هر انداختن، برش تازه‌ای از سنگ را نشان می‌دهد.</string>
+    <string name="dice_gold_title">طلا</string>
+    <string name="dice_gold_desc">کندتر می‌غلتند. باز هم همه نگاهشان می‌کنند.</string>
+
+    <!-- القاب، به زبان خودِ بازی -->
+    <string name="title_none_title">بدون لقب</string>
+    <string name="title_none_desc">بگذار بازی حرف بزند.</string>
+    <string name="title_doubler_title">جفت‌آور</string>
+    <string name="title_doubler_desc">برای کسی که جفت‌هایش تمام نمی‌شوند.</string>
+    <string name="title_prime_title">شش‌دربند</string>
+    <string name="title_prime_desc">برای کسی که شش خانه را می‌بندد و باز نمی‌گذارد.</string>
+    <string name="title_gammon_title">مارس‌زن</string>
+    <string name="title_gammon_desc">بردن برای بیشتر آدم‌ها کافی است.</string>
+    <string name="title_plakoto_title">استاد پلاکوتو</string>
+    <string name="title_plakoto_desc">جایی که مهره را نمی‌زنند، حبس می‌کنند — و مادر تصمیم می‌گیرد.</string>
+    <string name="title_unbeaten_title">بی‌باخت</string>
+    <string name="title_unbeaten_desc">تا وقتی درست است، مال توست.</string>
 </resources>

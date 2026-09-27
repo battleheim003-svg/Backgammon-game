@@ -507,4 +507,29 @@
     <string name="checkers_agate_desc">Banded carnelian, cut and polished like a seal stone.</string>
     <string name="checkers_gold_title">Gold leaf</string>
     <string name="checkers_gold_desc">A set for a table nobody plays on. Play on it anyway.</string>
+    <!-- Dice, cut from real stone -->
+    <string name="dice_bone_title">Bone</string>
+    <string name="dice_bone_desc">The pair every table starts with. Light, loud, honest.</string>
+    <string name="dice_ebony_title">Ebony</string>
+    <string name="dice_ebony_desc">Nearly black, and heavy enough to land where you throw it.</string>
+    <string name="dice_turquoise_title">Turquoise</string>
+    <string name="dice_turquoise_desc">Veined with the matrix it grew in. No two faces alike.</string>
+    <string name="dice_agate_title">Agate</string>
+    <string name="dice_agate_desc">Banded through, so every roll shows a different cut of the stone.</string>
+    <string name="dice_gold_title">Gold</string>
+    <string name="dice_gold_desc">They roll slower. Everyone watches them anyway.</string>
+
+    <!-- Titles, in the language of the game -->
+    <string name="title_none_title">No title</string>
+    <string name="title_none_desc">Let the play speak.</string>
+    <string name="title_doubler_title">The Doubler</string>
+    <string name="title_doubler_desc">For the player whose doubles keep arriving.</string>
+    <string name="title_prime_title">Six-Block</string>
+    <string name="title_prime_desc">For the one who builds the prime and never lets it open.</string>
+    <string name="title_gammon_title">Gammon-Maker</string>
+    <string name="title_gammon_desc">Winning is enough for most people.</string>
+    <string name="title_plakoto_title">Master of Plakoto</string>
+    <string name="title_plakoto_desc">Where nothing is hit, only pinned — and the mother decides.</string>
+    <string name="title_unbeaten_title">Unbeaten</string>
+    <string name="title_unbeaten_desc">Held only while it is true.</string>
 </resources>

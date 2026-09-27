@@ -394,61 +394,72 @@ public class CoinShopActivity extends AppCompatActivity {
             0, 0, 300, null, 0, false));
 
         // ═══════════════════════════════════════════
-        // DICE SKINS — 6 items
+        // DICE — cut from the stones a real pair is cut from
+        //
+        // Each is rendered as a cube in axonometric projection with its pips
+        // drilled rather than printed, so what the shelf shows is the object
+        // the player will be rolling.
         // ═══════════════════════════════════════════
-        allItems.add(ShopItem.permanent(
-            "dice_default", getString(R.string.dice_default_title), getString(R.string.dice_default_desc),
-            0, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.COMMON, "🎲"));
+        allItems.add(ShopItem.crafted(
+            "dice_bone", getString(R.string.dice_bone_title), getString(R.string.dice_bone_desc),
+            0, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.COMMON,
+            R.drawable.dice_set_bone, 0));
 
-        allItems.add(ShopItem.permanent(
+        allItems.add(ShopItem.crafted(
             "dice_walnut", getString(R.string.dice_walnut_title), getString(R.string.dice_walnut_desc),
-            200, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.COMMON, "🟫"));
+            250, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.COMMON,
+            R.drawable.dice_set_walnut, 0));
 
-        allItems.add(ShopItem.withUnlock(
-            "dice_ruby", getString(R.string.dice_ruby_title), getString(R.string.dice_ruby_desc),
-            500, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.RARE, "🔴", 15));
+        allItems.add(ShopItem.crafted(
+            "dice_ebony", getString(R.string.dice_ebony_title), getString(R.string.dice_ebony_desc),
+            700, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.RARE,
+            R.drawable.dice_set_ebony, 12));
 
-        allItems.add(ShopItem.withUnlock(
-            "dice_marble", getString(R.string.dice_marble_title), getString(R.string.dice_marble_desc),
-            700, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.RARE, "⬜", 30));
+        allItems.add(ShopItem.crafted(
+            "dice_turquoise", getString(R.string.dice_turquoise_title), getString(R.string.dice_turquoise_desc),
+            1800, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.EPIC,
+            R.drawable.dice_set_turquoise, 40));
 
-        allItems.add(new ShopItem(
-            "dice_crystal", getString(R.string.dice_crystal_title), getString(R.string.dice_crystal_desc),
-            1400, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.EPIC, "🔷",
-            0, 0, 100, getString(R.string.shop_badge_new), 0, false));
+        allItems.add(ShopItem.crafted(
+            "dice_agate", getString(R.string.dice_agate_title), getString(R.string.dice_agate_desc),
+            2400, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.EPIC,
+            R.drawable.dice_set_agate, 60));
 
-        allItems.add(new ShopItem(
-            "dice_dragon", getString(R.string.dice_dragon_title), getString(R.string.dice_dragon_desc),
-            3500, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.LEGENDARY, "🐉",
-            0, 0, 200, null, 0, false));
+        allItems.add(ShopItem.crafted(
+            "dice_gold", getString(R.string.dice_gold_title), getString(R.string.dice_gold_desc),
+            5000, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.LEGENDARY,
+            R.drawable.dice_set_gold, 150));
 
         // ═══════════════════════════════════════════
-        // TITLES — 6 items
+        // TITLES — earned in the language of the game itself
+        //
+        // Not a rank ladder. These are the things backgammon players actually
+        // call each other: the one who builds a six-prime, the one whose doubles
+        // keep coming, the one who wins by a gammon.
         // ═══════════════════════════════════════════
         allItems.add(ShopItem.permanent(
-            "title_beginner", getString(R.string.title_beginner_title), getString(R.string.title_beginner_desc),
-            0, ShopItem.Category.TITLE, ShopItem.Rarity.COMMON, "🌱"));
+            "title_none", getString(R.string.title_none_title), getString(R.string.title_none_desc),
+            0, ShopItem.Category.TITLE, ShopItem.Rarity.COMMON, ""));
 
         allItems.add(ShopItem.withUnlock(
-            "title_sharp", getString(R.string.title_sharp_title), getString(R.string.title_sharp_desc),
-            100, ShopItem.Category.TITLE, ShopItem.Rarity.COMMON, "🧩", 5));
+            "title_doubler", getString(R.string.title_doubler_title), getString(R.string.title_doubler_desc),
+            400, ShopItem.Category.TITLE, ShopItem.Rarity.COMMON, "", 10));
 
         allItems.add(ShopItem.withUnlock(
-            "title_tactician", getString(R.string.title_tactician_title), getString(R.string.title_tactician_desc),
-            350, ShopItem.Category.TITLE, ShopItem.Rarity.RARE, "⚔️", 25));
+            "title_prime", getString(R.string.title_prime_title), getString(R.string.title_prime_desc),
+            900, ShopItem.Category.TITLE, ShopItem.Rarity.RARE, "", 25));
 
         allItems.add(ShopItem.withUnlock(
-            "title_master", getString(R.string.title_master_title), getString(R.string.title_master_desc),
-            600, ShopItem.Category.TITLE, ShopItem.Rarity.RARE, "🎓", 60));
+            "title_gammon", getString(R.string.title_gammon_title), getString(R.string.title_gammon_desc),
+            1500, ShopItem.Category.TITLE, ShopItem.Rarity.RARE, "", 40));
 
-        allItems.add(new ShopItem(
-            "title_king", getString(R.string.title_king_title), getString(R.string.title_king_desc),
-            1200, ShopItem.Category.TITLE, ShopItem.Rarity.EPIC, "♔",
-            0, 0, 100, null, 0, false));
+        allItems.add(ShopItem.withUnlock(
+            "title_plakoto", getString(R.string.title_plakoto_title), getString(R.string.title_plakoto_desc),
+            2200, ShopItem.Category.TITLE, ShopItem.Rarity.EPIC, "", 70));
 
-        allItems.add(new ShopItem(
-            "title_sultan", getString(R.string.title_sultan_title), getString(R.string.title_sultan_desc),
-            2500, ShopItem.Category.TITLE, ShopItem.Rarity.LEGENDARY, "🏆",
-            0, 0, 250, null, 0, false));
+        allItems.add(ShopItem.withUnlock(
+            "title_unbeaten", getString(R.string.title_unbeaten_title), getString(R.string.title_unbeaten_desc),
+            4000, ShopItem.Category.TITLE, ShopItem.Rarity.LEGENDARY, "", 150));
+
     }
 }

@@ -211,6 +211,69 @@ MATERIALS = {
 }
 
 
+def material_character(h, w, material, seed):
+    """
+    What a material looks like close up, beyond its colour ramp.
+
+    A gradient alone gives plastic. Real Neyshabur turquoise is crossed by the
+    dark matrix it grew in; agate is banded because it formed in layers; nacre
+    shifts colour because light interferes in its plates; bone has a fine
+    longitudinal grain; ebony is nearly featureless but not quite. Each of those
+    is a different function, so each gets one.
+
+    Returns (albedo multiplier, height perturbation).
+    """
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float64)
+    tint = np.ones((h, w, 3))
+    relief = np.zeros((h, w))
+
+    if material == "turquoise":
+        # Matrix: a dark web of the host rock, thin and irregular.
+        # Sparse and thin: a good stone shows a few veins, not a crazed glaze.
+        veins = grain(h, w, 20, seed, blur=2.0)
+        web = np.clip(1.0 - np.abs(veins) / 0.055, 0, 1) ** 2.2
+        tint = tint * (1.0 - 0.55 * web)[..., None]
+        relief -= web * 0.18
+
+    elif material == "agate":
+        # Bands: concentric, following a slowly wandering centre.
+        cx, cy = w * 0.42, h * 0.55
+        wobble = grain(h, w, 26, seed, blur=3.0) * 16
+        rings = np.sin((np.hypot(xx - cx, yy - cy) + wobble) * (2 * math.pi / 13.0))
+        band = 0.5 + 0.5 * np.sign(rings) * np.abs(rings) ** 0.8
+        tint = tint * (0.80 + 0.34 * band)[..., None]
+        relief += (band - 0.5) * 0.10
+
+    elif material == "nacre":
+        # Interference: hue slides across the surface instead of brightness.
+        phase = (xx * 0.035 + yy * 0.052 + grain(h, w, 18, seed, blur=2.0) * 3.2)
+        tint = np.stack([
+            0.90 + 0.16 * np.sin(phase),
+            0.92 + 0.14 * np.sin(phase + 2.1),
+            0.94 + 0.16 * np.sin(phase + 4.2),
+        ], axis=-1)
+        relief += grain(h, w, 3, seed + 1, blur=0.6) * 0.05
+
+    elif material == "bone":
+        # Fine grain along the length, plus the faint mottle of real bone.
+        lines = np.sin((yy + grain(h, w, 30, seed, blur=3.0) * 12) * (2 * math.pi / 3.4))
+        mottle = grain(h, w, 14, seed + 2, blur=1.6)
+        tint = tint * (1.0 + 0.045 * lines + 0.06 * mottle)[..., None]
+        relief += lines * 0.03
+
+    elif material == "walnut":
+        figure, _ = walnut(h, w, seed=seed, contrast=1.0, scale=0.45)
+        luma = figure.mean(axis=-1)
+        tint = tint * (0.72 + 0.7 * luma)[..., None]
+        relief += (luma - luma.mean()) * 0.30
+
+    elif material == "ebony":
+        streaks = grain(h, w, 20, seed, blur=2.2)
+        tint = tint * (1.0 + 0.10 * streaks)[..., None]
+
+    return np.clip(tint, 0, 2), relief
+
+
 def hammered(h, w, material="gold", seed=5):
     """A metal over a hammered ground: its gradient plus shallow dents."""
     albedo = vertical_gradient(h, w, MATERIALS[material])
@@ -222,7 +285,10 @@ def hammered(h, w, material="gold", seed=5):
     sweep = np.sin((xx / max(w, 1) * 1.3 + yy / max(h, 1) * 0.7) * math.pi)
     albedo = np.clip(albedo * (0.93 + 0.14 * sweep[..., None]), 0, 1)
 
-    return albedo, dents * 0.10 + sweep * 0.05
+    tint, relief = material_character(h, w, material, seed + 101)
+    albedo = np.clip(albedo * tint, 0, 1)
+
+    return albedo, dents * 0.10 + sweep * 0.05 + relief
 
 
 def hammered_gold(h, w, seed=5):
@@ -584,6 +650,11 @@ def main():
                            ("gold", "gold")):
         save(f"checkers_{name}.png", checker_stack(material))
 
+    # Dice, in the stones a real pair is cut from.
+    for name, material in (("bone", "bone"), ("walnut", "walnut"), ("ebony", "ebony"),
+                           ("turquoise", "turquoise"), ("agate", "agate"), ("gold", "gold")):
+        save(f"dice_set_{name}.png", die(material))
+
     # Struck titles, one per language.
     for language, strings in TITLES.items():
         folder = OUT if language is None else RES / f"drawable-{language}-xhdpi"
@@ -703,6 +774,87 @@ def checker_stack(material, motif="ic_shamsa", size=170, seed=29):
     canvas.alpha_composite(back, (int(size * 0.28), int(size * 0.04)))
     canvas.alpha_composite(front, (int(size * 0.02), int(size * 0.26)))
     return canvas
+
+
+def die(material, size=180, seed=37, faces=(5, 3, 6)):
+    """
+    A die as an object rather than a symbol: a cube in axonometric projection,
+    three faces visible, pips sunk into them.
+
+    Each face gets its own constant normal, which is what a flat face has, so
+    the three read at three different brightnesses under the one key light this
+    whole theme is lit by — top brightest, then the left cheek, then the right.
+    The pips are drilled, not printed: a depression with the light caught on its
+    far wall.
+    """
+    canvas = np.zeros((size, size, 4))
+    s = size * 0.40          # edge length in projection
+    # Both axes run down-and-out from the top vertex; with a negative rise the
+    # top face folds behind the cube and you get a banner instead of a die.
+    ux, uy = math.cos(math.radians(30)), math.sin(math.radians(30))
+    vx, vy = -ux, uy
+    cx, cy = size * 0.5, size * 0.17
+
+    apex = np.array([cx, cy])
+    right = apex + np.array([ux, uy]) * s
+    left = apex + np.array([vx, vy]) * s
+    front = right + np.array([vx, vy]) * s
+    down = np.array([0.0, s * 1.02])
+
+    def polygon_mask(points):
+        img = Image.new("L", (size * SS, size * SS), 0)
+        ImageDraw.Draw(img).polygon([(p[0] * SS, p[1] * SS) for p in points], fill=255)
+        return np.asarray(img.resize((size, size), Image.LANCZOS), dtype=np.float64) / 255.0
+
+    # Brightness of each face under the shared key light, top lit most.
+    faces_geometry = [
+        ("top", [apex, right, front, left], 1.00,
+         (np.array([ux, uy]) * s, np.array([vx, vy]) * s)),
+        ("left", [left, front, front + down, left + down], 0.78,
+         (np.array([ux, uy]) * s, down)),
+        ("right", [front, right, right + down, front + down], 0.58,
+         (np.array([vx, vy]) * -s, down)),
+    ]
+
+    albedo_full, _ = hammered(size, size, material, seed=seed)
+
+    for (name, points, lit, (axis_a, axis_b)), pip_count in zip(faces_geometry, faces):
+        mask = polygon_mask(points)
+        if not mask.any():
+            continue
+        origin = np.array(points[0], dtype=float)
+
+        # Pips, in the face's own coordinates, then projected onto the screen.
+        pip_layout = {
+            1: [(0.5, 0.5)],
+            2: [(0.28, 0.28), (0.72, 0.72)],
+            3: [(0.24, 0.24), (0.5, 0.5), (0.76, 0.76)],
+            4: [(0.28, 0.28), (0.72, 0.28), (0.28, 0.72), (0.72, 0.72)],
+            5: [(0.26, 0.26), (0.74, 0.26), (0.5, 0.5), (0.26, 0.74), (0.74, 0.74)],
+            6: [(0.26, 0.22), (0.26, 0.5), (0.26, 0.78),
+                (0.74, 0.22), (0.74, 0.5), (0.74, 0.78)],
+        }[pip_count]
+
+        pips = Image.new("L", (size * SS, size * SS), 0)
+        artist = ImageDraw.Draw(pips)
+        radius = s * 0.115 * SS
+        for a, b in pip_layout:
+            centre = origin + axis_a * a + axis_b * b
+            artist.ellipse([centre[0] * SS - radius, centre[1] * SS - radius,
+                            centre[0] * SS + radius, centre[1] * SS + radius], fill=255)
+        pip_mask = np.asarray(pips.resize((size, size), Image.LANCZOS),
+                              dtype=np.float64) / 255.0 * mask
+
+        height = bevel_height(mask, size * 0.022)
+        height = height - bevel_height(pip_mask, size * 0.020) * pip_mask * 1.35
+
+        face = shade(height, albedo_full * lit, mask,
+                     relief=3.0, ambient=0.50, key=0.62,
+                     spec_strength=0.55 if name == "top" else 0.30, spec_power=26)
+        canvas = np.where(face[..., 3:4] > 0.01, face, canvas)
+
+    rgba = add_rim(canvas, canvas[..., 3], colour=(0.14, 0.08, 0.03), width=1.6)
+    return to_image(drop_shadow(rgba, offset=4, blur=3.6, opacity=0.5))
 
 
 def rarity_plaque(material, w=280, h=150, radius=22, bevel=9):
