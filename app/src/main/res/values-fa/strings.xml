@@ -554,4 +554,13 @@
     <string name="season_bundle_saving">جدا جدا %1$d</string>
     <string name="season_bundle_owned">این دست را داری</string>
     <string name="season_retires">با بسته شدن فصل، این دست جمع می‌شود و دیگر عرضه نخواهد شد.</string>
+    <!-- گنجینه -->
+    <string name="collection_title">گنجینه</string>
+    <string name="collection_total">%1$d از %2$d</string>
+    <string name="collection_season_open">%1$d روز مانده</string>
+    <string name="collection_season_closed">بسته</string>
+    <string name="collection_piece_held">داری</string>
+    <string name="collection_piece_missed">از دست رفته</string>
+    <string name="collection_piece_price">%1$d سکه</string>
+    <string name="collection_open">گنجینه</string>
 </resources>

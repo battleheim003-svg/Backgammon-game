@@ -41,10 +41,12 @@ TITLES = {
     None: {
         "title_app": "Royal Backgammon",
         "title_journey": "Journey",
+        "title_collection": "Treasury",
     },
     "fa": {
         "title_app": "تخته‌نرد سلطنتی",
         "title_journey": "سفر",
+        "title_collection": "گنجینه",
     },
 }
 SS = 4  # supersampling for the mask, so edges are not stair-stepped

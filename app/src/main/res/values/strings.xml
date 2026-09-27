@@ -553,4 +553,13 @@
     <string name="season_bundle_saving">Separately %1$d</string>
     <string name="season_bundle_owned">You own this set</string>
     <string name="season_retires">When the season closes, this set is withdrawn and is not sold again.</string>
+    <!-- The treasury -->
+    <string name="collection_title">Treasury</string>
+    <string name="collection_total">%1$d of %2$d</string>
+    <string name="collection_season_open">%1$d days left</string>
+    <string name="collection_season_closed">Closed</string>
+    <string name="collection_piece_held">Held</string>
+    <string name="collection_piece_missed">Missed</string>
+    <string name="collection_piece_price">%1$d coins</string>
+    <string name="collection_open">Treasury</string>
 </resources>

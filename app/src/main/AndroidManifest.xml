@@ -58,6 +58,10 @@
             android:screenOrientation="landscape" />
 
         <activity
+            android:name=".Economy.CollectionActivity"
+            android:screenOrientation="landscape" />
+
+        <activity
             android:name=".Economy.CoinShopActivity"
             android:screenOrientation="landscape" />
 

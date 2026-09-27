@@ -82,6 +82,12 @@ public class CoinShopActivity extends AppCompatActivity {
         buildShopCatalog();
         setupRecyclerView();
         setupCategoryTabs();
+
+        View treasury = findViewById(R.id.btnOpenCollection);
+        if (treasury != null) {
+            treasury.setOnClickListener(v ->
+                    startActivity(new android.content.Intent(this, CollectionActivity.class)));
+        }
         setupFreeCoinsButton();
         refreshCoinBalance();
     }
@@ -415,160 +421,10 @@ public class CoinShopActivity extends AppCompatActivity {
         allItems.add(ShopItem.hintPack10(this));
         allItems.add(ShopItem.undoPack3(this));
 
-        // ═══════════════════════════════════════════
-        // CHECKERS — the pieces the player actually touches
-        //
-        // Named for what a real set is made of rather than for a tier: a
-        // bronze/silver/gold/diamond ladder belongs to every mobile game, and
-        // walnut, camel bone, Isfahan khatam and Neyshabur turquoise belong to
-        // this one. Each has its own rendered artwork.
-        // ═══════════════════════════════════════════
-        allItems.add(ShopItem.crafted(
-            "checkers_walnut", getString(R.string.checkers_walnut_title),
-            getString(R.string.checkers_walnut_desc), 0,
-            ShopItem.Category.CHECKERS, ShopItem.Rarity.COMMON,
-            R.drawable.checkers_walnut, 0));
-
-        allItems.add(ShopItem.crafted(
-            "checkers_bone", getString(R.string.checkers_bone_title),
-            getString(R.string.checkers_bone_desc), 300,
-            ShopItem.Category.CHECKERS, ShopItem.Rarity.COMMON,
-            R.drawable.checkers_bone, 0));
-
-        allItems.add(ShopItem.crafted(
-            "checkers_khatam", getString(R.string.checkers_khatam_title),
-            getString(R.string.checkers_khatam_desc), 800,
-            ShopItem.Category.CHECKERS, ShopItem.Rarity.RARE,
-            R.drawable.checkers_khatam, 15));
-
-        allItems.add(ShopItem.crafted(
-            "checkers_nacre", getString(R.string.checkers_nacre_title),
-            getString(R.string.checkers_nacre_desc), 1100,
-            ShopItem.Category.CHECKERS, ShopItem.Rarity.RARE,
-            R.drawable.checkers_nacre, 25));
-
-        allItems.add(ShopItem.crafted(
-            "checkers_turquoise", getString(R.string.checkers_turquoise_title),
-            getString(R.string.checkers_turquoise_desc), 2000,
-            ShopItem.Category.CHECKERS, ShopItem.Rarity.EPIC,
-            R.drawable.checkers_turquoise, 50));
-
-        allItems.add(ShopItem.crafted(
-            "checkers_agate", getString(R.string.checkers_agate_title),
-            getString(R.string.checkers_agate_desc), 2800,
-            ShopItem.Category.CHECKERS, ShopItem.Rarity.EPIC,
-            R.drawable.checkers_agate, 80));
-
-        allItems.add(ShopItem.crafted(
-            "checkers_gold", getString(R.string.checkers_gold_title),
-            getString(R.string.checkers_gold_desc), 6000,
-            ShopItem.Category.CHECKERS, ShopItem.Rarity.LEGENDARY,
-            R.drawable.checkers_gold, 200));
-
-        // ═══════════════════════════════════════════
-        // AVATAR FRAMES — 8 items
-        // ═══════════════════════════════════════════
-        allItems.add(ShopItem.permanent(
-            "frame_default", getString(R.string.frame_default_title), getString(R.string.frame_default_desc),
-            0, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.COMMON, "🪵"));
-
-        allItems.add(ShopItem.permanent(
-            "frame_bronze", getString(R.string.frame_bronze_title), getString(R.string.frame_bronze_desc),
-            150, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.COMMON, "🥉"));
-
-        allItems.add(ShopItem.withUnlock(
-            "frame_silver", getString(R.string.frame_silver_title), getString(R.string.frame_silver_desc),
-            400, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.RARE, "🥈", 10));
-
-        allItems.add(ShopItem.withUnlock(
-            "frame_carpet", getString(R.string.frame_carpet_title), getString(R.string.frame_carpet_desc),
-            550, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.RARE, "🟥", 20));
-
-        allItems.add(ShopItem.withUnlock(
-            "frame_gold", getString(R.string.frame_gold_title), getString(R.string.frame_gold_desc),
-            1000, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.EPIC, "🥇", 50));
-
-        allItems.add(ShopItem.withUnlock(
-            "frame_peacock", getString(R.string.frame_peacock_title), getString(R.string.frame_peacock_desc),
-            1500, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.EPIC, "🦚", 75));
-
-        allItems.add(new ShopItem(
-            "frame_diamond", getString(R.string.frame_diamond_title), getString(R.string.frame_diamond_desc),
-            3000, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.LEGENDARY, "💎",
-            0, 0, 150, getString(R.string.shop_badge_popular), 0, false));
-
-        allItems.add(new ShopItem(
-            "frame_sultan", getString(R.string.frame_sultan_title), getString(R.string.frame_sultan_desc),
-            5000, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.LEGENDARY, "👑",
-            0, 0, 300, null, 0, false));
-
-        // ═══════════════════════════════════════════
-        // DICE — cut from the stones a real pair is cut from
-        //
-        // Each is rendered as a cube in axonometric projection with its pips
-        // drilled rather than printed, so what the shelf shows is the object
-        // the player will be rolling.
-        // ═══════════════════════════════════════════
-        allItems.add(ShopItem.crafted(
-            "dice_bone", getString(R.string.dice_bone_title), getString(R.string.dice_bone_desc),
-            0, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.COMMON,
-            R.drawable.dice_set_bone, 0));
-
-        allItems.add(ShopItem.crafted(
-            "dice_walnut", getString(R.string.dice_walnut_title), getString(R.string.dice_walnut_desc),
-            250, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.COMMON,
-            R.drawable.dice_set_walnut, 0));
-
-        allItems.add(ShopItem.crafted(
-            "dice_ebony", getString(R.string.dice_ebony_title), getString(R.string.dice_ebony_desc),
-            700, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.RARE,
-            R.drawable.dice_set_ebony, 12));
-
-        allItems.add(ShopItem.crafted(
-            "dice_turquoise", getString(R.string.dice_turquoise_title), getString(R.string.dice_turquoise_desc),
-            1800, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.EPIC,
-            R.drawable.dice_set_turquoise, 40));
-
-        allItems.add(ShopItem.crafted(
-            "dice_agate", getString(R.string.dice_agate_title), getString(R.string.dice_agate_desc),
-            2400, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.EPIC,
-            R.drawable.dice_set_agate, 60));
-
-        allItems.add(ShopItem.crafted(
-            "dice_gold", getString(R.string.dice_gold_title), getString(R.string.dice_gold_desc),
-            5000, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.LEGENDARY,
-            R.drawable.dice_set_gold, 150));
-
-        // ═══════════════════════════════════════════
-        // TITLES — earned in the language of the game itself
-        //
-        // Not a rank ladder. These are the things backgammon players actually
-        // call each other: the one who builds a six-prime, the one whose doubles
-        // keep coming, the one who wins by a gammon.
-        // ═══════════════════════════════════════════
-        allItems.add(ShopItem.permanent(
-            "title_none", getString(R.string.title_none_title), getString(R.string.title_none_desc),
-            0, ShopItem.Category.TITLE, ShopItem.Rarity.COMMON, ""));
-
-        allItems.add(ShopItem.withUnlock(
-            "title_doubler", getString(R.string.title_doubler_title), getString(R.string.title_doubler_desc),
-            400, ShopItem.Category.TITLE, ShopItem.Rarity.COMMON, "", 10));
-
-        allItems.add(ShopItem.withUnlock(
-            "title_prime", getString(R.string.title_prime_title), getString(R.string.title_prime_desc),
-            900, ShopItem.Category.TITLE, ShopItem.Rarity.RARE, "", 25));
-
-        allItems.add(ShopItem.withUnlock(
-            "title_gammon", getString(R.string.title_gammon_title), getString(R.string.title_gammon_desc),
-            1500, ShopItem.Category.TITLE, ShopItem.Rarity.RARE, "", 40));
-
-        allItems.add(ShopItem.withUnlock(
-            "title_plakoto", getString(R.string.title_plakoto_title), getString(R.string.title_plakoto_desc),
-            2200, ShopItem.Category.TITLE, ShopItem.Rarity.EPIC, "", 70));
-
-        allItems.add(ShopItem.withUnlock(
-            "title_unbeaten", getString(R.string.title_unbeaten_title), getString(R.string.title_unbeaten_desc),
-            4000, ShopItem.Category.TITLE, ShopItem.Rarity.LEGENDARY, "", 150));
+        // Checkers, dice and titles share one definition with the treasury
+        // screen, because a season names its pieces by id and both screens have
+        // to agree on what those ids mean.
+        allItems.addAll(SeasonCatalogue.all(this));
 
         withdrawClosedSeasons();
 
