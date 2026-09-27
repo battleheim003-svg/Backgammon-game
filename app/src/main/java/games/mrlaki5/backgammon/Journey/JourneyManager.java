@@ -8,13 +8,23 @@ import games.mrlaki5.backgammon.Economy.CoinManager;
 /** Tracks how far the player has come in the journey and pays the chapter rewards. */
 public class JourneyManager {
 
+    /** The piece the last completed chapter handed over, or null. */
+    private String lastGranted;
+
     private static final String PREFS_NAME = "journey_prefs";
     private static final String KEY_COMPLETED = "completed_stages";
 
     private final SharedPreferences prefs;
+    private final Context context;
 
     public JourneyManager(Context context) {
+        this.context = context.getApplicationContext();
         prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
+    /** The piece the last call to completeStage handed over, or null. */
+    public String getLastGrantedItem() {
+        return lastGranted;
     }
 
     /** Number of chapters finished; also the index of the chapter now open. */
@@ -48,6 +58,11 @@ public class JourneyManager {
         if (coinManager != null && reward > 0) {
             coinManager.earn(reward, "journey_stage_" + stageIndex);
         }
+        // Four chapters also hand over a season banner. Coins are the reward for
+        // every chapter; a banner is the reward for this one, and it is the only
+        // way one is ever obtained.
+        lastGranted = games.mrlaki5.backgammon.Economy.SeasonRewards
+                .grantForStage(context, stageIndex);
         return reward;
     }
 }

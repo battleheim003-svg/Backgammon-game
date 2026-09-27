@@ -185,6 +185,19 @@ public class CollectionActivity extends AppCompatActivity {
             seal.setVisibility(View.VISIBLE);
             state.setText(R.string.collection_piece_held);
             state.setTextColor(getResources().getColor(R.color.turquoise));
+        } else if (item != null && item.isEarnOnly()) {
+            // A banner has no price whether the season is open or shut. Showing
+            // one here, even a struck-through one, would suggest it was ever
+            // for sale — and the fact that it never was is the point of it.
+            state.setText(R.string.detail_earn_only);
+            state.setTextColor(getResources().getColor(R.color.gold_bright));
+            if (!seasonOpen) {
+                art.setColorFilter(drained());
+                art.setAlpha(0.55f);
+                lock.setVisibility(View.VISIBLE);
+                state.setTextColor(getResources().getColor(R.color.ink_muted));
+                name.setTextColor(getResources().getColor(R.color.ink_muted));
+            }
         } else if (seasonOpen) {
             state.setText(item == null
                     ? "" : getString(R.string.collection_piece_price, item.getPrice()));

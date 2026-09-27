@@ -258,6 +258,10 @@ public class CoinShopActivity extends AppCompatActivity {
         }
         Season season = seasonManager.current();
 
+        // The card is a summary; the set has a page of its own, and tapping
+        // anywhere on the card is how a player gets to it.
+        card.setOnClickListener(v -> BundleActivity.open(this));
+
         ((android.widget.ImageView) findViewById(R.id.seasonSeal))
                 .setImageResource(season.sealDrawable());
         ((android.widget.TextView) findViewById(R.id.seasonName)).setText(season.nameRes);

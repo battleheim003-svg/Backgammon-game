@@ -108,16 +108,36 @@ public final class SeasonManager {
         return owned;
     }
 
+    /** Whole bundle means every piece that was ever on sale, not the banner. */
     public boolean ownsWholeBundle() {
-        return bundleOwnedCount() == current().itemIds().length;
+        return bundleOwnedCount() >= purchasableCount();
     }
 
-    /** Records the whole set as bought, which is what a bundle purchase means. */
+    /**
+     * Records the set as bought.
+     *
+     * The banner is deliberately left out: it is the one piece of each season
+     * that is never for sale, and a bundle that quietly handed it over would
+     * make every banner in the game purchasable for the price of a set.
+     */
     public void grantBundle() {
         PlayerProfileManager profile = PlayerProfileManager.getInstance(context);
-        for (String id : current().itemIds()) {
-            profile.addPurchasedItem(id);
+        for (ShopItem item : SeasonCatalogue.ofSeason(context, current())) {
+            if (item.isPurchasable()) {
+                profile.addPurchasedItem(item.getId());
+            }
         }
+    }
+
+    /** How many pieces of the set coins can actually buy. */
+    public int purchasableCount() {
+        int n = 0;
+        for (ShopItem item : SeasonCatalogue.ofSeason(context, current())) {
+            if (item.isPurchasable()) {
+                n++;
+            }
+        }
+        return n;
     }
 
     /** True the first time a player opens the shop in a new season. */

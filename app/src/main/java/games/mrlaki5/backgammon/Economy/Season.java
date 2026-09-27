@@ -22,26 +22,34 @@ public enum Season {
     /** Isfahan: khatam marquetry, enamel, chased metal. */
     ISFAHAN(1, R.string.season_isfahan_name, R.string.season_isfahan_story,
             R.string.season_isfahan_bundle,
-            new String[] {"checkers_khatam", "dice_ebony", "title_prime"},
-            1900),
+            new String[] {"board_khatam", "checkers_khatam", "dice_ebony",
+                          "effect_enamel_dust", "banner_isfahan", "frame_isfahan",
+                          "title_prime"},
+            5900),
 
     /** Neyshabur: the mines the country's blue is named after. */
     NEYSHABUR(2, R.string.season_neyshabur_name, R.string.season_neyshabur_story,
             R.string.season_neyshabur_bundle,
-            new String[] {"checkers_turquoise", "dice_turquoise", "title_gammon"},
-            3400),
+            new String[] {"board_mina", "checkers_turquoise", "dice_turquoise",
+                          "effect_turquoise_spark", "banner_neyshabur",
+                          "frame_neyshabur", "title_gammon"},
+            8500),
 
     /** The Gulf: shell, coral, and everything the divers brought up. */
     HARBOUR(3, R.string.season_harbour_name, R.string.season_harbour_story,
             R.string.season_harbour_bundle,
-            new String[] {"checkers_nacre", "dice_bone", "title_doubler"},
-            1600),
+            new String[] {"board_nacre", "checkers_nacre", "dice_bone",
+                          "effect_pearl_ripple", "banner_harbour", "frame_harbour",
+                          "title_doubler"},
+            4900),
 
     /** Yemen by way of the caravan road: banded agate, cut like a seal stone. */
     CARAVAN(4, R.string.season_caravan_name, R.string.season_caravan_story,
             R.string.season_caravan_bundle,
-            new String[] {"checkers_agate", "dice_agate", "title_plakoto"},
-            4200);
+            new String[] {"board_monabbat", "checkers_agate", "dice_agate",
+                          "effect_agate_ember", "banner_caravan", "frame_caravan",
+                          "title_plakoto"},
+            10300);
 
     /** Six weeks, in days — long enough to earn a set, short enough to matter. */
     public static final int LENGTH_DAYS = 42;
@@ -75,6 +83,42 @@ public enum Season {
             }
         }
         return false;
+    }
+
+    /**
+     * The image the bundle page leads with: this season's whole set standing in
+     * its niche. A set sold as a list of names is a receipt; this is the thing
+     * a player actually decides on.
+     */
+    public int heroDrawable() {
+        switch (this) {
+            case NEYSHABUR: return R.drawable.hero_season_2;
+            case HARBOUR:   return R.drawable.hero_season_3;
+            case CARAVAN:   return R.drawable.hero_season_4;
+            case ISFAHAN:
+            default:        return R.drawable.hero_season_1;
+        }
+    }
+
+    /** The Journey chapter whose completion hands over this season's banner. */
+    public String earnChapterKey() {
+        switch (this) {
+            case NEYSHABUR: return SeasonCatalogue.EARN_CHAPTER_NEYSHABUR;
+            case HARBOUR:   return SeasonCatalogue.EARN_CHAPTER_HARBOUR;
+            case CARAVAN:   return SeasonCatalogue.EARN_CHAPTER_CARAVAN;
+            case ISFAHAN:
+            default:        return SeasonCatalogue.EARN_CHAPTER_ISFAHAN;
+        }
+    }
+
+    /** The season a piece belongs to, or null if it is not seasonal at all. */
+    public static Season of(String itemId) {
+        for (Season season : values()) {
+            if (season.contains(itemId)) {
+                return season;
+            }
+        }
+        return null;
     }
 
     /** The seal stamped on anything from this season, in its own metal. */

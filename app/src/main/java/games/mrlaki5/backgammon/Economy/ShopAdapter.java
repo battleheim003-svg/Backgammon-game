@@ -101,6 +101,28 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ShopItem item = displayedItems.get(position);
 
+        // Tapping the card body opens the piece rather than buying it. A card
+        // has room for a name and a price; wanting something takes more than
+        // that, so the detail sheet is where the art, the craft and the way it
+        // is come by actually get shown. The action button still buys.
+        if (holder.itemView.getContext() instanceof android.app.Activity) {
+            final android.app.Activity host = (android.app.Activity) holder.itemView.getContext();
+            View body = holder.itemView.findViewById(R.id.shopCardBody);
+            View target = body != null ? body : holder.itemView;
+            target.setOnClickListener(v -> {
+                Season season = Season.of(item.getId());
+                if (season == null) {
+                    season = new SeasonManager(context).current();
+                }
+                ItemDetailSheet.show(host, item, season, () -> {
+                    notifyDataSetChanged();
+                    if (actionListener != null) {
+                        actionListener.onItemAction();
+                    }
+                });
+            });
+        }
+
         if (holder.ivLock != null) {
             holder.ivLock.setImageResource(R.drawable.ic_lock_theme);
         }

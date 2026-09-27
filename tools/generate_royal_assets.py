@@ -662,6 +662,53 @@ def main():
                            ("turquoise", "turquoise"), ("agate", "agate"), ("gold", "gold")):
         save(f"dice_set_{name}.png", die(material))
 
+    # Boards. Each season plays on its own surface, so the field wood and the
+    # two point materials name the workshop before a word is read.
+    for name, field_wood, point_a, point_b in (
+        ("khatam",    "walnut", "bone",      "ebony"),
+        ("mina",      "ebony",  "turquoise", "bone"),
+        ("nacre",     "walnut", "nacre",     "ebony"),
+        ("monabbat",  "ebony",  "agate",     "bone"),
+    ):
+        save(f"board_{name}.png", board_surface(field_wood, point_a, point_b))
+
+    # What the dice throw off when they land.
+    for name, material, kind in (
+        ("enamel_dust",     "bronze",    "dust"),
+        ("turquoise_spark", "turquoise", "spark"),
+        ("pearl_ripple",    "nacre",     "ripple"),
+        ("agate_ember",     "agate",     "ember"),
+    ):
+        save(f"effect_{name}.png", dice_effect(material, kind))
+
+    # The banner that drops on a win.
+    for name, material, accent in (
+        ("isfahan",   "bronze",    (0x2E, 0x8B, 0x7A)),
+        ("neyshabur", "turquoise", (0x1F, 0x4E, 0x8C)),
+        ("harbour",   "nacre",     (0x0F, 0x6B, 0x74)),
+        ("caravan",   "agate",     (0x8A, 0x5A, 0x14)),
+    ):
+        save(f"banner_{name}.png", victory_banner(material, accent))
+
+    # Frames for the player's face, one per season rather than a metal ladder.
+    for name, material, points, accent in (
+        ("isfahan",   "bronze",    8,  (0x2E, 0x8B, 0x7A)),
+        ("neyshabur", "turquoise", 9,  (0x1F, 0x4E, 0x8C)),
+        ("harbour",   "nacre",     8,  (0x0F, 0x6B, 0x74)),
+        ("caravan",   "agate",     6,  (0x8A, 0x5A, 0x14)),
+    ):
+        save(f"frame_{name}.png", avatar_ring(material, points, accent))
+
+    # One hero image per season: the whole set standing in its arch.
+    for number, wood, metal, checker_mat, dice_mat, accent in (
+        (1, "walnut", "bronze",    "ebony",     "walnut",    (0x2E, 0x8B, 0x7A)),
+        (2, "ebony",  "turquoise", "turquoise", "turquoise", (0x1F, 0x4E, 0x8C)),
+        (3, "walnut", "silver",    "nacre",     "bone",      (0x0F, 0x6B, 0x74)),
+        (4, "ebony",  "gold",      "agate",     "agate",     (0x8A, 0x5A, 0x14)),
+    ):
+        save(f"hero_season_{number}.png",
+             bundle_hero(number, wood, metal, checker_mat, dice_mat, accent))
+
     # Struck titles, one per language.
     for language, strings in TITLES.items():
         folder = OUT if language is None else RES / f"drawable-{language}-xhdpi"
@@ -1003,6 +1050,322 @@ def muqarnas(width=880, tiers=4, base_cell=118, seed=3):
                  key=0.84, spec_strength=0.58, spec_power=14)
     rgba = add_rim(rgba, mask, colour=(0.18, 0.10, 0.02), width=1.4)
     return to_image(drop_shadow(rgba, offset=3, blur=3.0, opacity=0.55))
+
+
+
+# ---------------------------------------------------------------------------
+# The pieces the catalogue was missing: a board to play on, an effect the dice
+# throw off, a banner for the win, a frame for the face, and one hero image per
+# season that shows the whole set at once.
+#
+# All of them go through bevel_height + shade under the same key light as the
+# checkers and dice, because the point of a set is that the pieces look struck
+# in the same workshop on the same afternoon.
+# ---------------------------------------------------------------------------
+
+
+def board_surface(field, point_a, point_b, size=220, seed=41, border=0.085):
+    """
+    A backgammon board seen square on: inlaid border, two quadrants of points,
+    and the bar down the middle.
+
+    This doubles as the shop icon and as the backdrop the detail sheet previews
+    a set of checkers on, so it is drawn at the real proportions rather than as
+    a decorative tile.
+    """
+    s = size
+    outer = rounded_mask(s, s, int(s * 0.055))
+
+    inset = int(s * border)
+    inner = np.zeros((s, s))
+    inner[inset:s - inset, inset:s - inset] = 1.0
+    inner = ndimage.gaussian_filter(inner, 0.8)
+
+    # The playing field, in the darker wood.
+    albedo, figure = hammered(s, s, field, seed=seed)
+
+    height = bevel_height(outer, bevel=int(s * 0.05)) * 0.55
+    height = height + bevel_height(inner, bevel=int(s * 0.03)) * -0.35
+    height = height + figure * 0.05
+
+    # Twelve points a side, alternating materials, meeting at the bar.
+    play_top, play_bottom = inset + 2, s - inset - 2
+    play_left, play_right = inset + 2, s - inset - 2
+    bar_half = max(2, int(s * 0.022))
+    centre = s // 2
+    half_w = (play_right - play_left) / 2.0 - bar_half
+    pt_w = half_w / 6.0
+    pt_h = (play_bottom - play_top) * 0.42
+
+    ramp_a = np.array([c for _, c in MATERIALS[point_a]], dtype=np.float64) / 255.0
+    ramp_b = np.array([c for _, c in MATERIALS[point_b]], dtype=np.float64) / 255.0
+    col_a = ramp_a[len(ramp_a) // 2]
+    col_b = ramp_b[len(ramp_b) // 2]
+
+    tri = Image.new("L", (s * SS, s * SS), 0)
+    tri_draw = ImageDraw.Draw(tri)
+    which = Image.new("L", (s * SS, s * SS), 0)
+    which_draw = ImageDraw.Draw(which)
+
+    for side_sign, base_y, tip_y in ((1, play_top, play_top + pt_h),
+                                     (-1, play_bottom, play_bottom - pt_h)):
+        for quadrant_left in (play_left, centre + bar_half):
+            for i in range(6):
+                x0 = quadrant_left + i * pt_w
+                x1 = x0 + pt_w
+                poly = [(x0 * SS, base_y * SS),
+                        (x1 * SS, base_y * SS),
+                        ((x0 + x1) / 2 * SS, tip_y * SS)]
+                tri_draw.polygon(poly, fill=255)
+                # Alternate, and flip the phase on the far side so the board
+                # reads as a real one rather than a repeated stripe.
+                alt = (i + (0 if side_sign > 0 else 1)) % 2
+                if alt:
+                    which_draw.polygon(poly, fill=255)
+
+    tri_mask = np.asarray(tri.resize((s, s), Image.LANCZOS), dtype=np.float64) / 255.0
+    which_mask = np.asarray(which.resize((s, s), Image.LANCZOS), dtype=np.float64) / 255.0
+
+    point_col = col_a[None, None, :] * (1 - which_mask[..., None]) \
+        + col_b[None, None, :] * which_mask[..., None]
+    albedo = albedo * (1 - tri_mask[..., None]) + point_col * tri_mask[..., None]
+    height = height + tri_mask * 0.10
+
+    # The bar, raised.
+    bar = np.zeros((s, s))
+    bar[play_top:play_bottom, centre - bar_half:centre + bar_half] = 1.0
+    bar = ndimage.gaussian_filter(bar, 0.7)
+    bar_albedo, _ = hammered(s, s, "gold", seed=seed + 3)
+    albedo = albedo * (1 - bar[..., None]) + bar_albedo * bar[..., None]
+    height = height + bar * 0.22
+
+    rgba = shade(height, albedo, outer, relief=2.2, ambient=0.50, key=0.60,
+                 spec_strength=0.34, spec_power=30)
+    rgba = add_rim(rgba, outer, colour=(0.20, 0.12, 0.04), width=1.5)
+    return to_image(drop_shadow(rgba, offset=3, blur=3.4, opacity=0.55))
+
+
+def dice_effect(material, kind, size=170, seed=47):
+    """
+    What the dice leave behind when they land.
+
+    The first version drew the effect as a pattern on a disc and produced four
+    marbles. An effect has to be shown doing something to a die, so the die is
+    rendered first and the marks are thrown off it: dust settling, sparks
+    radiating, a ripple ringing outward, an ember burning from inside.
+    """
+    s_ = size
+    yy, xx = np.mgrid[0:s_, 0:s_].astype(np.float64)
+    cx = cy = (s_ - 1) / 2.0
+    dx, dy = xx - cx, yy - cy
+    r = np.sqrt(dx * dx + dy * dy) / (s_ / 2.0)
+    theta = np.arctan2(dy, dx)
+    rng = np.random.default_rng(seed)
+
+    if kind == "dust":
+        motes = np.zeros((s_, s_))
+        for _ in range(90):
+            a = rng.uniform(0, 2 * np.pi)
+            rad = rng.uniform(0.35, 0.98)
+            px = int(cx + np.cos(a) * rad * s_ / 2)
+            py = int(cy + np.sin(a) * rad * s_ / 2)
+            if 0 <= px < s_ and 0 <= py < s_:
+                motes[py, px] = rng.uniform(0.5, 1.0)
+        mark = ndimage.gaussian_filter(motes, 1.6) * 6.0
+        glow = np.array([1.0, 0.90, 0.68])
+    elif kind == "spark":
+        spokes = (np.cos(theta * 16.0) * 0.5 + 0.5) ** 10
+        length = rng.uniform(0.75, 1.0, size=(1, 1))
+        mark = spokes * np.clip((r - 0.30) * 2.4, 0, 1) * np.clip(1.25 - r, 0, 1) * length
+        glow = np.array([1.0, 0.95, 0.72])
+    elif kind == "ripple":
+        rings = np.cos((r - 0.28) * 26.0) * 0.5 + 0.5
+        mark = (rings ** 5) * np.clip((r - 0.30) * 3.0, 0, 1) * np.clip(1.15 - r, 0, 1)
+        glow = np.array([0.84, 0.97, 1.0])
+    else:  # ember
+        core = np.clip(1.0 - r * 1.35, 0, 1) ** 1.5 * 1.35
+        flick = ndimage.gaussian_filter(rng.random((s_, s_)), 2.0)
+        tongues = np.clip(flick - 0.55, 0, 1) * np.clip(1.15 - r * 1.1, 0, 1) * 5.0
+        mark = core + tongues
+        glow = np.array([1.0, 0.64, 0.24])
+
+    mark = np.clip(mark, 0, 1.4)
+    rgba = np.zeros((s_, s_, 4))
+    rgba[..., :3] = np.clip(glow[None, None, :] * mark[..., None], 0, 1)
+    rgba[..., 3] = np.clip(mark * 0.95, 0, 1)
+    canvas = to_image(rgba)
+
+    cube = die(material, size=int(s_ * 0.56), seed=seed + 5)
+    canvas.alpha_composite(cube, (int((s_ - cube.width) / 2),
+                                  int((s_ - cube.height) / 2)))
+    return canvas
+
+
+def victory_banner(material, accent, w=170, h=230, seed=53):
+    """
+    The banner that drops on a win: a rod, a tapered cloth, a swallowtail hem
+    and a rosette at the centre.
+    """
+    cloth = Image.new("L", (w * SS, h * SS), 0)
+    d = ImageDraw.Draw(cloth)
+    top = int(h * 0.12)
+    tail = int(h * 0.16)
+    d.polygon([(int(w * 0.14) * SS, top * SS),
+               (int(w * 0.86) * SS, top * SS),
+               (int(w * 0.86) * SS, (h - tail) * SS),
+               (int(w * 0.50) * SS, (h - int(tail * 0.25)) * SS),
+               (int(w * 0.14) * SS, (h - tail) * SS)], fill=255)
+    cloth_mask = np.asarray(cloth.resize((w, h), Image.LANCZOS), dtype=np.float64) / 255.0
+
+    rod = Image.new("L", (w * SS, h * SS), 0)
+    rd = ImageDraw.Draw(rod)
+    ry = int(h * 0.09)
+    rd.rounded_rectangle([int(w * 0.06) * SS, (ry - 4) * SS,
+                          int(w * 0.94) * SS, (ry + 4) * SS],
+                         radius=4 * SS, fill=255)
+    rod_mask = np.asarray(rod.resize((w, h), Image.LANCZOS), dtype=np.float64) / 255.0
+
+    mask = np.clip(cloth_mask + rod_mask, 0, 1)
+    albedo, figure = hammered(h, w, material, seed=seed)
+    height = bevel_height(cloth_mask, bevel=7) * 0.8 + figure * 0.12
+
+    # A slow vertical fold across the cloth, so it hangs instead of lying flat.
+    xx = np.linspace(0, 1, w)[None, :]
+    height = height + np.cos(xx * np.pi * 5.0) * 0.045 * cloth_mask
+
+    rod_albedo, _ = hammered(h, w, "gold", seed=seed + 7)
+    albedo = albedo * (1 - rod_mask[..., None]) + rod_albedo * rod_mask[..., None]
+    height = height + bevel_height(rod_mask, bevel=4) * 0.9
+
+    medal = rosette(int(w * 0.44), 8, seed + 11, accent)
+    rgba = shade(height, albedo, mask, relief=2.3, ambient=0.52, key=0.60,
+                 spec_strength=0.40, spec_power=28)
+    rgba = add_rim(rgba, mask, colour=(0.20, 0.12, 0.04), width=1.4)
+    banner = to_image(drop_shadow(rgba, offset=3, blur=3.4, opacity=0.55))
+    banner.alpha_composite(medal, (int(w * 0.28), int(h * 0.36)))
+    return banner
+
+
+def avatar_ring(material, points, accent, size=168, seed=61):
+    """
+    A frame for the player's face.
+
+    The first version bumped a scallop into the height of a fat torus and got a
+    pool float. The cut has to be geometry: the outer edge's RADIUS varies with
+    angle, so the metal genuinely comes to points, and the band stays thin.
+    """
+    s_ = size
+    yy, xx = np.mgrid[0:s_, 0:s_].astype(np.float64)
+    cx = cy = (s_ - 1) / 2.0
+    dx, dy = xx - cx, yy - cy
+    r = np.sqrt(dx * dx + dy * dy)
+    theta = np.arctan2(dy, dx)
+
+    r_out = (s_ / 2.0 - 3) * (1.0 + 0.075 * np.cos(theta * points))
+    r_in = r_out * 0.775
+
+    soft = 1.1
+    ring = np.clip((r_out - r) / soft, 0, 1) * np.clip((r - r_in) / soft, 0, 1)
+
+    albedo, figure = hammered(s_, s_, material, seed=seed)
+    # A shallow band, domed only slightly: jewellery, not tubing.
+    mid = (r_out + r_in) / 2.0
+    half = (r_out - r_in) / 2.0
+    dome = np.clip(1.0 - ((r - mid) / np.maximum(half, 1e-6)) ** 2, 0, 1)
+    height = (dome ** 0.30) * 0.30 * ring + figure * 0.07
+
+    # One chase line near each edge, not a corrugation across the whole band.
+    edge_a = np.exp(-((r - (r_in + half * 0.35)) ** 2) / (2 * 1.6 ** 2))
+    edge_b = np.exp(-((r - (r_out - half * 0.35)) ** 2) / (2 * 1.6 ** 2))
+    height = height - (edge_a + edge_b) * ring * 0.05
+
+    rgba = shade(height, albedo, ring, relief=3.0, ambient=0.50, key=0.64,
+                 spec_strength=0.70, spec_power=34)
+    rgba = add_rim(rgba, ring, colour=(0.18, 0.11, 0.03), width=1.2)
+    frame = to_image(drop_shadow(rgba, offset=3, blur=3.0, opacity=0.5))
+    jewel = rosette(int(s_ * 0.24), 6, seed + 5, accent)
+    frame.alpha_composite(jewel, (int((s_ - jewel.width) / 2), -int(s_ * 0.015)))
+    return frame
+
+
+def bundle_hero(number, wood, metal, checker_mat, dice_mat, accent,
+                w=760, h=380, seed=59):
+    """
+    One image that says what a season is: the arch it is sold under, the set
+    standing in the niche, and the seal that dates it.
+
+    A bundle sold as a list of names is a receipt. This is the thing a player
+    decides on, so the pieces in it have to be the actual rendered pieces, not
+    stand-ins.
+    """
+    field = np.zeros((h, w))
+    field[:, :] = 1.0
+    albedo, figure = hammered(h, w, wood, seed=seed)
+    height = figure * 0.10
+
+    # The niche: a pointed arch sunk into the back wall.
+    # The niche. A silhouette, however sharp, is still a shape on a wall; what
+    # makes a niche is that light stops at its mouth. So: a deeply darkened
+    # interior that falls off toward the crown, a narrow bright reveal on the
+    # arch line itself, and a plinth for the set to stand on.
+    arch_mask, _apex = pointed_arch((h, w), w // 2, int(h * 0.92),
+                                    int(w * 0.30), sharpness=0.74)
+    arch = arch_mask.astype(np.float64)
+    inner = ndimage.gaussian_filter(arch, 1.0)
+
+    # Inside, the wall is in shadow, deepest at the top where least light reaches.
+    depth_ramp = np.linspace(1.0, 0.30, h)[:, None]
+    cavity = inner * depth_ramp
+    albedo = albedo * (1 - cavity[..., None] * 0.72)
+    height = height - inner * 0.34
+
+    # The reveal: a narrow lit band exactly on the arch line.
+    reveal = np.clip(ndimage.gaussian_filter(arch, 3.0)
+                     - ndimage.gaussian_filter(arch, 0.6), 0, 1)
+    reveal = np.clip(reveal * 2.6, 0, 1)
+    metal_band, _ = hammered(h, w, metal, seed=seed + 5)
+    albedo = albedo * (1 - reveal[..., None]) + metal_band * reveal[..., None]
+    height = height + reveal * 0.42
+
+    # The plinth the pieces stand on, carried right across the niche.
+    plinth = np.zeros((h, w))
+    ptop = int(h * 0.745)
+    plinth[ptop:ptop + max(4, int(h * 0.035)), :] = 1.0
+    plinth = ndimage.gaussian_filter(plinth, 1.0) * np.clip(inner + 0.35, 0, 1)
+    albedo = albedo * (1 - plinth[..., None]) + metal_band * plinth[..., None]
+    height = height + plinth * 0.30
+
+    # An inlaid border, kept well inside so nothing crowds the edge.
+    border = np.zeros((h, w))
+    m = int(min(w, h) * 0.045)
+    border[m:h - m, m:w - m] = 1.0
+    edge = np.clip(ndimage.gaussian_filter(border, 1.2) - ndimage.gaussian_filter(border, 4.0), 0, 1)
+    metal_albedo, _ = hammered(h, w, metal, seed=seed + 2)
+    albedo = albedo * (1 - edge[..., None]) + metal_albedo * edge[..., None]
+    height = height + edge * 0.18
+
+    rgba = shade(height, albedo, field, relief=2.0, ambient=0.48, key=0.58,
+                 spec_strength=0.28, spec_power=30)
+    hero = to_image(rgba)
+
+    # The set, standing in the niche: checkers left, dice right, seal between.
+    stack = checker_stack(checker_mat, size=int(h * 0.52), seed=seed + 13)
+    pair = die(dice_mat, size=int(h * 0.46), seed=seed + 17)
+    seal = season_seal(number, metal, size=int(h * 0.34), seed=seed + 19)
+
+    # Centred on the niche, sitting on one shelf line, seal behind and above:
+    # the arrangement a shop window uses, rather than three objects scattered.
+    shelf = int(h * 0.745)
+    hero.alpha_composite(seal, (int(w / 2 - seal.width / 2), int(h * 0.20)))
+    hero.alpha_composite(stack, (int(w * 0.30 - stack.width / 2),
+                                 shelf - stack.height))
+    hero.alpha_composite(pair, (int(w * 0.70 - pair.width / 2),
+                                shelf - pair.height))
+
+    crest = rosette(int(h * 0.17), 8, seed + 23, accent)
+    hero.alpha_composite(crest, (int(w / 2 - crest.width / 2), int(h * 0.045)))
+    return hero
+
 
 if __name__ == "__main__":
     main()

@@ -21,10 +21,168 @@ public final class SeasonCatalogue {
 
     public static List<ShopItem> all(Context context) {
         List<ShopItem> items = new ArrayList<>();
+        items.addAll(boards(context));
         items.addAll(checkers(context));
         items.addAll(dice(context));
+        items.addAll(effects(context));
+        items.addAll(banners(context));
+        items.addAll(frames(context));
         items.addAll(titles(context));
         return items;
+    }
+
+    /** Every piece in one season's set, in the order the bundle page lists them. */
+    public static List<ShopItem> ofSeason(Context context, Season season) {
+        List<ShopItem> set = new ArrayList<>();
+        for (String id : season.itemIds()) {
+            ShopItem item = byId(context, id);
+            if (item != null) {
+                set.add(item);
+            }
+        }
+        return set;
+    }
+
+    public static ShopItem byId(Context context, String id) {
+        for (ShopItem item : all(context)) {
+            if (item.id.equals(id)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * What the pieces of a set would cost bought one at a time.
+     *
+     * Earn-only pieces contribute nothing, because they are not for sale at any
+     * price and counting them would inflate the saving the bundle claims.
+     */
+    public static int separatePrice(Context context, Season season) {
+        int total = 0;
+        for (ShopItem item : ofSeason(context, season)) {
+            if (item.isPurchasable()) {
+                total += item.price;
+            }
+        }
+        return total;
+    }
+
+    /**
+     * The playing surface. A board is the largest thing on screen during a
+     * game, so it is the piece a set is actually judged on — and the catalogue
+     * had none at all.
+     */
+    public static List<ShopItem> boards(Context context) {
+        List<ShopItem> items = new ArrayList<>();
+        items.add(board(context, "board_khatam", R.string.board_khatam_title,
+                R.string.board_khatam_desc, R.string.board_khatam_story,
+                3200, ShopItem.Rarity.EPIC, R.drawable.board_khatam));
+        items.add(board(context, "board_mina", R.string.board_mina_title,
+                R.string.board_mina_desc, R.string.board_mina_story,
+                3600, ShopItem.Rarity.EPIC, R.drawable.board_mina));
+        items.add(board(context, "board_nacre", R.string.board_nacre_title,
+                R.string.board_nacre_desc, R.string.board_nacre_story,
+                3000, ShopItem.Rarity.EPIC, R.drawable.board_nacre));
+        items.add(board(context, "board_monabbat", R.string.board_monabbat_title,
+                R.string.board_monabbat_desc, R.string.board_monabbat_story,
+                3800, ShopItem.Rarity.EPIC, R.drawable.board_monabbat));
+        return items;
+    }
+
+    private static ShopItem board(Context c, String id, int title, int desc, int story,
+                                  int price, ShopItem.Rarity rarity, int art) {
+        return ShopItem.crafted(id, c.getString(title), c.getString(desc),
+                c.getString(story), price, ShopItem.Category.BOARD, rarity, art,
+                0, ShopItem.Acquisition.BUY, "");
+    }
+
+    /** What the dice throw off when they land. */
+    public static List<ShopItem> effects(Context context) {
+        List<ShopItem> items = new ArrayList<>();
+        items.add(effect(context, "effect_enamel_dust", R.string.effect_enamel_dust_title,
+                R.string.effect_enamel_dust_desc, R.string.effect_enamel_dust_story,
+                1400, R.drawable.effect_enamel_dust));
+        items.add(effect(context, "effect_turquoise_spark", R.string.effect_turquoise_spark_title,
+                R.string.effect_turquoise_spark_desc, R.string.effect_turquoise_spark_story,
+                1600, R.drawable.effect_turquoise_spark));
+        items.add(effect(context, "effect_pearl_ripple", R.string.effect_pearl_ripple_title,
+                R.string.effect_pearl_ripple_desc, R.string.effect_pearl_ripple_story,
+                1300, R.drawable.effect_pearl_ripple));
+        items.add(effect(context, "effect_agate_ember", R.string.effect_agate_ember_title,
+                R.string.effect_agate_ember_desc, R.string.effect_agate_ember_story,
+                1700, R.drawable.effect_agate_ember));
+        return items;
+    }
+
+    private static ShopItem effect(Context c, String id, int title, int desc, int story,
+                                   int price, int art) {
+        return ShopItem.crafted(id, c.getString(title), c.getString(desc),
+                c.getString(story), price, ShopItem.Category.DICE_EFFECT,
+                ShopItem.Rarity.RARE, art, 0, ShopItem.Acquisition.BUY, "");
+    }
+
+    /**
+     * Banners. One per season, and none of them has a price.
+     *
+     * This is the half of the catalogue that gives the other half its meaning:
+     * a shelf where everything can be bought is a shelf where nothing was
+     * earned, so the banner of each season is only ever handed over for
+     * finishing that season's Journey chapter.
+     */
+    public static List<ShopItem> banners(Context context) {
+        List<ShopItem> items = new ArrayList<>();
+        items.add(banner(context, "banner_isfahan", R.string.banner_isfahan_title,
+                R.string.banner_isfahan_desc, R.string.banner_isfahan_story,
+                R.drawable.banner_isfahan, EARN_CHAPTER_ISFAHAN));
+        items.add(banner(context, "banner_neyshabur", R.string.banner_neyshabur_title,
+                R.string.banner_neyshabur_desc, R.string.banner_neyshabur_story,
+                R.drawable.banner_neyshabur, EARN_CHAPTER_NEYSHABUR));
+        items.add(banner(context, "banner_harbour", R.string.banner_harbour_title,
+                R.string.banner_harbour_desc, R.string.banner_harbour_story,
+                R.drawable.banner_harbour, EARN_CHAPTER_HARBOUR));
+        items.add(banner(context, "banner_caravan", R.string.banner_caravan_title,
+                R.string.banner_caravan_desc, R.string.banner_caravan_story,
+                R.drawable.banner_caravan, EARN_CHAPTER_CARAVAN));
+        return items;
+    }
+
+    /** The Journey chapters that hand over each season's banner. */
+    public static final String EARN_CHAPTER_ISFAHAN   = "chapter_isfahan";
+    public static final String EARN_CHAPTER_NEYSHABUR = "chapter_neyshabur";
+    public static final String EARN_CHAPTER_HARBOUR   = "chapter_harbour";
+    public static final String EARN_CHAPTER_CARAVAN   = "chapter_caravan";
+
+    private static ShopItem banner(Context c, String id, int title, int desc, int story,
+                                   int art, String earnKey) {
+        return ShopItem.earned(id, c.getString(title), c.getString(desc),
+                c.getString(story), ShopItem.Category.BANNER,
+                ShopItem.Rarity.EPIC, art, earnKey);
+    }
+
+    /** Frames for the player's face, named for a season rather than a metal tier. */
+    public static List<ShopItem> frames(Context context) {
+        List<ShopItem> items = new ArrayList<>();
+        items.add(frame(context, "frame_isfahan", R.string.frame_isfahan_title,
+                R.string.frame_isfahan_desc, R.string.frame_isfahan_story,
+                1200, R.drawable.frame_isfahan));
+        items.add(frame(context, "frame_neyshabur", R.string.frame_neyshabur_title,
+                R.string.frame_neyshabur_desc, R.string.frame_neyshabur_story,
+                1400, R.drawable.frame_neyshabur));
+        items.add(frame(context, "frame_harbour", R.string.frame_harbour_title,
+                R.string.frame_harbour_desc, R.string.frame_harbour_story,
+                1100, R.drawable.frame_harbour));
+        items.add(frame(context, "frame_caravan", R.string.frame_caravan_title,
+                R.string.frame_caravan_desc, R.string.frame_caravan_story,
+                1500, R.drawable.frame_caravan));
+        return items;
+    }
+
+    private static ShopItem frame(Context c, String id, int title, int desc, int story,
+                                  int price, int art) {
+        return ShopItem.crafted(id, c.getString(title), c.getString(desc),
+                c.getString(story), price, ShopItem.Category.AVATAR_FRAME,
+                ShopItem.Rarity.RARE, art, 0, ShopItem.Acquisition.BUY, "");
     }
 
     /**
