@@ -23,33 +23,65 @@ public enum Season {
     ISFAHAN(1, R.string.season_isfahan_name, R.string.season_isfahan_story,
             R.string.season_isfahan_bundle,
             new String[] {"board_khatam", "checkers_khatam", "dice_ebony",
-                          "effect_enamel_dust", "banner_isfahan", "frame_isfahan",
-                          "title_prime"},
-            5900),
+                          "effect_enamel_dust", "sound_isfahan", "banner_isfahan",
+                          "frame_isfahan", "title_prime"},
+            6500),
 
     /** Neyshabur: the mines the country's blue is named after. */
     NEYSHABUR(2, R.string.season_neyshabur_name, R.string.season_neyshabur_story,
             R.string.season_neyshabur_bundle,
             new String[] {"board_mina", "checkers_turquoise", "dice_turquoise",
-                          "effect_turquoise_spark", "banner_neyshabur",
-                          "frame_neyshabur", "title_gammon"},
-            8500),
+                          "effect_turquoise_spark", "sound_neyshabur",
+                          "banner_neyshabur", "frame_neyshabur", "title_gammon"},
+            9200),
 
     /** The Gulf: shell, coral, and everything the divers brought up. */
     HARBOUR(3, R.string.season_harbour_name, R.string.season_harbour_story,
             R.string.season_harbour_bundle,
             new String[] {"board_nacre", "checkers_nacre", "dice_bone",
-                          "effect_pearl_ripple", "banner_harbour", "frame_harbour",
-                          "title_doubler"},
-            4900),
+                          "effect_pearl_ripple", "sound_harbour", "banner_harbour",
+                          "frame_harbour", "title_doubler"},
+            5500),
 
     /** Yemen by way of the caravan road: banded agate, cut like a seal stone. */
     CARAVAN(4, R.string.season_caravan_name, R.string.season_caravan_story,
             R.string.season_caravan_bundle,
             new String[] {"board_monabbat", "checkers_agate", "dice_agate",
-                          "effect_agate_ember", "banner_caravan", "frame_caravan",
-                          "title_plakoto"},
-            10300);
+                          "effect_agate_ember", "sound_caravan", "banner_caravan",
+                          "frame_caravan", "title_plakoto"},
+            11000),
+
+    /** Shiraz: seven glazes painted together and fired once. */
+    SHIRAZ(5, R.string.season_shiraz_name, R.string.season_shiraz_story,
+            R.string.season_shiraz_bundle,
+            new String[] {"board_haftrang", "checkers_lajvard", "dice_lajvard",
+                          "effect_lapis_night", "sound_shiraz", "banner_shiraz",
+                          "frame_shiraz", "title_backgame"},
+            9500),
+
+    /** Kerman: wool sewn onto wool until no ground shows. */
+    KERMAN(6, R.string.season_kerman_name, R.string.season_kerman_story,
+            R.string.season_kerman_bundle,
+            new String[] {"board_pateh", "checkers_copper", "dice_copper",
+                          "effect_madder_thread", "sound_kerman", "banner_kerman",
+                          "frame_kerman", "title_anchor"},
+            6600),
+
+    /** Tabriz: silver drawn to a hair and bent into something self-supporting. */
+    TABRIZ(7, R.string.season_tabriz_name, R.string.season_tabriz_story,
+            R.string.season_tabriz_bundle,
+            new String[] {"board_melileh", "checkers_melileh", "dice_melileh",
+                          "effect_filigree_glint", "sound_tabriz", "banner_tabriz",
+                          "frame_tabriz", "title_blitz"},
+            12400),
+
+    /** Yazd: a finger's width a day, the pattern in the weave. */
+    YAZD(8, R.string.season_yazd_name, R.string.season_yazd_story,
+            R.string.season_yazd_bundle,
+            new String[] {"board_zari", "checkers_saffron", "dice_saffron",
+                          "effect_saffron_haze", "sound_yazd", "banner_yazd",
+                          "frame_yazd", "title_bearoff"},
+            11000);
 
     /** Six weeks, in days — long enough to earn a set, short enough to matter. */
     public static final int LENGTH_DAYS = 42;
@@ -95,20 +127,23 @@ public enum Season {
             case NEYSHABUR: return R.drawable.hero_season_2;
             case HARBOUR:   return R.drawable.hero_season_3;
             case CARAVAN:   return R.drawable.hero_season_4;
+            case SHIRAZ:    return R.drawable.hero_season_5;
+            case KERMAN:    return R.drawable.hero_season_6;
+            case TABRIZ:    return R.drawable.hero_season_7;
+            case YAZD:      return R.drawable.hero_season_8;
             case ISFAHAN:
             default:        return R.drawable.hero_season_1;
         }
     }
 
-    /** The Journey chapter whose completion hands over this season's banner. */
-    public String earnChapterKey() {
-        switch (this) {
-            case NEYSHABUR: return SeasonCatalogue.EARN_CHAPTER_NEYSHABUR;
-            case HARBOUR:   return SeasonCatalogue.EARN_CHAPTER_HARBOUR;
-            case CARAVAN:   return SeasonCatalogue.EARN_CHAPTER_CARAVAN;
-            case ISFAHAN:
-            default:        return SeasonCatalogue.EARN_CHAPTER_ISFAHAN;
+    /** The banner of this season: the one piece of it that is never for sale. */
+    public String bannerId() {
+        for (String id : itemIds) {
+            if (id.startsWith("banner_")) {
+                return id;
+            }
         }
+        return null;
     }
 
     /** The season a piece belongs to, or null if it is not seasonal at all. */
@@ -127,6 +162,10 @@ public enum Season {
             case NEYSHABUR: return R.drawable.seal_season_2;
             case HARBOUR:   return R.drawable.seal_season_3;
             case CARAVAN:   return R.drawable.seal_season_4;
+            case SHIRAZ:    return R.drawable.seal_season_5;
+            case KERMAN:    return R.drawable.seal_season_6;
+            case TABRIZ:    return R.drawable.seal_season_7;
+            case YAZD:      return R.drawable.seal_season_8;
             case ISFAHAN:
             default:        return R.drawable.seal_season_1;
         }

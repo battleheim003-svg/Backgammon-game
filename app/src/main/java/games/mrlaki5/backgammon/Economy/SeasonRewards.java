@@ -8,62 +8,51 @@ import games.mrlaki5.backgammon.Database.PlayerProfileManager;
  * The pieces that coins cannot buy.
  *
  * Every other object in this game has a price, and a catalogue where everything
- * has a price is one where nothing was earned — the shelf fills up at whatever
- * rate the player is willing to spend, and none of it means anything afterwards.
- * The four season banners are the answer to that: they are handed over here,
- * when a Journey chapter closes, and nowhere else. No screen offers them, the
- * bundle deliberately skips them, and a player who did not play that chapter
- * while its season was open does not get one later.
+ * has a price is one where nothing was earned: the shelf fills at whatever rate
+ * the player is willing to spend, and none of it means anything afterwards. The
+ * eight season banners are the answer. They are handed over here and nowhere
+ * else — no screen offers them, and the bundle deliberately skips them.
  *
- * That is the whole mechanism. It is small because it has to be: the moment
- * there is a second way to get a banner, there is no reason to want one.
+ * The rule is deliberately not "chapter three gives you the Tabriz banner".
+ * That would let a player finish the Journey once and walk away with all eight,
+ * including seasons that have not opened yet, which is exactly the thing that
+ * makes a collection weightless. Instead: finishing a chapter hands over the
+ * banner of the season that is open while you finish it. Eight banners means
+ * eight seasons of actually being here, which is the only claim a banner makes
+ * and the only one worth making.
  */
 public final class SeasonRewards {
 
     private SeasonRewards() {}
 
     /**
-     * The chapter each banner closes behind.
+     * Hands over the open season's banner, if this chapter earns one and the
+     * player does not already hold it.
      *
-     * Harbour is chapter eight because chapter eight is the harbour; the others
-     * are spaced so a banner never lands two chapters running.
-     */
-    private static String bannerForStage(int stageIndex) {
-        switch (stageIndex) {
-            case 1: return "banner_isfahan";     // the tea house
-            case 4: return "banner_neyshabur";   // Crete
-            case 7: return "banner_harbour";     // the harbour
-            case 8: return "banner_caravan";     // the grand master
-            default: return null;
-        }
-    }
-
-    /**
-     * Hands over the banner a chapter carries, if it carries one and the player
-     * does not already hold it.
+     * Chapter one is excluded: it is the tutorial, and a banner handed over
+     * before the player has chosen anything is a banner that means nothing.
      *
-     * @return the id of the piece granted, or null if this chapter grants none.
+     * @return the id of the piece granted, or null if nothing was granted.
      */
     public static String grantForStage(Context context, int stageIndex) {
-        String id = bannerForStage(stageIndex);
-        if (id == null) {
+        if (stageIndex < 1) {
+            return null;
+        }
+        Season season = new SeasonManager(context).current();
+        String bannerId = season.bannerId();
+        if (bannerId == null) {
             return null;
         }
         PlayerProfileManager profile = PlayerProfileManager.getInstance(context);
-        if (profile.isItemPurchased(id)) {
+        if (profile.isItemPurchased(bannerId)) {
             return null;
         }
-        profile.addPurchasedItem(id);
-        return id;
+        profile.addPurchasedItem(bannerId);
+        return bannerId;
     }
 
-    /** The chapter that hands over this piece, or -1 if none does. */
-    public static int stageForItem(String itemId) {
-        for (int i = 0; i < 9; i++) {
-            if (itemId.equals(bannerForStage(i))) {
-                return i;
-            }
-        }
-        return -1;
+    /** True when this piece is one that only a finished chapter hands over. */
+    public static boolean isEarnedBanner(String itemId) {
+        return itemId != null && itemId.startsWith("banner_");
     }
 }

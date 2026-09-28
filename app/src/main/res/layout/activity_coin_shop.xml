@@ -156,10 +156,25 @@
         android:paddingEnd="@dimen/space_l"
         android:paddingBottom="@dimen/space_m">
 
+        <!--
+            The season's own art, at a size worth looking at. A 56dp seal told
+            the player which season it was; it did not show them anything they
+            might want. The hero image is the set standing in its niche, which
+            is the actual offer.
+        -->
+        <ImageView
+            android:id="@+id/seasonHero"
+            android:layout_width="152dp"
+            android:layout_height="76dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter" />
+
         <ImageView
             android:id="@+id/seasonSeal"
-            android:layout_width="@dimen/art_md"
-            android:layout_height="@dimen/control_lg"
+            android:layout_width="@dimen/icon_lg"
+            android:layout_height="@dimen/icon_lg"
+            android:layout_marginStart="@dimen/space_xs"
             android:contentDescription="@null" />
 
         <LinearLayout

@@ -262,6 +262,8 @@ public class CoinShopActivity extends AppCompatActivity {
         // anywhere on the card is how a player gets to it.
         card.setOnClickListener(v -> BundleActivity.open(this));
 
+        ((android.widget.ImageView) findViewById(R.id.seasonHero))
+                .setImageResource(season.heroDrawable());
         ((android.widget.ImageView) findViewById(R.id.seasonSeal))
                 .setImageResource(season.sealDrawable());
         ((android.widget.TextView) findViewById(R.id.seasonName)).setText(season.nameRes);

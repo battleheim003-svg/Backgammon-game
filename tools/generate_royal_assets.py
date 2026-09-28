@@ -205,6 +205,24 @@ MATERIALS = {
         (0.55, (0xA8, 0x36, 0x2C)), (0.84, (0x6E, 0x1E, 0x1A)),
         (1.00, (0x42, 0x10, 0x0E)),
     ],
+    # Lapis, the blue a seven-colour tile is glazed around, with its pyrite fleck.
+    "lajvard": [
+        (0.00, (0xC9, 0xD8, 0xFF)), (0.18, (0x6A, 0x86, 0xD8)),
+        (0.52, (0x2B, 0x43, 0x9E)), (0.82, (0x17, 0x25, 0x62)),
+        (1.00, (0x0B, 0x12, 0x36)),
+    ],
+    # Madder red on wool: Kerman's dye, which goes brown before it goes pink.
+    "termeh": [
+        (0.00, (0xFF, 0xD6, 0xBE)), (0.20, (0xD9, 0x6F, 0x52)),
+        (0.55, (0x9E, 0x2F, 0x28)), (0.84, (0x63, 0x1A, 0x18)),
+        (1.00, (0x38, 0x0D, 0x0C)),
+    ],
+    # Saffron and honey — Yazd, and the light it is looked at in.
+    "saffron": [
+        (0.00, (0xFF, 0xF2, 0xCE)), (0.18, (0xF6, 0xC5, 0x63)),
+        (0.52, (0xD9, 0x91, 0x1E)), (0.82, (0x9A, 0x5E, 0x0F)),
+        (1.00, (0x5E, 0x37, 0x08)),
+    ],
     "ebony": [
         (0.00, (0x6B, 0x66, 0x63)), (0.22, (0x44, 0x40, 0x3E)),
         (0.58, (0x2A, 0x27, 0x26)), (0.86, (0x18, 0x16, 0x15)),
@@ -647,19 +665,25 @@ def main():
 
     # One seal per season, in that season's own metal.
     for number, material in ((1, "ebony"), (2, "turquoise"),
-                             (3, "nacre"), (4, "agate")):
+                             (3, "nacre"), (4, "agate"),
+                             (5, "lajvard"), (6, "termeh"),
+                             (7, "silver"), (8, "saffron")):
         save(f"seal_season_{number}.png", season_seal(number, material))
 
     # Checker sets, named for what they are made of.
     for name, material in (("walnut", "walnut"), ("bone", "bone"),
                            ("khatam", "ebony"), ("nacre", "nacre"),
                            ("turquoise", "turquoise"), ("agate", "agate"),
-                           ("gold", "gold")):
+                           ("gold", "gold"),
+                           ("lajvard", "lajvard"), ("copper", "bronze"),
+                           ("melileh", "silver"), ("saffron", "saffron")):
         save(f"checkers_{name}.png", checker_stack(material))
 
     # Dice, in the stones a real pair is cut from.
     for name, material in (("bone", "bone"), ("walnut", "walnut"), ("ebony", "ebony"),
-                           ("turquoise", "turquoise"), ("agate", "agate"), ("gold", "gold")):
+                           ("turquoise", "turquoise"), ("agate", "agate"), ("gold", "gold"),
+                           ("lajvard", "lajvard"), ("copper", "bronze"),
+                           ("melileh", "silver"), ("saffron", "saffron")):
         save(f"dice_set_{name}.png", die(material))
 
     # Boards. Each season plays on its own surface, so the field wood and the
@@ -669,6 +693,10 @@ def main():
         ("mina",      "ebony",  "turquoise", "bone"),
         ("nacre",     "walnut", "nacre",     "ebony"),
         ("monabbat",  "ebony",  "agate",     "bone"),
+        ("haftrang",  "ebony",  "lajvard",   "turquoise"),
+        ("pateh",     "walnut", "termeh",    "bone"),
+        ("melileh",   "ebony",  "silver",    "bone"),
+        ("zari",      "walnut", "saffron",   "ebony"),
     ):
         save(f"board_{name}.png", board_surface(field_wood, point_a, point_b))
 
@@ -678,6 +706,10 @@ def main():
         ("turquoise_spark", "turquoise", "spark"),
         ("pearl_ripple",    "nacre",     "ripple"),
         ("agate_ember",     "agate",     "ember"),
+        ("lapis_night",     "lajvard",   "dust"),
+        ("madder_thread",   "termeh",    "ripple"),
+        ("filigree_glint",  "silver",    "spark"),
+        ("saffron_haze",    "saffron",   "ember"),
     ):
         save(f"effect_{name}.png", dice_effect(material, kind))
 
@@ -687,6 +719,10 @@ def main():
         ("neyshabur", "turquoise", (0x1F, 0x4E, 0x8C)),
         ("harbour",   "nacre",     (0x0F, 0x6B, 0x74)),
         ("caravan",   "agate",     (0x8A, 0x5A, 0x14)),
+        ("shiraz",    "lajvard",   (0xD9, 0x91, 0x1E)),
+        ("kerman",    "termeh",    (0x2E, 0x8B, 0x7A)),
+        ("tabriz",    "silver",    (0x2B, 0x43, 0x9E)),
+        ("yazd",      "saffron",   (0x9E, 0x2F, 0x28)),
     ):
         save(f"banner_{name}.png", victory_banner(material, accent))
 
@@ -696,8 +732,26 @@ def main():
         ("neyshabur", "turquoise", 9,  (0x1F, 0x4E, 0x8C)),
         ("harbour",   "nacre",     8,  (0x0F, 0x6B, 0x74)),
         ("caravan",   "agate",     6,  (0x8A, 0x5A, 0x14)),
+        ("shiraz",    "lajvard",   7,  (0xD9, 0x91, 0x1E)),
+        ("kerman",    "termeh",    9,  (0x2E, 0x8B, 0x7A)),
+        ("tabriz",    "silver",    11, (0x2B, 0x43, 0x9E)),
+        ("yazd",      "saffron",   8,  (0x9E, 0x2F, 0x28)),
     ):
         save(f"frame_{name}.png", avatar_ring(material, points, accent))
+
+    # A sound set per season: the one product that cannot be drawn, so it is
+    # struck instead.
+    for name, material, arcs in (
+        ("isfahan",   "bronze",    3),
+        ("neyshabur", "turquoise", 4),
+        ("harbour",   "nacre",     3),
+        ("caravan",   "agate",     4),
+        ("shiraz",    "lajvard",   3),
+        ("kerman",    "termeh",    4),
+        ("tabriz",    "silver",    5),
+        ("yazd",      "saffron",   3),
+    ):
+        save(f"sound_{name}.png", sound_medallion(material, arcs))
 
     # One hero image per season: the whole set standing in its arch.
     for number, wood, metal, checker_mat, dice_mat, accent in (
@@ -705,6 +759,10 @@ def main():
         (2, "ebony",  "turquoise", "turquoise", "turquoise", (0x1F, 0x4E, 0x8C)),
         (3, "walnut", "silver",    "nacre",     "bone",      (0x0F, 0x6B, 0x74)),
         (4, "ebony",  "gold",      "agate",     "agate",     (0x8A, 0x5A, 0x14)),
+        (5, "ebony",  "lajvard",   "lajvard",   "lajvard",   (0xD9, 0x91, 0x1E)),
+        (6, "walnut", "bronze",    "bronze",    "bronze",    (0x2E, 0x8B, 0x7A)),
+        (7, "ebony",  "silver",    "silver",    "silver",    (0x2B, 0x43, 0x9E)),
+        (8, "walnut", "saffron",   "saffron",   "saffron",   (0x9E, 0x2F, 0x28)),
     ):
         save(f"hero_season_{number}.png",
              bundle_hero(number, wood, metal, checker_mat, dice_mat, accent))
@@ -1286,6 +1344,40 @@ def avatar_ring(material, points, accent, size=168, seed=61):
     jewel = rosette(int(s_ * 0.24), 6, seed + 5, accent)
     frame.alpha_composite(jewel, (int((s_ - jewel.width) / 2), -int(s_ * 0.015)))
     return frame
+
+
+def sound_medallion(material, arcs=3, size=160, seed=67):
+    """
+    A set of sounds, which is the one thing in the catalogue that cannot be
+    drawn. So it is not drawn: it is struck. A raised boss with arcs ringing
+    off it, cast in the season's metal like everything else on the shelf.
+    """
+    s_ = size
+    disc = rounded_mask(s_, s_, s_ // 2)
+    albedo, figure = hammered(s_, s_, material, seed=seed)
+    height = bevel_height(disc, bevel=int(s_ * 0.10)) + figure * 0.10
+
+    yy, xx = np.mgrid[0:s_, 0:s_].astype(np.float64)
+    cx, cy = s_ * 0.30, (s_ - 1) / 2.0
+    dx, dy = xx - cx, yy - cy
+    r = np.sqrt(dx * dx + dy * dy)
+    theta = np.arctan2(dy, dx)
+
+    # The boss the sound comes off.
+    boss = np.clip(1.0 - r / (s_ * 0.155), 0, 1)
+    height = height + np.sqrt(boss) * 0.55 * disc
+
+    # Arcs, opening to the right, cut rather than added.
+    wedge = np.clip(1.0 - (np.abs(theta) / 0.95) ** 4, 0, 1)
+    for i in range(arcs):
+        radius = s_ * (0.26 + 0.135 * i)
+        band = np.exp(-((r - radius) ** 2) / (2 * (s_ * 0.026) ** 2))
+        height = height - band * wedge * disc * 0.70
+
+    rgba = shade(height, albedo, disc, relief=2.6, ambient=0.52, key=0.62,
+                 spec_strength=0.58, spec_power=30)
+    rgba = add_rim(rgba, disc, colour=(0.20, 0.12, 0.04), width=1.3)
+    return to_image(drop_shadow(rgba, offset=3, blur=3.2, opacity=0.5))
 
 
 def bundle_hero(number, wood, metal, checker_mat, dice_mat, accent,
