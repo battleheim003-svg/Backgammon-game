@@ -2,14 +2,14 @@
 <resources>
 
     <string name="app_name">تخته‌نرد سلطنتی</string>
-    <string name="royal_subtitle">اصیل ولی مدرن</string>
+    <string name="royal_subtitle">هزار سال تخته‌نرد · نسخه سلطنتی</string>
     <string name="studio_splash_content_description">لوگوی Battleheim Studio</string>
 
     <string name="continue_game">ادامه بازی</string>
     <string name="new_game">بازی جدید</string>
-    <string name="tutorial">🎓 آموزش</string>
-    <string name="scores">🏆 امتیازها</string>
-    <string name="settings">⚙️ تنظیمات</string>
+    <string name="tutorial">آموزش</string>
+    <string name="scores">امتیازها</string>
+    <string name="settings">تنظیمات</string>
     <string name="language_toggle">🌐 English</string>
 
     <string name="player_one">بازیکن اول</string>
@@ -56,7 +56,7 @@
     <string name="initial_game_message">بازیکن اول، تاس بریزید</string>
     <string name="tutorial_next">بعدی ◀</string>
     <string name="tutorial_done">تمام</string>
-    <string name="tutorial_title">🎓 آموزش</string>
+    <string name="tutorial_title">آموزش</string>
     <string name="tutorial_player">شما</string>
     <string name="tutorial_bot">ربات آموزشی</string>
     <string name="tutorial_intro">خوش آمدید! هدف این است که همه مهره‌هایتان را دور تخته ببرید و زودتر از حریف خارج کنید. بیایید هر مهارت را تمرین کنیم!</string>
@@ -83,7 +83,7 @@
     <string name="game_time_with_value">زمان بازی: %1$s</string>
     <string name="results_summary">%1$s %2$d:%3$d %4$s</string>
 
-    <string name="settings_title">⚙️ تنظیمات بازی</string>
+    <string name="settings_title">تنظیمات بازی</string>
     <string name="sound_enabled">صدا</string>
     <string name="effects_enabled">افکت‌ها</string>
     <string name="sound">میزان صدا</string>
@@ -110,7 +110,7 @@
     <string name="reset">بازنشانی</string>
 
     <!-- Pass & Play -->
-    <string name="pass_and_play">👥 دو نفره</string>
+    <string name="pass_and_play">دو نفره</string>
     <string name="pass_and_play_subtitle">بازی روی یک گوشی</string>
     <string name="pass_and_play_setup">تنظیم بازی دو نفره</string>
     <string name="pass_and_play_player1_default">بازیکن ۱</string>
@@ -158,7 +158,7 @@
     <string name="leaderboard_avatar_desc">آواتار بازیکن</string>
     <string name="leaderboard_rank">رتبه</string>
 
-    <string name="play_game">▶️ بازی</string>
+    <string name="play_game">بازی</string>
     <string name="play_choice_title">انتخاب بازی</string>
     <string name="play_choice_message">بازی ذخیره‌شده را ادامه بدهید یا از نو شروع کنید.</string>
 
@@ -183,7 +183,7 @@
     <string name="roll_button_label">بنداز</string>
 
     <!-- Game Over / Rematch -->
-    <string name="game_over_title">🏆 پایان بازی</string>
+    <string name="game_over_title">پایان بازی</string>
     <string name="game_over_winner">%1$s برنده شد!</string>
     <string name="game_over_duration">مدت: %1$d:%2$02d</string>
     <string name="game_over_game_number">بازی #%1$d</string>

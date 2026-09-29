@@ -79,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/vazirmatn_semibold"
                 android:text="@string/theme_royal"
                 android:textColor="@color/color_player_name_text"
                 android:textSize="9sp" />
@@ -124,7 +124,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/vazirmatn_semibold"
                 android:text="@string/theme_pop_art"
                 android:textColor="@color/color_player_name_text"
                 android:textSize="9sp" />
@@ -169,7 +169,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/vazirmatn_semibold"
                 android:text="@string/theme_cyberpunk"
                 android:textColor="@color/color_player_name_text"
                 android:textSize="9sp" />
@@ -214,7 +214,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/vazirmatn_semibold"
                 android:text="@string/theme_luxury"
                 android:textColor="@color/color_player_name_text"
                 android:textSize="9sp" />
@@ -259,7 +259,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/vazirmatn_semibold"
                 android:text="@string/theme_woodland_name"
                 android:textColor="@color/color_player_name_text"
                 android:textSize="9sp" />
@@ -303,7 +303,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/vazirmatn_semibold"
                 android:text="@string/theme_galaxy"
                 android:textColor="@color/color_player_name_text"
                 android:textSize="9sp" />
@@ -347,7 +347,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/vazirmatn_semibold"
                 android:text="@string/theme_ancient_egypt"
                 android:textColor="@color/color_player_name_text"
                 android:textSize="9sp" />
@@ -391,7 +391,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/vazirmatn_semibold"
                 android:text="@string/theme_neon_retro"
                 android:textColor="@color/color_player_name_text"
                 android:textSize="9sp" />
@@ -417,7 +417,7 @@
             android:layout_weight="1"
             android:layout_marginEnd="6dp"
             android:background="@drawable/bg_name_field_normal"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/vazirmatn_semibold"
             android:gravity="center"
             android:hint="@string/player_one"
             android:importantForAutofill="no"
@@ -438,7 +438,7 @@
             android:layout_weight="1"
             android:layout_marginStart="6dp"
             android:background="@drawable/bg_name_field_normal"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/vazirmatn_semibold"
             android:gravity="center"
             android:hint="@string/player_two"
             android:importantForAutofill="no"
@@ -460,7 +460,7 @@
         android:layout_height="44dp"
         android:background="@drawable/bg_button_play"
         app:backgroundTint="@null"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/vazirmatn_semibold"
         android:gravity="center"
         android:minHeight="0dp"
         android:minWidth="0dp"

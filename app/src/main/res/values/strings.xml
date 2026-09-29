@@ -2,17 +2,17 @@
 <resources>
 
     <string name="app_name">Royal Backgammon</string>
-    <string name="royal_subtitle">Classic, but modern</string>
+    <string name="royal_subtitle">هزار سال تخته‌نرد · Royal Edition</string>
     <string name="studio_splash_content_description">Battleheim Studio logo</string>
 
     <string name="continue_game">Continue Game</string>
-    <string name="play_game">▶️ Play</string>
+    <string name="play_game">Play</string>
     <string name="new_game">New Game</string>
     <string name="play_choice_title">Choose Game</string>
     <string name="play_choice_message">Continue your saved match or start fresh.</string>
-    <string name="tutorial">🎓 Tutorial</string>
-    <string name="scores">🏆 Scores</string>
-    <string name="settings">⚙️ Settings</string>
+    <string name="tutorial">Tutorial</string>
+    <string name="scores">Scores</string>
+    <string name="settings">Settings</string>
     <string name="language_toggle">🌐 فارسی</string>
 
     <string name="player_one">Player One</string>
@@ -59,7 +59,7 @@
     <string name="initial_game_message">Player One, roll the dice</string>
     <string name="tutorial_next">Next ▶</string>
     <string name="tutorial_done">Done</string>
-    <string name="tutorial_title">🎓 Tutorial</string>
+    <string name="tutorial_title">Tutorial</string>
     <string name="tutorial_player">You</string>
     <string name="tutorial_bot">Tutor Bot</string>
     <string name="tutorial_intro">Welcome! Your goal is to move all your checkers around the board and bear them off before your opponent. Let\'s practice each skill!</string>
@@ -86,7 +86,7 @@
     <string name="game_time_with_value">Game Time: %1$s</string>
     <string name="results_summary">%1$s %2$d:%3$d %4$s</string>
 
-    <string name="settings_title">⚙️ Game Settings</string>
+    <string name="settings_title">Game Settings</string>
     <string name="sound_enabled">Sound</string>
     <string name="effects_enabled">Effects</string>
     <string name="sound">Sound Volume</string>
@@ -113,7 +113,7 @@
     <string name="reset">Reset</string>
 
     <!-- Pass & Play -->
-    <string name="pass_and_play">👥 Two Player</string>
+    <string name="pass_and_play">Two Player</string>
     <string name="pass_and_play_subtitle">Play on one device</string>
     <string name="pass_and_play_setup">Two Player Setup</string>
     <string name="pass_and_play_player1_default">Player 1</string>
@@ -182,7 +182,7 @@
     <string name="roll_button_label">ROLL</string>
 
     <!-- Game Over / Rematch -->
-    <string name="game_over_title">🏆 Game Over</string>
+    <string name="game_over_title">Game Over</string>
     <string name="game_over_winner">%1$s wins!</string>
     <string name="game_over_duration">Duration: %1$d:%2$02d</string>
     <string name="game_over_game_number">Game #%1$d</string>

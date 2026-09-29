@@ -35,13 +35,13 @@
             android:visibility="gone" />
 
         <FrameLayout
-            android:layout_width="@dimen/art_md"
-            android:layout_height="@dimen/art_md">
+            android:layout_width="@dimen/art_lg"
+            android:layout_height="@dimen/art_lg">
 
             <TextView
                 android:id="@+id/tvShopItemIcon"
-                android:layout_width="@dimen/art_md"
-                android:layout_height="@dimen/art_md"
+                android:layout_width="@dimen/art_lg"
+                android:layout_height="@dimen/art_lg"
                 android:background="@drawable/medal_shop_common"
                 android:gravity="center" />
 

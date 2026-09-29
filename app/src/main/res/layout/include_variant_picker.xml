@@ -201,7 +201,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:fontFamily="sans-serif"
+        android:fontFamily="@font/vazirmatn_regular"
         android:gravity="center"
         android:maxLines="3"
         android:textColor="@color/color_difficulty_text_normal"

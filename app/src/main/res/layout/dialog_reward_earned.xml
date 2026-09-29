@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:fontFamily="sans-serif-black"
+        android:fontFamily="@font/lalezar_regular"
         android:text="@string/reward_earned_title"
         android:textColor="@color/color_gold_primary"
         android:textSize="16sp"
@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/vazirmatn_semibold"
         android:textColor="@color/accent_gold"
         android:textSize="22sp"
         android:textStyle="bold" />

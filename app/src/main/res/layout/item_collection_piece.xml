@@ -7,7 +7,7 @@
     at if it can show you what you missed.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/card_piece_width"
+    android:layout_width="@dimen/card_shop_width"
     android:layout_height="wrap_content"
     android:layout_marginEnd="@dimen/space_s"
     android:background="@drawable/card_common"
@@ -19,8 +19,8 @@
     android:paddingBottom="@dimen/space_s">
 
     <FrameLayout
-        android:layout_width="@dimen/art_md"
-        android:layout_height="@dimen/art_md">
+        android:layout_width="@dimen/art_lg"
+        android:layout_height="@dimen/art_lg">
 
         <ImageView
             android:id="@+id/pieceArt"
