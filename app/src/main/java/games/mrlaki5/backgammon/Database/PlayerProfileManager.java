@@ -11,6 +11,7 @@ import java.util.Set;
 import games.mrlaki5.backgammon.Economy.CoinConfig;
 import games.mrlaki5.backgammon.Economy.CoinManager;
 import games.mrlaki5.backgammon.GamePreferences;
+import games.mrlaki5.backgammon.R;
 
 /**
  * Manages player profile data, ELO ratings, match history, and cosmetic inventory.
@@ -66,7 +67,7 @@ public class PlayerProfileManager {
                     .putInt(KEY_WINS, 0)
                     .putInt(KEY_LOSSES, 0)
                     .putInt(KEY_TOTAL_GAMES, 0)
-                    .putString(KEY_DISPLAY_NAME, "Player 1")
+                    .putString(KEY_DISPLAY_NAME, context.getString(R.string.pass_and_play_player1_default))
                     .putString(KEY_ACTIVE_FRAME, "frame_default")
                     .putString(KEY_ACTIVE_DICE, "dice_default")
                     .putString(KEY_ACTIVE_TITLE, "title_beginner")
@@ -137,7 +138,7 @@ public class PlayerProfileManager {
     }
 
     public String getDisplayName() {
-        return prefs.getString(KEY_DISPLAY_NAME, "Player 1");
+        return prefs.getString(KEY_DISPLAY_NAME, context.getString(R.string.pass_and_play_player1_default));
     }
 
     public void setDisplayName(String name) {

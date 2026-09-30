@@ -39,45 +39,57 @@
 
         <activity
             android:name=".GameControllers.GameActivity"
+            android:exported="false"
             android:screenOrientation="landscape" />
 
         <activity
             android:name=".Menus.SettingsActivity"
+            android:exported="false"
             android:screenOrientation="landscape" />
 
         <activity
             android:name=".Menus.ResultsActivity"
+            android:exported="false"
             android:screenOrientation="landscape" />
 
         <activity
             android:name=".Menus.ScoresActivity"
+            android:exported="false"
             android:screenOrientation="landscape" />
 
         <activity
             android:name=".Menus.LegacyScoresActivity"
+            android:exported="false"
             android:screenOrientation="landscape" />
 
         <activity
             android:name=".Economy.CollectionActivity"
+            android:exported="false"
             android:screenOrientation="landscape" />
-            <activity
+
+        <activity
             android:name=".Economy.BundleActivity"
+            android:exported="false"
             android:screenOrientation="landscape" />
 
         <activity
             android:name=".Economy.CoinShopActivity"
+            android:exported="false"
             android:screenOrientation="landscape" />
 
         <activity
             android:name=".PlayerStatsActivity"
+            android:exported="false"
             android:screenOrientation="landscape" />
 
         <activity
             android:name=".Analysis.GameReviewActivity"
+            android:exported="false"
             android:screenOrientation="landscape" />
 
         <activity
             android:name=".Journey.JourneyActivity"
+            android:exported="false"
             android:screenOrientation="landscape" />
 
     </application>

@@ -212,8 +212,11 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
                 }
             });
         } else if (item.getCategory() == ShopItem.Category.BUNDLE) {
-            if (profileManager.hasStarterBundle()) {
-                holder.btnAction.setText(R.string.shop_item_equipped);
+            boolean bundleOwned = item.getId().equals("starter_bundle")
+                    ? profileManager.hasStarterBundle()
+                    : profileManager.isItemPurchased(item.getId());
+            if (bundleOwned) {
+                holder.btnAction.setText(R.string.shop_already_purchased);
                 holder.btnAction.setBackgroundResource(R.drawable.neuro_secondary_button);
                 holder.btnAction.setEnabled(false);
                 holder.btnAction.setAlpha(0.7f);
@@ -223,15 +226,25 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
                 holder.btnAction.setEnabled(true);
                 holder.btnAction.setAlpha(1f);
                 holder.btnAction.setOnClickListener(v -> {
-                    if (profileManager.hasStarterBundle()) {
-                        Toast.makeText(context, R.string.shop_already_purchased, Toast.LENGTH_SHORT).show();
-                    } else {
+                    if (item.getId().equals("starter_bundle")) {
                         boolean ok = profileManager.purchaseStarterBundle(item.getPrice());
                         Toast.makeText(context, ok ? R.string.purchase_successful : R.string.not_enough_coins,
                                 Toast.LENGTH_SHORT).show();
                         if (ok) {
                             notifyItemChanged(holder.getAdapterPosition());
                             if (actionListener != null) actionListener.onItemAction();
+                        }
+                    } else {
+                        if (coinManager.spend(item.getPrice(), "bundle_" + item.getId())) {
+                            profileManager.addPurchasedItem(item.getId());
+                            for (String contentId : item.bundleContents) {
+                                profileManager.addPurchasedItem(contentId);
+                            }
+                            Toast.makeText(context, R.string.purchase_successful, Toast.LENGTH_SHORT).show();
+                            notifyDataSetChanged();
+                            if (actionListener != null) actionListener.onItemAction();
+                        } else {
+                            Toast.makeText(context, R.string.not_enough_coins, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

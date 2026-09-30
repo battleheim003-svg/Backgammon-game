@@ -39,9 +39,6 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField "String", "TAPSELL_APP_KEY", "\"icqpgedfgrrbfflttiglpqbfneimtpltlnbodeaginjtfcreqkthhblofgmcegogkgpeij\""
-        buildConfigField "String", "TAPSELL_ZONE_INTERSTITIAL", "\"6a8b35a0f34d73758477ec0a\""
-        buildConfigField "String", "TAPSELL_ZONE_REWARDED", "\"6a8dddf3488ef01a725b3afd\""
     }
 
     signingConfigs {
@@ -90,16 +87,25 @@ android {
             dimension "store"
             applicationIdSuffix ".bazaar"
             buildConfigField "String", "STORE", "\"bazaar\""
+            buildConfigField "String", "TAPSELL_APP_KEY", "\"icqpgedfgrrbfflttiglpqbfneimtpltlnbodeaginjtfcreqkthhblofgmcegogkgpeij\""
+            buildConfigField "String", "TAPSELL_ZONE_INTERSTITIAL", "\"6a8b35a0f34d73758477ec0a\""
+            buildConfigField "String", "TAPSELL_ZONE_REWARDED", "\"6a8dddf3488ef01a725b3afd\""
         }
         myket {
             dimension "store"
             applicationIdSuffix ".myket"
             buildConfigField "String", "STORE", "\"myket\""
+            buildConfigField "String", "TAPSELL_APP_KEY", "\"icqpgedfgrrbfflttiglpqbfneimtpltlnbodeaginjtfcreqkthhblofgmcegogkgpeij\""
+            buildConfigField "String", "TAPSELL_ZONE_INTERSTITIAL", "\"6a8b35a0f34d73758477ec0a\""
+            buildConfigField "String", "TAPSELL_ZONE_REWARDED", "\"6a8dddf3488ef01a725b3afd\""
         }
         foss {
             // Free/open-source build without any store SDK (for testing/development)
             dimension "store"
             buildConfigField "String", "STORE", "\"foss\""
+            buildConfigField "String", "TAPSELL_APP_KEY", "\"\""
+            buildConfigField "String", "TAPSELL_ZONE_INTERSTITIAL", "\"\""
+            buildConfigField "String", "TAPSELL_ZONE_REWARDED", "\"\""
         }
     }
 

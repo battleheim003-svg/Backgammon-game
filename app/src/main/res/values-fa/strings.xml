@@ -300,6 +300,60 @@
     <string name="shop_hint_pack_10_desc">۱۰ شارژ راهنما برای بازی</string>
     <string name="shop_undo_pack_3_desc">۳ شارژ برگشت حرکت رایگان</string>
     <string name="shop_starter_bundle_desc">فریم نقره + تاس استیل + ۵۰ سکه هدیه + ۲ راهنما</string>
+
+    <!-- باندل‌های موضوع‌محور -->
+    <string name="bundle_nacre_title">صدف دریای عُمان</string>
+    <string name="bundle_nacre_desc">مهره صدف + تاس گردو + موج فرود — سه لایه از یک اقیانوس.</string>
+    <string name="bundle_nacre_story">پوسته‌ی صدف را زیر نور می‌شکنند تا رنگ‌های نهفته‌اش بیرون بیاید — صورتی، سبز و طلایی که با هر زاویه‌ای تغییر می‌کند. این مهره‌ها از پوسته‌هایی هستند که دیگر در خلیج پیدا نمی‌شوند.</string>
+
+    <string name="bundle_copper_title">مس اصفهان</string>
+    <string name="bundle_copper_desc">مهره مسی + تاس مسی + دودِ روشنایی — یادگار کوره‌های بازار مسگرها.</string>
+    <string name="bundle_copper_story">مسگرهای اصفهان سه نسل در یک کوچه کوبیده‌اند. رنگ مس با آتش تغییر می‌کند — از نارنجی نو به قهوه‌ای پیر — و این مهره‌ها درست در همان لحظه‌ای خاموش شده‌اند که رنگ در اوج بود.</string>
+
+    <string name="bundle_turquoise_title">فیروزه‌ی نیشابور</string>
+    <string name="bundle_turquoise_desc">مهره، تاس و جرقه‌ی فرود — همه از معادن نیشابور.</string>
+    <string name="bundle_turquoise_story">فیروزه نه در رگه‌ها بلکه در حفره‌ها نشسته، و هر حفره رنگ خودش را دارد. این مهره‌ها رنگ خود را از سه حفره‌ی متفاوت گرفته‌اند — هیچ دو تختی در نور یکسان آبی یکسانی نشان نمی‌دهند.</string>
+
+    <string name="bundle_lapis_title">لاجوردِ شیراز</string>
+    <string name="bundle_lapis_desc">آبی ژرف — مهره، تاس و شبی که پشت سر می‌گذارند.</string>
+    <string name="bundle_lapis_story">لاجورد از پیش از آنکه رنگ نامی داشته باشد برای رنگ‌پزی آسیاب شده. این مهره‌ها رنگ‌آمیزی نشده‌اند — خودِ سنگ هستند، شکل‌گرفته و صیقلی. رنگ اعمال نشده؛ خودِ ماده است، و محو نمی‌شود.</string>
+
+    <string name="bundle_saffron_title">زعفران یزد</string>
+    <string name="bundle_saffron_desc">رنگ طلایی یزد — مهره، تاس و مه‌ی طلایی که روی تخته می‌نشیند.</string>
+    <string name="bundle_saffron_story">بیش از صدهزار رشته برای یک کیلوگرم زعفران لازم است. رنگ این مهره‌ها دقیقاً همان است: رشته‌ی خشک‌شده، فشرده در چیزی که شکل خود را نگه می‌دارد. در غروب پرمایه‌تر می‌شود، در ظهر روشن‌تر.</string>
+
+    <string name="bundle_agate_title">عقیق یمنی</string>
+    <string name="bundle_agate_desc">سنگ نواری تراشیده در مهره، تاس و شعله‌ی فرود — محبوب‌ترین بسته.</string>
+    <string name="bundle_agate_story">راه کاروانی از یمن به ایران یک طرف ادویه می‌برد و طرف دیگر عقیق می‌آورد. هر نوار در سنگ یک سال زمین‌شناسی آرام است و صنعتگر تراشنده انتخاب نمی‌کند کدام نوارها نمایان شوند — به همین دلیل هر جفت مهره یکتاست.</string>
+
+    <string name="bundle_isfahan_title">اصفهان — نصف جهان</string>
+    <string name="bundle_isfahan_desc">تخته هفت‌رنگ + قاب اصفهان + صدای اصفهان — یک شهر در یک جعبه.</string>
+    <string name="bundle_isfahan_story">هفت‌رنگ سفالگری‌ای است که رنگ‌هایش در هشتصد درجه پخته می‌شوند تا هرگز محو نشوند. قاب اصفهان از همان نقش گره‌کاری‌ای گرفته شده که روی پل خواجو تکرار می‌شود. صدا هم از همان میدان بلند می‌شود.</string>
+
+    <string name="bundle_caravan_title">کاروان‌سرا</string>
+    <string name="bundle_caravan_desc">تخته پته + قاب کاروان + صدای کاروان — از راه‌های شاه‌عباسی.</string>
+    <string name="bundle_caravan_story">پته‌ی کرمان روی ابریشم با نخ پشمی دوخته می‌شود — طرح‌هایی که فهمیدنشان وقت می‌برد. این تخته سه ماه زیر دست یک خانواده در کرمان بوده. صدای آن از خان‌های جاده‌ی کرمان به اصفهان است.</string>
+
+    <string name="bundle_sound_pack_title">بازار صداها</string>
+    <string name="bundle_sound_pack_desc">چهار صدا از چهار شهر — نیشابور، شیراز، تبریز و یزد.</string>
+    <string name="bundle_sound_pack_story">هر شهر طنین خودش را دارد. این بسته چهار مجموعه صدا می‌دهد: سفال نیشابور، بازار شیراز، کارگاه‌های تبریز و بادگیرهای یزد — برای کسی که می‌خواهد هر مسابقه حس متفاوتی داشته باشد.</string>
+
+    <string name="bundle_boards_title">تخته‌های پیشه‌کاران</string>
+    <string name="bundle_boards_desc">سه تخته — خاتم، مینا و صدف — از سه کارگاه متفاوت.</string>
+    <string name="bundle_boards_story">خاتم برای سطحی به اندازه‌ی کف دست یک ماه مونتاژ نیاز دارد. مینا در هشتصد درجه روی مس پخته می‌شود. صدف از پوسته‌ی صدف‌هایی تراشیده شده که دیگر در خلیج وجود ندارند. این سه تخته از کارگاه‌هایی هستند که هنوز می‌دانند چطور.</string>
+
+    <string name="bundle_zari_title">زری یزد</string>
+    <string name="bundle_zari_desc">تخته زری + قاب یزد + صدای یزد — از بافنده‌های ابریشم.</string>
+    <string name="bundle_zari_story">زری از تار نقره یا طلا بافته می‌شود — پارچه‌ای که در خودش نور دارد. این تخته از بافته‌های شهر یزد الهام گرفته که سال‌هاست خلعت‌های درباری از آن‌جا آمده. صدای آن از بادگیرهای بلند شهر است.</string>
+
+    <string name="bundle_gold_title">طلا — فلزِ بی‌مرگ</string>
+    <string name="bundle_gold_desc">مهره‌ها و تاس‌ها ریخته‌شده از تنها فلزی که پیر نمی‌شود.</string>
+    <string name="bundle_gold_story">طلا خورده نمی‌شود و پیر نمی‌شود. این مهره‌ها آب‌طلا نشده‌اند — هیچ فلز پایه‌ای زیرشان نیست — و در یک قرن بازی دقیقاً همان‌طور که اکنون هستند خواهند بود.</string>
+
+    <string name="bundle_master_title">مجموعه‌ی استاد تبریز</string>
+    <string name="bundle_master_desc">تخته، مهره و تاس — همه از کارگاه‌های ملیله‌کاری تبریز.</string>
+    <string name="bundle_master_story">نقره‌کاران تبریز مفتول را به پهنای یک تار مو می‌کشند و آن را سرد، بی‌لحیم، به شکل‌هایی خم می‌کنند که وزن خود را نگه می‌دارند. تخته، مهره و تاس این مجموعه همه از یک کارگاه در همان کوچه در تبریزند — و چیزی گران‌تر از این در قفسه نیست.</string>
+
     <string name="shop_category_cosmetic">زیبایی</string>
     <string name="shop_category_consumable">مصرفی</string>
     <string name="shop_category_bundle">باندل</string>

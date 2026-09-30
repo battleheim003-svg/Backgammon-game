@@ -10,6 +10,7 @@ build/
 .externalNativeBuild
 *.jks
 *.keystore
+app/google-services.json
 app/release/*.apk
 app/release/baselineProfiles/
 hs_err_pid*

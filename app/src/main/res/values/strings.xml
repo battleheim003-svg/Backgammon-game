@@ -299,6 +299,60 @@
     <string name="shop_hint_pack_10_desc">10 hint charges for your games</string>
     <string name="shop_undo_pack_3_desc">3 free move-undo charges</string>
     <string name="shop_starter_bundle_desc">Silver Frame + Steel Dice + 50 bonus coins + 2 hints</string>
+
+    <!-- Themed bundles -->
+    <string name="bundle_nacre_title">Gulf Nacre Bundle</string>
+    <string name="bundle_nacre_desc">Nacre checkers, walnut dice, and pearl ripple — three layers of one ocean.</string>
+    <string name="bundle_nacre_story">Nacre is broken under light to release its hidden colours — pink, green, and gold that shift with angle. These pieces are cut from shells no longer found in the Gulf.</string>
+
+    <string name="bundle_copper_title">Isfahan Copper Bundle</string>
+    <string name="bundle_copper_desc">Copper checkers, copper dice, and madder smoke — from the coppersmiths\' bazaar.</string>
+    <string name="bundle_copper_story">Isfahan\'s coppersmiths have hammered in one alley for three generations. Copper\'s colour changes with heat — from fresh orange to old brown — and these pieces were quenched at exactly the moment the colour was best.</string>
+
+    <string name="bundle_turquoise_title">Neyshabur Turquoise Bundle</string>
+    <string name="bundle_turquoise_desc">Checkers, dice, and turquoise spark — all from the mines of Neyshabur.</string>
+    <string name="bundle_turquoise_story">Turquoise does not sit in veins but in pockets, each one its own shade. These pieces take their colour from three different pockets — no two boards lit the same way will show the same blue.</string>
+
+    <string name="bundle_lapis_title">Lapis of Shiraz Bundle</string>
+    <string name="bundle_lapis_desc">The deep blue — checkers, dice, and the night they leave behind.</string>
+    <string name="bundle_lapis_story">Lapis lazuli has been ground for paint since before paint had a name. These pieces are not painted — they are the stone itself, shaped and polished. The colour is not applied: it is the material, and it does not fade.</string>
+
+    <string name="bundle_saffron_title">Yazd Saffron Bundle</string>
+    <string name="bundle_saffron_desc">The golden colour of Yazd — checkers, dice, and the golden haze they leave.</string>
+    <string name="bundle_saffron_story">More than a hundred thousand filaments go into a kilogram of saffron. The colour of these pieces is exactly that: the dried thread, pressed into something that holds its shape. The hue shifts in different light — richer at dusk, paler at noon.</string>
+
+    <string name="bundle_agate_title">Yemeni Agate Bundle</string>
+    <string name="bundle_agate_desc">Banded stone cut into checkers, dice, and the ember of landing — the most popular bundle.</string>
+    <string name="bundle_agate_story">The caravan road from Yemen to Persia carried spices one way and agate the other. Each band in the stone is a year of slow geology, and the craftsman cutting it does not choose which bands show. Every pair of checkers is therefore unique.</string>
+
+    <string name="bundle_isfahan_title">Isfahan — Half the World</string>
+    <string name="bundle_isfahan_desc">Haft-rang board, Isfahan frame, and Isfahan sound — a city in one box.</string>
+    <string name="bundle_isfahan_story">Haft-rang is a ceramic tradition whose colours are fired at eight hundred degrees so they will never fade. The Isfahan frame is taken from the same geometric knotwork that repeats across Khaju Bridge. The sound rises from the same square.</string>
+
+    <string name="bundle_caravan_title">Caravanserai Bundle</string>
+    <string name="bundle_caravan_desc">Pateh board, caravan frame, and caravan sound — from the Safavid road.</string>
+    <string name="bundle_caravan_story">Pateh from Kerman is embroidered on silk with wool thread — patterns that require the reader to know where to look. This board was under one family\'s hands in Kerman for three months. The sound is from the khans along the road from Kerman to Isfahan.</string>
+
+    <string name="bundle_sound_pack_title">Sound Market</string>
+    <string name="bundle_sound_pack_desc">Four sounds from four cities — Neyshabur, Shiraz, Tabriz, and Yazd.</string>
+    <string name="bundle_sound_pack_story">Each city has its own resonance. This bundle gives four sound sets: Neyshabur pottery, Shiraz bazaar, Tabriz workshops, and Yazd badgirs — for anyone who wants each match to feel different.</string>
+
+    <string name="bundle_boards_title">Artisan Boards</string>
+    <string name="bundle_boards_desc">Three boards — khatam, mina, and nacre — from three different workshops.</string>
+    <string name="bundle_boards_story">Khatam needs a month of assembly for a surface the size of your palm. Mina is enamel fired on copper at eight hundred degrees. Nacre is cut from shells of oysters no longer found in the Gulf. These three boards are from the workshops that still know how.</string>
+
+    <string name="bundle_zari_title">Yazd Zari Bundle</string>
+    <string name="bundle_zari_desc">Zari board, Yazd frame, and Yazd sound — from the silk weavers.</string>
+    <string name="bundle_zari_story">Zari is woven from silver or gold thread — fabric that carries light inside it. The board in this set is drawn from the Yazd weavings that have supplied court robes for centuries. The sound is from the city\'s tall badgirs.</string>
+
+    <string name="bundle_gold_title">Gold — The Deathless Metal</string>
+    <string name="bundle_gold_desc">Checkers and dice cast in the only metal that does not age.</string>
+    <string name="bundle_gold_story">Gold does not corrode and gold does not age. The pieces in this set are not gilded — there is no base metal underneath — and in a century of playing they will look exactly as they do now.</string>
+
+    <string name="bundle_master_title">Tabriz Master Set</string>
+    <string name="bundle_master_desc">Board, checkers, and dice — all from the filigree workshops of Tabriz.</string>
+    <string name="bundle_master_story">Tabriz silversmiths flatten wire to the width of a hair and bend it cold, without solder, into shapes that support their own weight. The board, checkers, and dice in this set all come from the same workshop on the same street — and nothing on the shelf costs more.</string>
+
     <string name="shop_category_cosmetic">Cosmetic</string>
     <string name="shop_category_consumable">Consumable</string>
     <string name="shop_category_bundle">Bundle</string>

@@ -95,6 +95,13 @@ public class ShopItem {
      * {@link SeasonCatalogue} names it. Empty for a piece that is only bought.
      */
     public final String earnKey;
+    /**
+     * For BUNDLE items only: the ids of every piece this bundle grants on
+     * purchase. Empty for non-bundle items. When a player buys the bundle every
+     * id here is added to their owned-items list, so they can equip each piece
+     * without a separate purchase.
+     */
+    public String[] bundleContents = new String[0];
 
     public ShopItem(String id, String title, String description, int price,
                     Category category, Rarity rarity, String iconEmoji,
@@ -216,6 +223,21 @@ public class ShopItem {
                 Category.BUNDLE, Rarity.EPIC, "🎁",
                 R.drawable.ic_shop_bundle, R.string.shop_starter_bundle,
                 0, context.getString(R.string.shop_badge_special), 0, false);
+    }
+
+    /**
+     * A themed bundle: several individual pieces sold together at a discount.
+     * Purchasing it grants every id in {@code contents} to the player's owned
+     * collection, so they can equip each piece without a second purchase.
+     */
+    public static ShopItem themedBundle(String id, String title, String description,
+                                        String story, int price, Rarity rarity,
+                                        int iconRes, String badge, String[] contents) {
+        ShopItem item = new ShopItem(id, title, description, price,
+                Category.BUNDLE, rarity, "", iconRes, 0, 0, badge, 0, false,
+                story, Acquisition.BUY, "");
+        item.bundleContents = contents;
+        return item;
     }
 
     public String getId()              { return id; }

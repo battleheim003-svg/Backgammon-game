@@ -416,9 +416,152 @@ public class CoinShopActivity extends AppCompatActivity {
         allItems.clear();
 
         // ═══════════════════════════════════════════
-        // BUNDLE — Starter Bundle (Spans 2 columns)
+        // BUNDLES — each spans 2 columns in the grid
         // ═══════════════════════════════════════════
         allItems.add(ShopItem.starterBundle(this));
+
+        // Nacre — checkers + dice + effect (2650 → 1900)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_nacre",
+                getString(R.string.bundle_nacre_title),
+                getString(R.string.bundle_nacre_desc),
+                getString(R.string.bundle_nacre_story),
+                1900, ShopItem.Rarity.RARE,
+                R.drawable.checkers_nacre,
+                null,
+                new String[]{"checkers_nacre", "dice_walnut", "effect_pearl_ripple"}));
+
+        // Copper — checkers + dice + effect (2900 → 2100)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_copper",
+                getString(R.string.bundle_copper_title),
+                getString(R.string.bundle_copper_desc),
+                getString(R.string.bundle_copper_story),
+                2100, ShopItem.Rarity.RARE,
+                R.drawable.checkers_copper,
+                getString(R.string.shop_badge_new),
+                new String[]{"checkers_copper", "dice_copper", "effect_madder_thread"}));
+
+        // Turquoise — checkers + dice + effect (5400 → 2800)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_turquoise",
+                getString(R.string.bundle_turquoise_title),
+                getString(R.string.bundle_turquoise_desc),
+                getString(R.string.bundle_turquoise_story),
+                2800, ShopItem.Rarity.EPIC,
+                R.drawable.checkers_turquoise,
+                getString(R.string.shop_badge_discount),
+                new String[]{"checkers_turquoise", "dice_turquoise", "effect_turquoise_spark"}));
+
+        // Lapis — checkers + dice + effect (5700 → 3500)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_lapis",
+                getString(R.string.bundle_lapis_title),
+                getString(R.string.bundle_lapis_desc),
+                getString(R.string.bundle_lapis_story),
+                3500, ShopItem.Rarity.EPIC,
+                R.drawable.checkers_lajvard,
+                null,
+                new String[]{"checkers_lajvard", "dice_lajvard", "effect_lapis_night"}));
+
+        // Saffron — checkers + dice + effect (6300 → 3800)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_saffron",
+                getString(R.string.bundle_saffron_title),
+                getString(R.string.bundle_saffron_desc),
+                getString(R.string.bundle_saffron_story),
+                3800, ShopItem.Rarity.EPIC,
+                R.drawable.checkers_saffron,
+                null,
+                new String[]{"checkers_saffron", "dice_saffron", "effect_saffron_haze"}));
+
+        // Agate — checkers + dice + effect (6900 → 4400)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_agate",
+                getString(R.string.bundle_agate_title),
+                getString(R.string.bundle_agate_desc),
+                getString(R.string.bundle_agate_story),
+                4400, ShopItem.Rarity.EPIC,
+                R.drawable.checkers_agate,
+                getString(R.string.shop_badge_popular),
+                new String[]{"checkers_agate", "dice_agate", "effect_agate_ember"}));
+
+        // Isfahan — board + frame + sound (5500 → 4000)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_isfahan",
+                getString(R.string.bundle_isfahan_title),
+                getString(R.string.bundle_isfahan_desc),
+                getString(R.string.bundle_isfahan_story),
+                4000, ShopItem.Rarity.EPIC,
+                R.drawable.board_haftrang,
+                getString(R.string.shop_badge_popular),
+                new String[]{"board_haftrang", "frame_isfahan", "sound_isfahan"}));
+
+        // Caravanserai — board + frame + sound (5600 → 4200)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_caravan",
+                getString(R.string.bundle_caravan_title),
+                getString(R.string.bundle_caravan_desc),
+                getString(R.string.bundle_caravan_story),
+                4200, ShopItem.Rarity.EPIC,
+                R.drawable.board_pateh,
+                getString(R.string.shop_badge_new),
+                new String[]{"board_pateh", "frame_caravan", "sound_caravan"}));
+
+        // Sound Market — 4 sound sets (4450 → 3000)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_sound_pack",
+                getString(R.string.bundle_sound_pack_title),
+                getString(R.string.bundle_sound_pack_desc),
+                getString(R.string.bundle_sound_pack_story),
+                3000, ShopItem.Rarity.RARE,
+                R.drawable.sound_isfahan,
+                getString(R.string.shop_badge_discount),
+                new String[]{"sound_neyshabur", "sound_shiraz", "sound_tabriz", "sound_yazd"}));
+
+        // Artisan Boards — board_khatam + board_mina + board_nacre (9800 → 6800)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_boards",
+                getString(R.string.bundle_boards_title),
+                getString(R.string.bundle_boards_desc),
+                getString(R.string.bundle_boards_story),
+                6800, ShopItem.Rarity.EPIC,
+                R.drawable.board_khatam,
+                null,
+                new String[]{"board_khatam", "board_mina", "board_nacre"}));
+
+        // Yazd Zari — board + frame + sound (5950 → 4500)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_zari",
+                getString(R.string.bundle_zari_title),
+                getString(R.string.bundle_zari_desc),
+                getString(R.string.bundle_zari_story),
+                4500, ShopItem.Rarity.EPIC,
+                R.drawable.board_zari,
+                getString(R.string.shop_badge_special),
+                new String[]{"board_zari", "frame_yazd", "sound_yazd"}));
+
+        // Gold — checkers + dice (11000 → 7500)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_gold",
+                getString(R.string.bundle_gold_title),
+                getString(R.string.bundle_gold_desc),
+                getString(R.string.bundle_gold_story),
+                7500, ShopItem.Rarity.LEGENDARY,
+                R.drawable.checkers_gold,
+                getString(R.string.shop_badge_special),
+                new String[]{"checkers_gold", "dice_gold"}));
+
+        // Tabriz Master — board_melileh + checkers_melileh + dice_melileh (9800 → 6500)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_master",
+                getString(R.string.bundle_master_title),
+                getString(R.string.bundle_master_desc),
+                getString(R.string.bundle_master_story),
+                6500, ShopItem.Rarity.LEGENDARY,
+                R.drawable.board_melileh,
+                getString(R.string.shop_badge_special),
+                new String[]{"board_melileh", "checkers_melileh", "dice_melileh"}));
 
         // ═══════════════════════════════════════════
         // CONSUMABLES — Hints & Undos
@@ -433,6 +576,5 @@ public class CoinShopActivity extends AppCompatActivity {
         allItems.addAll(SeasonCatalogue.all(this));
 
         withdrawClosedSeasons();
-
     }
 }
