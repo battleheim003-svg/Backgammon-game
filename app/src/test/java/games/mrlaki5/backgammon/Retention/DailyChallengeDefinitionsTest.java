@@ -11,8 +11,21 @@ import static org.junit.Assert.*;
 public class DailyChallengeDefinitionsTest {
 
     @Test
-    public void challenges_haveSevenItems() {
-        assertEquals(7, DailyChallenge.CHALLENGES.length);
+    public void challenges_haveEightItems() {
+        assertEquals(8, DailyChallenge.CHALLENGES.length);
+    }
+
+    @Test
+    public void variantOfDay_isStableAndCoversEveryVariant() {
+        java.util.Set<com.royalbackgammon.core.variant.Variant> seen = new java.util.HashSet<>();
+        for (int day = 1; day <= 366; day++) {
+            com.royalbackgammon.core.variant.Variant variant = DailyChallenge.variantOfDay(day);
+            assertNotNull(variant);
+            assertEquals("the same day always gives the same variant",
+                    variant, DailyChallenge.variantOfDay(day));
+            seen.add(variant);
+        }
+        assertEquals(DailyChallenge.DAILY_VARIANTS.length, seen.size());
     }
 
     @Test

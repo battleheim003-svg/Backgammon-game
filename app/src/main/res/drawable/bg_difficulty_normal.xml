@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <corners android:radius="10dp" />
-    <solid android:color="#0F1A24" />
-    <stroke
-        android:width="1dp"
-        android:color="#2A3D4F" />
-</shape>
+<!--
+    The unselected state of every chooser in the app: variant, match length,
+    difficulty, review filters. It is the walnut plaque, so a chooser is made of
+    the same material as the buttons around it.
+
+    Redefining this one file re-skins six layouts and needs no Java change: the
+    code already swaps between this and bg_difficulty_selected.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/btn_wood_pressed" android:state_pressed="true" />
+    <item android:drawable="@drawable/btn_wood" />
+</selector>

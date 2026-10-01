@@ -1,5 +1,9 @@
 package games.mrlaki5.backgammon.GameControllers;
 
+import com.royalbackgammon.core.model.GameResult;
+import com.royalbackgammon.core.model.WinType;
+import com.royalbackgammon.core.variant.Variant;
+
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -50,8 +54,63 @@ public class GameLogicTest {
 
         List<NextJump> moves = logic.calculateMoves(board(model), 1, model.getDiceThrows());
 
-        assertTrue(hasMove(moves, 23, 27, 1));
+        // Only one die can be used for the last checker, so the higher die is forced
         assertTrue(hasMove(moves, 23, 27, 2));
+        assertFalse(hasMove(moves, 23, 27, 1));
+    }
+
+    @Test
+    public void calculateMoves_rejectsFirstMoveThatStrandsSecondDie() {
+        Model model = modelWithEmptyBoard(1, dice(6, 5));
+        GameLogic logic = new GameLogic(model);
+        int a = logic.calculateMatrixPosition(1, 1);
+        int b = logic.calculateMatrixPosition(18, 1);
+        board(model)[a] = field(1, 1);
+        board(model)[b] = field(1, 1);
+        board(model)[logic.calculateMatrixPosition(24, 1)] = field(13, 1);
+        board(model)[logic.calculateMatrixPosition(6, 1)] = field(2, 2);
+        board(model)[logic.calculateMatrixPosition(12, 2)] = field(13, 2);
+
+        List<NextJump> moves = logic.calculateMoves(board(model), 1, model.getDiceThrows());
+
+        assertFalse(hasMove(moves, b, logic.calculateMatrixPosition(24, 1), 6));
+        assertTrue(hasMove(moves, b, logic.calculateMatrixPosition(23, 1), 5));
+        assertTrue(hasMove(moves, a, logic.calculateMatrixPosition(7, 1), 6));
+    }
+
+    @Test
+    public void calculateMoves_flagsFinishedPlayer() {
+        Model model = modelWithEmptyBoard(1, dice(1, 2));
+        board(model)[27] = field(15, 1);
+        board(model)[0] = field(15, 2);
+        GameLogic logic = new GameLogic(model);
+
+        assertTrue(logic.calculateMoves(board(model), 1, model.getDiceThrows()).isEmpty());
+        assertEquals(1, logic.getCurrPlayerFinished());
+        assertEquals(2, logic.whatPartOfGame(board(model), 1));
+    }
+
+    @Test
+    public void calculateResult_scoresBackgammonByVariant() {
+        Model model = modelWithEmptyBoard(1, dice(1, 2));
+        board(model)[27] = field(15, 1);
+        board(model)[25] = field(1, 2);
+        board(model)[0] = field(14, 2);
+        GameLogic logic = new GameLogic(model);
+
+        GameResult standard = logic.calculateResult();
+        assertEquals(WinType.BACKGAMMON, standard.getWinType());
+        assertEquals(3, standard.getPoints());
+
+        model.setVariant(Variant.TAVLA);
+        assertEquals(2, logic.calculateResult().getPoints());
+    }
+
+    @Test
+    public void parseVariant_fallsBackToStandard() {
+        assertEquals(Variant.STANDARD, Model.parseVariant(null));
+        assertEquals(Variant.STANDARD, Model.parseVariant("NARDY_FROM_FUTURE"));
+        assertEquals(Variant.PORTES, Model.parseVariant("PORTES"));
     }
 
     @Test

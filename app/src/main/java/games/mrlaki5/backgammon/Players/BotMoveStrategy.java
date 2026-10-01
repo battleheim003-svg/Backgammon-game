@@ -1,5 +1,12 @@
 package games.mrlaki5.backgammon.Players;
 
+import com.royalbackgammon.core.model.GameResult;
+import com.royalbackgammon.core.model.WinType;
+import com.royalbackgammon.core.logic.BackgammonRules;
+import com.royalbackgammon.core.logic.PositionMapper;
+import com.royalbackgammon.core.variant.RuleFamily;
+import com.royalbackgammon.core.variant.Variant;
+
 import java.util.List;
 import java.util.Random;
 
@@ -38,6 +45,32 @@ public class BotMoveStrategy {
         return best;
     }
 
+    /** Acey-deucey: names the double that leaves the best position after playing it out. */
+    public int chooseBonusDouble(Model model, int difficulty, Random random) {
+        SearchProfile profile = profileFor(difficulty);
+        int bestValue = 6;
+        double bestScore = -Double.MAX_VALUE;
+        for (int value = 1; value <= 6; value++) {
+            Model copy = copyModel(model);
+            copy.setDiceThrows(dice(value, value));
+            GameLogic logic = new GameLogic(copy);
+            GameMoveExecutor executor = new GameMoveExecutor(copy);
+            while (true) {
+                List<NextJump> moves = logic.calculateMoves(copy.getBoardFields(),
+                        copy.getCurrentPlayer(), copy.getDiceThrows());
+                if (moves.isEmpty()) break;
+                NextJump move = chooseMove(copy, moves, difficulty, random);
+                executor.applyMove(move);
+            }
+            double score = evaluateBoard(copy, model.getCurrentPlayer(), profile);
+            if (score > bestScore) {
+                bestScore = score;
+                bestValue = value;
+            }
+        }
+        return bestValue;
+    }
+
     private double continueTurnOrRoll(Model model, int rootPlayer, int rollsRemaining,
                                       SearchProfile profile, Random random,
                                       SearchBudget budget) {
@@ -66,6 +99,7 @@ public class BotMoveStrategy {
         }
 
         Model nextTurn = copyModel(model);
+        nextTurn.onTurnEnded();
         nextTurn.changeCurrentPlayer();
         return expectedRollValue(nextTurn, rootPlayer, rollsRemaining - 1, profile, random,
                 budget);
@@ -113,11 +147,21 @@ public class BotMoveStrategy {
         return bonus;
     }
 
+    /** Position score for [player] at [difficulty]; used by the post-game analyzer. */
+    public double evaluatePosition(Model model, int player, int difficulty) {
+        return evaluateBoard(model, player, profileFor(difficulty));
+    }
+
     private double evaluateBoard(Model model, int player, SearchProfile profile) {
+        if (model.getVariant().getFamily() == RuleFamily.RUNNING) {
+            return evaluateRunning(model, player, profile)
+                    - evaluateRunning(model, opponentOf(player), profile) * 0.9;
+        }
         BoardFieldState[] board = model.getBoardFields();
         int opponent = player == 1 ? 2 : 1;
         GameLogic logic = new GameLogic(model);
-        double score = 0.0;
+        double score = model.getVariant().getFamily() == RuleFamily.PINNING
+                ? pinningTerms(model, player, logic, profile) : 0.0;
 
         for (int i = 0; i < board.length; i++) {
             int chips = board[i].getNumberOfChips();
@@ -146,6 +190,77 @@ public class BotMoveStrategy {
 
         score += madePointRun(board, player, logic) * profile.primeWeight;
         score -= madePointRun(board, opponent, logic) * profile.opponentPrimeWeight;
+        return score;
+    }
+
+    /**
+     * Plakoto extras on top of the hitting evaluation: a decisive mother result, pinned checkers
+     * (still progressing, but frozen and costly like a hit), and the value of pinning early.
+     */
+    private double pinningTerms(Model model, int player, GameLogic logic, SearchProfile profile) {
+        GameResult result = logic.calculateResult();
+        if (result != null) {
+            if (result.getWinType() == WinType.DRAW) return 0.0;
+            return result.getWinner() == player ? 100000.0 : -100000.0;
+        }
+        BoardFieldState[] board = model.getBoardFields();
+        double score = 0.0;
+        for (int i = 0; i < 24; i++) {
+            int pinned = board[i].getPinnedPlayer();
+            if (pinned == 0) continue;
+            int sign = pinned == player ? -1 : 1;
+            int real = logic.calculateRealPosition(i, pinned);
+            // Pinned deep in the pinner's home is worst: it will wait there for a long time
+            score += sign * (profile.barPenalty + (25 - real) * profile.progressWeight * 0.5);
+            score -= sign * real * profile.progressWeight;
+        }
+        return score;
+    }
+
+    /**
+     * Running-family score for [side]: race progress, borne-off and home checkers, points held in
+     * front of the opponent's rearmost checker (longest run weighted most), and a late-head penalty.
+     */
+    private double evaluateRunning(Model model, int side, SearchProfile profile) {
+        BoardFieldState[] board = model.getBoardFields();
+        Variant variant = model.getVariant();
+        int opponent = opponentOf(side);
+        int borneOffIndex = side == 1 ? 27 : 26;
+        double score = board[borneOffIndex].getNumberOfChips() * profile.borneOffWeight;
+
+        int opponentRearmost = 25;
+        for (int i = 0; i < 24; i++) {
+            int chips = board[i].getNumberOfChips();
+            if (chips <= 0) continue;
+            if (board[i].getPlayer() == side) {
+                int real = PositionMapper.toReal(i, side, variant);
+                score += chips * real * profile.progressWeight;
+                if (real >= 19) score += chips * profile.homeWeight;
+            } else if (board[i].getPlayer() == opponent) {
+                opponentRearmost = Math.min(opponentRearmost,
+                        PositionMapper.toReal(i, opponent, variant));
+            }
+        }
+
+        int held = 0;
+        int run = 0;
+        int longestRun = 0;
+        for (int oppReal = opponentRearmost + 1; oppReal <= 24; oppReal++) {
+            int field = PositionMapper.toMatrix(oppReal, opponent, variant);
+            if (board[field].getPlayer() == side && board[field].getNumberOfChips() > 0) {
+                held++;
+                run++;
+                longestRun = Math.max(longestRun, run);
+            } else {
+                run = 0;
+            }
+        }
+        score += held * profile.pointWeight * 0.35 + longestRun * longestRun * profile.primeWeight * 0.6;
+
+        int head = BackgammonRules.headIndex(side, variant);
+        if (board[head].getPlayer() == side && model.getTurnsPlayed() > 12) {
+            score -= board[head].getNumberOfChips() * profile.pointWeight * 0.25;
+        }
         return score;
     }
 
@@ -197,12 +312,15 @@ public class BotMoveStrategy {
         BoardFieldState[] board = new BoardFieldState[source.getBoardFields().length];
         for (int i = 0; i < board.length; i++) {
             BoardFieldState field = source.getBoardFields()[i];
-            board[i] = new BoardFieldState(field.getNumberOfChips(), field.getPlayer());
+            board[i] = field.copy();
         }
         copy.setBoardFields(board);
         copy.setCurrentPlayer(source.getCurrentPlayer());
         copy.setState(source.getState());
         copy.setDiceThrows(copyDice(source.getDiceThrows()));
+        copy.setVariant(source.getVariant());
+        copy.setTurnsPlayed(source.getTurnsPlayed());
+        copy.setHeadMovesThisTurn(source.getHeadMovesThisTurn());
         return copy;
     }
 

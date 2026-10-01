@@ -7,7 +7,5 @@ enum class GameMode {
     /** Player vs Bot (offline AI). */
     VS_BOT,
     /** Two players on the same device, taking turns. */
-    PASS_AND_PLAY,
-    /** Online multiplayer (future). */
-    ONLINE
+    PASS_AND_PLAY
 }

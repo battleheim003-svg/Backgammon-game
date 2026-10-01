@@ -24,11 +24,8 @@ public class BoardTouchHandler {
             if (touchX > (m.RightX + m.XBaseLeft)) {
                 // Top-right end board
                 if (touchX > m.Width) {
-                    float tempXStart = m.EndBoardMidX - (m.PaddingXLeft * 0.35F);
-                    float tempXEnd = m.EndBoardMidX + (m.PaddingXLeft * 0.35F);
-                    if ((touchX >= tempXStart) && (touchX <= tempXEnd)) {
-                        return 26;
-                    }
+                    // The whole tray column is a valid drop target
+                    return 26;
                 } else {
                     // Top-right triangles (6..11)
                     float triangleBorder = m.PaddingXRight + m.RightX + m.XBaseLeft;
@@ -65,11 +62,8 @@ public class BoardTouchHandler {
                 if (touchX > (m.RightX + m.XBaseLeft)) {
                     // Bottom-right end board
                     if (touchX > m.Width) {
-                        float tempXStart = m.EndBoardMidX - (m.PaddingXLeft * 0.35F);
-                        float tempXEnd = m.EndBoardMidX + (m.PaddingXLeft * 0.35F);
-                        if ((touchX >= tempXStart) && (touchX <= tempXEnd)) {
-                            return 27;
-                        }
+                        // The whole tray column is a valid drop target
+                        return 27;
                     } else {
                         // Bottom-right triangles (18..23)
                         float triangleBorder = m.PaddingXRight + m.RightX + m.XBaseLeft;
@@ -114,7 +108,7 @@ public class BoardTouchHandler {
             return false;
         }
 
-        int numberOfChips = chipMatrix[trianglePosition].getNumberOfChips();
+        int numberOfChips = chipMatrix[trianglePosition].getVisibleChips();
         if (numberOfChips <= 0) {
             return false;
         }

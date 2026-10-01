@@ -46,6 +46,7 @@ public class CoinShopActivity extends AppCompatActivity {
     private RecyclerView rvShopItems;
     private ShopAdapter shopAdapter;
     private ShopItem.Category selectedCategory = ShopItem.Category.ALL;
+    private SeasonManager seasonManager;
     private Button btnFreeCoinsShop;
 
     private final List<ShopItem> allItems = new ArrayList<>();
@@ -81,6 +82,12 @@ public class CoinShopActivity extends AppCompatActivity {
         buildShopCatalog();
         setupRecyclerView();
         setupCategoryTabs();
+
+        View treasury = findViewById(R.id.btnOpenCollection);
+        if (treasury != null) {
+            treasury.setOnClickListener(v ->
+                    startActivity(new android.content.Intent(this, CollectionActivity.class)));
+        }
         setupFreeCoinsButton();
         refreshCoinBalance();
     }
@@ -143,6 +150,8 @@ public class CoinShopActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        bindSeason();
+        bindCollection();
         freeCoinsTickHandler.removeCallbacks(freeCoinsTick);
         freeCoinsTickHandler.post(freeCoinsTick);
     }
@@ -186,22 +195,27 @@ public class CoinShopActivity extends AppCompatActivity {
 
         ShopItem.Category[] cats = {
                 ShopItem.Category.ALL,
+                ShopItem.Category.CHECKERS,
+                ShopItem.Category.DICE_SKIN,
+                ShopItem.Category.TITLE,
                 ShopItem.Category.COSMETIC,
                 ShopItem.Category.CONSUMABLE,
                 ShopItem.Category.BUNDLE
         };
         int[] labelRes = {
                 R.string.shop_category_all,
+                R.string.shop_category_checkers,
+                R.string.shop_category_dice,
+                R.string.shop_category_title,
                 R.string.shop_category_cosmetic,
                 R.string.shop_category_consumable,
                 R.string.shop_category_bundle
         };
-        String[] icons = {"🛍️", "💎", "🎯", "🎁"};
 
         for (int i = 0; i < cats.length; i++) {
             final ShopItem.Category cat = cats[i];
             Button btn = new Button(new ContextThemeWrapper(this, R.style.ShopCategoryTabButton), null, 0);
-            btn.setText(icons[i] + " " + getString(labelRes[i]));
+            btn.setText(getString(labelRes[i]));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
             lp.setMarginEnd(4);
@@ -217,8 +231,164 @@ public class CoinShopActivity extends AppCompatActivity {
                     shopAdapter.filter(cat);
                 }
                 updateTabSelection(tabs, btn);
+                bindCollection();
             });
             tabs.addView(btn);
+        }
+    }
+
+    /**
+     * How much of the current shelf the player already holds.
+     *
+     * A list of prices is a catalogue; a count of what you own turns the same
+     * list into a set worth completing, which is the whole point of collections.
+     */
+    /**
+     * The season's set: what it is, what it costs, and how long it is still here.
+     *
+     * Nothing else in the shop can be missed, which is exactly why this one can.
+     */
+    private void bindSeason() {
+        View card = findViewById(R.id.seasonBundle);
+        if (card == null) {
+            return;
+        }
+        if (seasonManager == null) {
+            seasonManager = new SeasonManager(this);
+        }
+        Season season = seasonManager.current();
+
+        // The card is a summary; the set has a page of its own, and tapping
+        // anywhere on the card is how a player gets to it.
+        card.setOnClickListener(v -> BundleActivity.open(this));
+
+        ((android.widget.ImageView) findViewById(R.id.seasonHero))
+                .setImageResource(season.heroDrawable());
+        ((android.widget.ImageView) findViewById(R.id.seasonSeal))
+                .setImageResource(season.sealDrawable());
+        ((android.widget.TextView) findViewById(R.id.seasonName)).setText(season.nameRes);
+        ((android.widget.TextView) findViewById(R.id.seasonStory)).setText(season.storyRes);
+
+        int remaining = seasonManager.daysRemaining();
+        ((android.widget.TextView) findViewById(R.id.seasonCountdown)).setText(
+                remaining <= 1
+                        ? getString(R.string.season_last_day)
+                        : getString(R.string.season_days_left, remaining));
+
+        // The pieces of the set, as their own artwork.
+        LinearLayout contents = findViewById(R.id.seasonContents);
+        contents.removeAllViews();
+        for (String id : season.itemIds()) {
+            ShopItem piece = findItem(id);
+            if (piece == null) {
+                continue;
+            }
+            android.widget.ImageView art = new android.widget.ImageView(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(38), dp(38));
+            lp.setMarginEnd(dp(8));
+            art.setLayoutParams(lp);
+            art.setImageResource(piece.getIconRes() != 0
+                    ? piece.getIconRes()
+                    : ShopArt.medallion(piece.getCategory(), piece.getRarity()));
+            contents.addView(art);
+        }
+
+        android.widget.TextView full = findViewById(R.id.seasonFullPrice);
+        Button buy = findViewById(R.id.seasonBuy);
+        int separately = seasonManager.bundleFullPrice(allItems);
+
+        if (seasonManager.ownsWholeBundle()) {
+            full.setText("");
+            buy.setText(R.string.season_bundle_owned);
+            buy.setEnabled(false);
+        } else {
+            full.setText(getString(R.string.season_bundle_saving, separately));
+            buy.setText(getString(R.string.season_bundle_price, season.bundlePrice));
+            buy.setEnabled(true);
+            buy.setOnClickListener(v -> {
+                if (!coinManager.spend(season.bundlePrice, "season_bundle")) {
+                    android.widget.Toast.makeText(this, R.string.not_enough_coins,
+                            android.widget.Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                seasonManager.grantBundle();
+                refreshCoinBalance();
+                bindSeason();
+                bindCollection();
+                if (shopAdapter != null) {
+                    shopAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+        seasonManager.markSeen();
+    }
+
+    /**
+     * Takes last season's set off the shelves.
+     *
+     * Anything the player already bought stays in the list so they can still see
+     * and equip it; anything they did not is gone, and does not come back. That
+     * is what makes the seal on a retired piece worth anything.
+     */
+    private void withdrawClosedSeasons() {
+        if (seasonManager == null) {
+            seasonManager = new SeasonManager(this);
+        }
+        games.mrlaki5.backgammon.Database.PlayerProfileManager profile =
+                games.mrlaki5.backgammon.Database.PlayerProfileManager.getInstance(this);
+
+        java.util.Iterator<ShopItem> iterator = allItems.iterator();
+        while (iterator.hasNext()) {
+            ShopItem item = iterator.next();
+            if (!seasonManager.isOffered(item.getId())
+                    && !profile.isItemPurchased(item.getId())) {
+                iterator.remove();
+            }
+        }
+    }
+
+    private ShopItem findItem(String id) {
+        for (ShopItem item : allItems) {
+            if (item.getId().equals(id)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    private void bindCollection() {
+        android.widget.TextView label = findViewById(R.id.tvShopCollectionLabel);
+        android.widget.TextView count = findViewById(R.id.tvShopCollectionCount);
+        android.widget.ProgressBar bar = findViewById(R.id.shopCollectionProgress);
+        if (label == null || count == null || bar == null || allItems == null) {
+            return;
+        }
+
+        games.mrlaki5.backgammon.Database.PlayerProfileManager profile =
+                games.mrlaki5.backgammon.Database.PlayerProfileManager.getInstance(this);
+
+        int total = 0;
+        int owned = 0;
+        for (ShopItem item : allItems) {
+            if (item.isConsumable()) {
+                continue;  // stock, not something you collect
+            }
+            if (selectedCategory != ShopItem.Category.ALL
+                    && item.getCategory() != selectedCategory) {
+                continue;
+            }
+            total++;
+            if (item.isFree() || profile.isItemPurchased(item.getId())) {
+                owned++;
+            }
+        }
+
+        label.setText(getString(R.string.shop_collection_label));
+        count.setText(getString(R.string.shop_collection_count, owned, total));
+        bar.setProgress(total == 0 ? 0 : Math.round(owned * 100F / total));
+        View container = findViewById(R.id.shopCollectionBar);
+        if (container != null) {
+            container.setVisibility(total == 0 ? View.GONE : View.VISIBLE);
         }
     }
 
@@ -246,9 +416,152 @@ public class CoinShopActivity extends AppCompatActivity {
         allItems.clear();
 
         // ═══════════════════════════════════════════
-        // BUNDLE — Starter Bundle (Spans 2 columns)
+        // BUNDLES — each spans 2 columns in the grid
         // ═══════════════════════════════════════════
         allItems.add(ShopItem.starterBundle(this));
+
+        // Nacre — checkers + dice + effect (2650 → 1900)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_nacre",
+                getString(R.string.bundle_nacre_title),
+                getString(R.string.bundle_nacre_desc),
+                getString(R.string.bundle_nacre_story),
+                1900, ShopItem.Rarity.RARE,
+                R.drawable.checkers_nacre,
+                null,
+                new String[]{"checkers_nacre", "dice_walnut", "effect_pearl_ripple"}));
+
+        // Copper — checkers + dice + effect (2900 → 2100)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_copper",
+                getString(R.string.bundle_copper_title),
+                getString(R.string.bundle_copper_desc),
+                getString(R.string.bundle_copper_story),
+                2100, ShopItem.Rarity.RARE,
+                R.drawable.checkers_copper,
+                getString(R.string.shop_badge_new),
+                new String[]{"checkers_copper", "dice_copper", "effect_madder_thread"}));
+
+        // Turquoise — checkers + dice + effect (5400 → 2800)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_turquoise",
+                getString(R.string.bundle_turquoise_title),
+                getString(R.string.bundle_turquoise_desc),
+                getString(R.string.bundle_turquoise_story),
+                2800, ShopItem.Rarity.EPIC,
+                R.drawable.checkers_turquoise,
+                getString(R.string.shop_badge_discount),
+                new String[]{"checkers_turquoise", "dice_turquoise", "effect_turquoise_spark"}));
+
+        // Lapis — checkers + dice + effect (5700 → 3500)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_lapis",
+                getString(R.string.bundle_lapis_title),
+                getString(R.string.bundle_lapis_desc),
+                getString(R.string.bundle_lapis_story),
+                3500, ShopItem.Rarity.EPIC,
+                R.drawable.checkers_lajvard,
+                null,
+                new String[]{"checkers_lajvard", "dice_lajvard", "effect_lapis_night"}));
+
+        // Saffron — checkers + dice + effect (6300 → 3800)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_saffron",
+                getString(R.string.bundle_saffron_title),
+                getString(R.string.bundle_saffron_desc),
+                getString(R.string.bundle_saffron_story),
+                3800, ShopItem.Rarity.EPIC,
+                R.drawable.checkers_saffron,
+                null,
+                new String[]{"checkers_saffron", "dice_saffron", "effect_saffron_haze"}));
+
+        // Agate — checkers + dice + effect (6900 → 4400)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_agate",
+                getString(R.string.bundle_agate_title),
+                getString(R.string.bundle_agate_desc),
+                getString(R.string.bundle_agate_story),
+                4400, ShopItem.Rarity.EPIC,
+                R.drawable.checkers_agate,
+                getString(R.string.shop_badge_popular),
+                new String[]{"checkers_agate", "dice_agate", "effect_agate_ember"}));
+
+        // Isfahan — board + frame + sound (5500 → 4000)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_isfahan",
+                getString(R.string.bundle_isfahan_title),
+                getString(R.string.bundle_isfahan_desc),
+                getString(R.string.bundle_isfahan_story),
+                4000, ShopItem.Rarity.EPIC,
+                R.drawable.board_haftrang,
+                getString(R.string.shop_badge_popular),
+                new String[]{"board_haftrang", "frame_isfahan", "sound_isfahan"}));
+
+        // Caravanserai — board + frame + sound (5600 → 4200)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_caravan",
+                getString(R.string.bundle_caravan_title),
+                getString(R.string.bundle_caravan_desc),
+                getString(R.string.bundle_caravan_story),
+                4200, ShopItem.Rarity.EPIC,
+                R.drawable.board_pateh,
+                getString(R.string.shop_badge_new),
+                new String[]{"board_pateh", "frame_caravan", "sound_caravan"}));
+
+        // Sound Market — 4 sound sets (4450 → 3000)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_sound_pack",
+                getString(R.string.bundle_sound_pack_title),
+                getString(R.string.bundle_sound_pack_desc),
+                getString(R.string.bundle_sound_pack_story),
+                3000, ShopItem.Rarity.RARE,
+                R.drawable.sound_isfahan,
+                getString(R.string.shop_badge_discount),
+                new String[]{"sound_neyshabur", "sound_shiraz", "sound_tabriz", "sound_yazd"}));
+
+        // Artisan Boards — board_khatam + board_mina + board_nacre (9800 → 6800)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_boards",
+                getString(R.string.bundle_boards_title),
+                getString(R.string.bundle_boards_desc),
+                getString(R.string.bundle_boards_story),
+                6800, ShopItem.Rarity.EPIC,
+                R.drawable.board_khatam,
+                null,
+                new String[]{"board_khatam", "board_mina", "board_nacre"}));
+
+        // Yazd Zari — board + frame + sound (5950 → 4500)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_zari",
+                getString(R.string.bundle_zari_title),
+                getString(R.string.bundle_zari_desc),
+                getString(R.string.bundle_zari_story),
+                4500, ShopItem.Rarity.EPIC,
+                R.drawable.board_zari,
+                getString(R.string.shop_badge_special),
+                new String[]{"board_zari", "frame_yazd", "sound_yazd"}));
+
+        // Gold — checkers + dice (11000 → 7500)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_gold",
+                getString(R.string.bundle_gold_title),
+                getString(R.string.bundle_gold_desc),
+                getString(R.string.bundle_gold_story),
+                7500, ShopItem.Rarity.LEGENDARY,
+                R.drawable.checkers_gold,
+                getString(R.string.shop_badge_special),
+                new String[]{"checkers_gold", "dice_gold"}));
+
+        // Tabriz Master — board_melileh + checkers_melileh + dice_melileh (9800 → 6500)
+        allItems.add(ShopItem.themedBundle(
+                "bundle_master",
+                getString(R.string.bundle_master_title),
+                getString(R.string.bundle_master_desc),
+                getString(R.string.bundle_master_story),
+                6500, ShopItem.Rarity.LEGENDARY,
+                R.drawable.board_melileh,
+                getString(R.string.shop_badge_special),
+                new String[]{"board_melileh", "checkers_melileh", "dice_melileh"}));
 
         // ═══════════════════════════════════════════
         // CONSUMABLES — Hints & Undos
@@ -257,99 +570,11 @@ public class CoinShopActivity extends AppCompatActivity {
         allItems.add(ShopItem.hintPack10(this));
         allItems.add(ShopItem.undoPack3(this));
 
-        // ═══════════════════════════════════════════
-        // AVATAR FRAMES — 8 items
-        // ═══════════════════════════════════════════
-        allItems.add(ShopItem.permanent(
-            "frame_default", getString(R.string.frame_default_title), getString(R.string.frame_default_desc),
-            0, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.COMMON, "🪵"));
+        // Checkers, dice and titles share one definition with the treasury
+        // screen, because a season names its pieces by id and both screens have
+        // to agree on what those ids mean.
+        allItems.addAll(SeasonCatalogue.all(this));
 
-        allItems.add(ShopItem.permanent(
-            "frame_bronze", getString(R.string.frame_bronze_title), getString(R.string.frame_bronze_desc),
-            150, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.COMMON, "🥉"));
-
-        allItems.add(ShopItem.withUnlock(
-            "frame_silver", getString(R.string.frame_silver_title), getString(R.string.frame_silver_desc),
-            400, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.RARE, "🥈", 10));
-
-        allItems.add(ShopItem.withUnlock(
-            "frame_carpet", getString(R.string.frame_carpet_title), getString(R.string.frame_carpet_desc),
-            550, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.RARE, "🟥", 20));
-
-        allItems.add(ShopItem.withUnlock(
-            "frame_gold", getString(R.string.frame_gold_title), getString(R.string.frame_gold_desc),
-            1000, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.EPIC, "🥇", 50));
-
-        allItems.add(ShopItem.withUnlock(
-            "frame_peacock", getString(R.string.frame_peacock_title), getString(R.string.frame_peacock_desc),
-            1500, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.EPIC, "🦚", 75));
-
-        allItems.add(new ShopItem(
-            "frame_diamond", getString(R.string.frame_diamond_title), getString(R.string.frame_diamond_desc),
-            3000, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.LEGENDARY, "💎",
-            0, 0, 150, getString(R.string.shop_badge_popular), 0, false));
-
-        allItems.add(new ShopItem(
-            "frame_sultan", getString(R.string.frame_sultan_title), getString(R.string.frame_sultan_desc),
-            5000, ShopItem.Category.AVATAR_FRAME, ShopItem.Rarity.LEGENDARY, "👑",
-            0, 0, 300, null, 0, false));
-
-        // ═══════════════════════════════════════════
-        // DICE SKINS — 6 items
-        // ═══════════════════════════════════════════
-        allItems.add(ShopItem.permanent(
-            "dice_default", getString(R.string.dice_default_title), getString(R.string.dice_default_desc),
-            0, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.COMMON, "🎲"));
-
-        allItems.add(ShopItem.permanent(
-            "dice_walnut", getString(R.string.dice_walnut_title), getString(R.string.dice_walnut_desc),
-            200, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.COMMON, "🟫"));
-
-        allItems.add(ShopItem.withUnlock(
-            "dice_ruby", getString(R.string.dice_ruby_title), getString(R.string.dice_ruby_desc),
-            500, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.RARE, "🔴", 15));
-
-        allItems.add(ShopItem.withUnlock(
-            "dice_marble", getString(R.string.dice_marble_title), getString(R.string.dice_marble_desc),
-            700, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.RARE, "⬜", 30));
-
-        allItems.add(new ShopItem(
-            "dice_crystal", getString(R.string.dice_crystal_title), getString(R.string.dice_crystal_desc),
-            1400, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.EPIC, "🔷",
-            0, 0, 100, getString(R.string.shop_badge_new), 0, false));
-
-        allItems.add(new ShopItem(
-            "dice_dragon", getString(R.string.dice_dragon_title), getString(R.string.dice_dragon_desc),
-            3500, ShopItem.Category.DICE_SKIN, ShopItem.Rarity.LEGENDARY, "🐉",
-            0, 0, 200, null, 0, false));
-
-        // ═══════════════════════════════════════════
-        // TITLES — 6 items
-        // ═══════════════════════════════════════════
-        allItems.add(ShopItem.permanent(
-            "title_beginner", getString(R.string.title_beginner_title), getString(R.string.title_beginner_desc),
-            0, ShopItem.Category.TITLE, ShopItem.Rarity.COMMON, "🌱"));
-
-        allItems.add(ShopItem.withUnlock(
-            "title_sharp", getString(R.string.title_sharp_title), getString(R.string.title_sharp_desc),
-            100, ShopItem.Category.TITLE, ShopItem.Rarity.COMMON, "🧩", 5));
-
-        allItems.add(ShopItem.withUnlock(
-            "title_tactician", getString(R.string.title_tactician_title), getString(R.string.title_tactician_desc),
-            350, ShopItem.Category.TITLE, ShopItem.Rarity.RARE, "⚔️", 25));
-
-        allItems.add(ShopItem.withUnlock(
-            "title_master", getString(R.string.title_master_title), getString(R.string.title_master_desc),
-            600, ShopItem.Category.TITLE, ShopItem.Rarity.RARE, "🎓", 60));
-
-        allItems.add(new ShopItem(
-            "title_king", getString(R.string.title_king_title), getString(R.string.title_king_desc),
-            1200, ShopItem.Category.TITLE, ShopItem.Rarity.EPIC, "♔",
-            0, 0, 100, null, 0, false));
-
-        allItems.add(new ShopItem(
-            "title_sultan", getString(R.string.title_sultan_title), getString(R.string.title_sultan_desc),
-            2500, ShopItem.Category.TITLE, ShopItem.Rarity.LEGENDARY, "🏆",
-            0, 0, 250, null, 0, false));
+        withdrawClosedSeasons();
     }
 }

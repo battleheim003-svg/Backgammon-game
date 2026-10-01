@@ -8,13 +8,38 @@ public class ShopItem {
 
     public enum Category {
         ALL,
+        CHECKERS,
         AVATAR_FRAME,
         DICE_SKIN,
         TITLE,
         THEME,
         COSMETIC,
         CONSUMABLE,
-        BUNDLE
+        BUNDLE,
+        /** The playing surface itself: khatam, monabbat, mina. */
+        BOARD,
+        /** What the dice do when they land — dust, sparks, a ripple of light. */
+        DICE_EFFECT,
+        /** The banner that unfurls on a win. */
+        BANNER,
+        /** The set of sounds a move, a hit and a win make. */
+        SOUND_SET
+    }
+
+    /**
+     * How a piece is come by.
+     *
+     * A catalogue where everything has a price is a catalogue where nothing is
+     * worth having. EARN marks the pieces that coins cannot buy at any amount —
+     * those are the ones a collection is actually judged on.
+     */
+    public enum Acquisition {
+        /** Coins, and nothing else. */
+        BUY,
+        /** Play, and nothing else. No price is ever shown for these. */
+        EARN,
+        /** Either: buy it now, or unlock it by playing. */
+        BOTH
     }
 
     public enum Rarity {
@@ -22,11 +47,12 @@ public class ShopItem {
 
         public String hexColor() {
             switch (this) {
-                case COMMON:    return "#9E9E9E";
-                case RARE:      return "#2196F3";
-                case EPIC:      return "#9C27B0";
-                case LEGENDARY: return "#FFB300";
-                default:        return "#9E9E9E";
+                // Each is its material's lit edge: bronze, silver, turquoise, gold.
+                case COMMON:    return "#D8A26A";
+                case RARE:      return "#E6ECF2";
+                case EPIC:      return "#8CE6D6";
+                case LEGENDARY: return "#F7D488";
+                default:        return "#D8A26A";
             }
         }
 
@@ -56,10 +82,44 @@ public class ShopItem {
     public final int quantity;
     public final boolean isConsumable;
 
+    /**
+     * The longer text the detail sheet shows: what the craft is, and why this
+     * piece looks the way it does. The short description stays for the card.
+     * Empty when the piece has no story to tell.
+     */
+    public final String story;
+    /** How this piece is obtained. */
+    public final Acquisition acquisition;
+    /**
+     * The Journey chapter or challenge that grants an EARN/BOTH piece, as
+     * {@link SeasonCatalogue} names it. Empty for a piece that is only bought.
+     */
+    public final String earnKey;
+    /**
+     * For BUNDLE items only: the ids of every piece this bundle grants on
+     * purchase. Empty for non-bundle items. When a player buys the bundle every
+     * id here is added to their owned-items list, so they can equip each piece
+     * without a separate purchase.
+     */
+    public String[] bundleContents = new String[0];
+
     public ShopItem(String id, String title, String description, int price,
                     Category category, Rarity rarity, String iconEmoji,
                     int iconRes, int nameRes, int unlockRequirement,
                     String badge, int quantity, boolean isConsumable) {
+        this(id, title, description, price, category, rarity, iconEmoji, iconRes,
+                nameRes, unlockRequirement, badge, quantity, isConsumable,
+                "", Acquisition.BUY, "");
+    }
+
+    public ShopItem(String id, String title, String description, int price,
+                    Category category, Rarity rarity, String iconEmoji,
+                    int iconRes, int nameRes, int unlockRequirement,
+                    String badge, int quantity, boolean isConsumable,
+                    String story, Acquisition acquisition, String earnKey) {
+        this.story = story == null ? "" : story;
+        this.acquisition = acquisition == null ? Acquisition.BUY : acquisition;
+        this.earnKey = earnKey == null ? "" : earnKey;
         this.id = id;
         this.title = title;
         this.description = description;
@@ -80,6 +140,40 @@ public class ShopItem {
                     int unlockRequirement, String badge) {
         this(id, title, description, price, category, rarity, iconEmoji,
                 0, 0, unlockRequirement, badge, 0, category == Category.CONSUMABLE);
+    }
+
+    /**
+     * A product with its own rendered artwork rather than a rarity medallion —
+     * used where the thing itself is worth showing, like a set of checkers.
+     */
+    public static ShopItem crafted(String id, String title, String description, int price,
+                                   Category category, Rarity rarity, int iconRes,
+                                   int unlockRequirement) {
+        return new ShopItem(id, title, description, price, category, rarity, "",
+                iconRes, 0, unlockRequirement, null, 0, false);
+    }
+
+    /**
+     * A crafted piece that also carries its story and how it is obtained.
+     * This is the form every season piece uses.
+     */
+    public static ShopItem crafted(String id, String title, String description, String story,
+                                   int price, Category category, Rarity rarity, int iconRes,
+                                   int unlockRequirement, Acquisition acquisition, String earnKey) {
+        return new ShopItem(id, title, description, price, category, rarity, "",
+                iconRes, 0, unlockRequirement, null, 0, false,
+                story, acquisition, earnKey);
+    }
+
+    /**
+     * A piece coins cannot buy. Price is forced to zero so no screen can
+     * accidentally offer it for sale.
+     */
+    public static ShopItem earned(String id, String title, String description, String story,
+                                  Category category, Rarity rarity, int iconRes, String earnKey) {
+        return new ShopItem(id, title, description, 0, category, rarity, "",
+                iconRes, 0, 0, null, 0, false,
+                story, Acquisition.EARN, earnKey);
     }
 
     public static ShopItem permanent(String id, String title, String description, int price,
@@ -131,6 +225,21 @@ public class ShopItem {
                 0, context.getString(R.string.shop_badge_special), 0, false);
     }
 
+    /**
+     * A themed bundle: several individual pieces sold together at a discount.
+     * Purchasing it grants every id in {@code contents} to the player's owned
+     * collection, so they can equip each piece without a second purchase.
+     */
+    public static ShopItem themedBundle(String id, String title, String description,
+                                        String story, int price, Rarity rarity,
+                                        int iconRes, String badge, String[] contents) {
+        ShopItem item = new ShopItem(id, title, description, price,
+                Category.BUNDLE, rarity, "", iconRes, 0, 0, badge, 0, false,
+                story, Acquisition.BUY, "");
+        item.bundleContents = contents;
+        return item;
+    }
+
     public String getId()              { return id; }
     public String getTitle()           { return title; }
     public String getDescription()     { return description; }
@@ -146,4 +255,12 @@ public class ShopItem {
     public boolean isConsumable()      { return isConsumable; }
     public boolean isFree()            { return price <= 0; }
     public boolean hasUnlockReq()      { return unlockRequirement > 0; }
+    public String getStory()           { return story; }
+    public Acquisition getAcquisition(){ return acquisition; }
+    public String getEarnKey()         { return earnKey; }
+
+    /** True when no amount of coins buys this piece. */
+    public boolean isEarnOnly()        { return acquisition == Acquisition.EARN; }
+    /** True when the shop may show a price for this piece. */
+    public boolean isPurchasable()     { return acquisition != Acquisition.EARN; }
 }

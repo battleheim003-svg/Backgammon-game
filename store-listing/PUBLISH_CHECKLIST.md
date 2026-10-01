@@ -74,8 +74,7 @@ Keep versionCode synchronized between both builds. Increment once per release cy
 
 ## Post-Release
 
-- [ ] Monitor crash reports (Sentry/ACRA dashboard)
-- [ ] Check analytics for first-day metrics
+- [ ] Monitor crash reports (Firebase Crashlytics — console.firebase.google.com)
+- [ ] Check analytics for first-day metrics (Firebase Analytics dashboard)
 - [ ] Respond to first user reviews within 24h
 - [ ] Monitor IAP revenue in both store consoles
-- [ ] Check matchmaking queue health (are people finding matches?)

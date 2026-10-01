@@ -1,5 +1,10 @@
 package games.mrlaki5.backgammon.GameControllers;
 
+import com.royalbackgammon.core.logic.BackgammonRules;
+import com.royalbackgammon.core.model.GameState;
+import com.royalbackgammon.core.variant.RuleFamily;
+import com.royalbackgammon.core.variant.Variant;
+
 import java.util.List;
 
 import games.mrlaki5.backgammon.Beans.BoardFieldState;
@@ -57,6 +62,10 @@ public class GameMoveExecutor {
             return new MoveResult(false, srcField, dstField, false);
         }
 
+        countHeadMove(srcField);
+        countBarEntry(srcField);
+        releasePinnedIfUncovered(srcField);
+        model.recordMove(jump);
         consumeDice(jump.getJumpNumber());
         boolean hit = placeChecker(dstField);
         return new MoveResult(true, srcField, dstField, hit);
@@ -70,7 +79,11 @@ public class GameMoveExecutor {
         if (board[src].getNumberOfChips() == 0) {
             board[src].setPlayer(0);
         }
+        releasePinnedIfUncovered(src);
 
+        countHeadMove(src);
+        countBarEntry(src);
+        model.recordMove(jump);
         consumeDice(jump.getJumpNumber());
         boolean hit = placeChecker(jump.getDstField());
         return new MoveResult(true, src, jump.getDstField(), hit);
@@ -93,6 +106,34 @@ public class GameMoveExecutor {
         }
     }
 
+    // Acey-deucey: a checker coming in off the bar clears one of the hits waiting there
+    private void countBarEntry(int srcField) {
+        if (model.getVariant().getStartsOnBar()
+                && srcField == GameState.barIndex(model.getCurrentPlayer())) {
+            model.setHitsOnBar(model.getCurrentPlayer(),
+                    model.getHitsOnBar(model.getCurrentPlayer()) - 1);
+        }
+    }
+
+    // Running family: track checkers leaving the head for the one-per-turn rule
+    private void countHeadMove(int srcField) {
+        Variant variant = model.getVariant();
+        if (variant.getFamily() == RuleFamily.RUNNING
+                && srcField == BackgammonRules.headIndex(model.getCurrentPlayer(), variant)) {
+            model.setHeadMovesThisTurn(model.getHeadMovesThisTurn() + 1);
+        }
+    }
+
+    // Plakoto: once the stack above a pinned checker is gone, that checker is free again
+    private void releasePinnedIfUncovered(int field) {
+        BoardFieldState state = model.getBoardFields()[field];
+        if (state.getNumberOfChips() == 0 && state.getPinnedPlayer() != 0) {
+            state.setNumberOfChips(1);
+            state.setPlayer(state.getPinnedPlayer());
+            state.setPinnedPlayer(0);
+        }
+    }
+
     private void consumeDice(int throwNumber) {
         for (DiceThrow dice : model.getDiceThrows()) {
             if (dice.getThrowNumber() == throwNumber && dice.getAlreadyUsed() == 0) {
@@ -106,9 +147,16 @@ public class GameMoveExecutor {
         BoardFieldState[] board = model.getBoardFields();
         int player = model.getCurrentPlayer();
         int destinationPlayer = board[dstField].getPlayer();
-        boolean hit = board[dstField].getNumberOfChips() == 1 && destinationPlayer != player;
+        boolean lone = board[dstField].getNumberOfChips() == 1 && destinationPlayer != player;
+        if (lone && model.getVariant().getFamily() == RuleFamily.PINNING) {
+            board[dstField].setPinnedPlayer(destinationPlayer);
+            board[dstField].setPlayer(player);
+            return false;
+        }
+        boolean hit = lone;
 
         if (hit) {
+            model.setHitsOnBar(destinationPlayer, model.getHitsOnBar(destinationPlayer) + 1);
             int bar = 23 + destinationPlayer;
             board[bar].setNumberOfChips(board[bar].getNumberOfChips() + 1);
             board[bar].setPlayer(destinationPlayer);

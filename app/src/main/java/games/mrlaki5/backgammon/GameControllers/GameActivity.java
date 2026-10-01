@@ -1,5 +1,17 @@
 package games.mrlaki5.backgammon.GameControllers;
 
+import androidx.annotation.Nullable;
+
+import com.royalbackgammon.core.model.GameResult;
+import com.royalbackgammon.core.scoring.MatchState;
+
+import games.mrlaki5.backgammon.Challenge.ChallengeCode;
+import games.mrlaki5.backgammon.Challenge.ChallengeHistory;
+import games.mrlaki5.backgammon.Journey.JourneyManager;
+import com.royalbackgammon.core.variant.Variant;
+
+import games.mrlaki5.backgammon.Menus.VariantPicker;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,6 +21,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
+import android.widget.Toast;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -100,8 +113,7 @@ public class GameActivity extends AppCompatActivity {
                      java.util.List<NextJump> moves) {
             this.boardFields = new games.mrlaki5.backgammon.Beans.BoardFieldState[fields.length];
             for (int i = 0; i < fields.length; i++) {
-                this.boardFields[i] = new games.mrlaki5.backgammon.Beans.BoardFieldState(
-                        fields[i].getNumberOfChips(), fields[i].getPlayer());
+                this.boardFields[i] = fields[i].copy();
             }
             this.diceThrows = new games.mrlaki5.backgammon.Beans.DiceThrow[dice.length];
             for (int i = 0; i < dice.length; i++) {
@@ -120,8 +132,7 @@ public class GameActivity extends AppCompatActivity {
             games.mrlaki5.backgammon.Beans.BoardFieldState[] copy =
                     new games.mrlaki5.backgammon.Beans.BoardFieldState[boardFields.length];
             for (int i = 0; i < boardFields.length; i++) {
-                copy[i] = new games.mrlaki5.backgammon.Beans.BoardFieldState(
-                        boardFields[i].getNumberOfChips(), boardFields[i].getPlayer());
+                copy[i] = boardFields[i].copy();
             }
             return copy;
         }
@@ -326,7 +337,7 @@ public class GameActivity extends AppCompatActivity {
 
         // View Setup
         BoardImage = findViewById(R.id.boardImage);
-        BoardImage.setBoardTheme(GamePreferences.getBoardTheme(this));
+        BoardImage.setBoardTheme(getBoardThemeForGame());
 
         rollDiceButton = findViewById(R.id.rollDiceButton);
         rollDiceButton.setOnClickListener(v -> rollDiceFromButton(v));
@@ -342,6 +353,8 @@ public class GameActivity extends AppCompatActivity {
 
         // Subsystem Controllers
         initControllers(tutorialMode, passAndPlayMode, shakeThreshold, sampleTime, diceDelay);
+
+        showVariantBanner(tutorialMode);
 
         // Board initial draw
         BoardImage.setChipMatrix(model.getBoardFields());
@@ -455,6 +468,22 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onChangeSettings(int winningPlayer, String p1Name, String p2Name, String gameMode) {
                 finishWithResult(winningPlayer, p1Name, p2Name, gameMode);
+            }
+
+            @Override
+            public java.util.List<games.mrlaki5.backgammon.Analysis.TurnRecord> onRequestTurnHistory() {
+                return model != null ? model.getTurnHistory() : null;
+            }
+
+            @Override
+            public int onRequestHumanPlayer() {
+                if (model == null || model.getPlayers() == null) return 0;
+                for (int i = 0; i < model.getPlayers().length; i++) {
+                    if (model.getPlayers()[i] instanceof games.mrlaki5.backgammon.Players.Human) {
+                        return i + 1;
+                    }
+                }
+                return 0;
             }
 
             @Override
@@ -639,7 +668,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void applySelectedBoardTheme() {
-        int themeId = GamePreferences.getBoardTheme(this);
+        int themeId = getBoardThemeForGame();
         BoardTheme theme = BoardThemeFactory.getTheme(themeId);
         android.view.View root = findViewById(R.id.gameRoot);
         android.graphics.drawable.Drawable programmatic = theme.createBackgroundDrawable();
@@ -850,7 +879,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private String getDifficultyName() {
-        int diff = GamePreferences.getBotDifficulty(this);
+        int diff = getBotDifficulty();
         switch (diff) {
             case 0: return "easy";
             case 1: return "medium";
@@ -861,7 +890,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private String getThemeName() {
-        int theme = GamePreferences.getBoardTheme(this);
+        int theme = getBoardThemeForGame();
         switch (theme) {
             case GamePreferences.THEME_POP_ART: return "pop_art";
             case GamePreferences.THEME_CYBERPUNK: return "cyberpunk";
@@ -874,11 +903,101 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    public void onGameFinished(int winningPlayer, String p1Name, String p2Name, String gameMode) {
+    private final Object bonusDoubleLock = new Object();
+    private volatile int bonusDoubleChoice = 0;
+
+    /**
+     * Acey-deucey: asks the player (or the bot) which double to play after a 1-2.
+     * Called from the game thread and blocks until a value is chosen.
+     */
+    public int chooseBonusDouble() {
+        if (!(model.getCurrentObjectPlayer() instanceof games.mrlaki5.backgammon.Players.Human)) {
+            return new games.mrlaki5.backgammon.Players.BotMoveStrategy()
+                    .chooseBonusDouble(model, getBotDifficulty(), new java.util.Random());
+        }
+        bonusDoubleChoice = 0;
+        runOnUiThread(this::showBonusDoubleDialog);
+        synchronized (bonusDoubleLock) {
+            while (bonusDoubleChoice == 0) {
+                try {
+                    bonusDoubleLock.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return 6;
+                }
+            }
+        }
+        return bonusDoubleChoice;
+    }
+
+    private void showBonusDoubleDialog() {
+        String[] options = new String[6];
+        for (int i = 0; i < 6; i++) {
+            options[i] = getString(R.string.acey_bonus_option, i + 1);
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.DarkAlertDialogTheme);
+        builder.setTitle(R.string.acey_bonus_title);
+        builder.setCancelable(false);
+        builder.setItems(options, (dialog, which) -> setBonusDoubleChoice(which + 1));
+        builder.show();
+    }
+
+    private void setBonusDoubleChoice(int value) {
+        synchronized (bonusDoubleLock) {
+            bonusDoubleChoice = value;
+            bonusDoubleLock.notifyAll();
+        }
+    }
+
+    /** Board theme for this game: a journey chapter may override the player's choice. */
+    public int getBoardThemeForGame() {
+        int override = getIntent().getIntExtra(MenuActivity.EXTRA_BOARD_THEME, -1);
+        return override >= 0 ? override : GamePreferences.getBoardTheme(this);
+    }
+
+    /** Difficulty for this game: a journey chapter overrides the player's setting. */
+    public int getBotDifficulty() {
+        int override = getIntent().getIntExtra(MenuActivity.EXTRA_BOT_DIFFICULTY, -1);
+        return override >= 0 ? override : GamePreferences.getBotDifficulty(this);
+    }
+
+    //Marks a journey chapter finished once its match is won
+    private void checkJourneyCompletion(int winningPlayer) {
+        int stage = getIntent().getIntExtra(MenuActivity.EXTRA_JOURNEY_STAGE, -1);
+        if (stage < 0 || winningPlayer != 1) {
+            return;
+        }
+        MatchState match = model.getMatch();
+        if (match.getTargetPoints() > 1 && !match.isOver()) {
+            return;
+        }
+        int reward = new JourneyManager(this).completeStage(stage, new CoinManager(this));
+        if (reward > 0) {
+            runOnUiThread(() -> Toast.makeText(this,
+                    getString(R.string.journey_stage_done, reward), Toast.LENGTH_LONG).show());
+        }
+    }
+
+    //Challenge games are logged so the player can compare results with whoever shared the code
+    private void recordChallengeResult(int winningPlayer, @Nullable GameResult result) {
+        if (model.getDiceSeed() == 0 || result == null) {
+            return;
+        }
+        String code = ChallengeCode.encode(model.getVariant(), model.getDiceSeed(),
+                model.getMatch().getTargetPoints());
+        new ChallengeHistory(this).record(new ChallengeHistory.Entry(code, model.getVariant(),
+                winningPlayer == 1, result.getPoints()));
+    }
+
+    public void onGameFinished(int winningPlayer, String p1Name, String p2Name, String gameMode,
+                               @Nullable GameResult result) {
+        checkJourneyCompletion(winningPlayer);
+        recordChallengeResult(winningPlayer, result);
         if (gameOverHandler != null) {
             gameOverHandler.handleGameFinished(winningPlayer, p1Name, p2Name, gameMode,
                     isPassAndPlayMode(), isTutorialMode(), isRematchGame,
-                    sessionGameNumber, getGameDurationSeconds(), getDifficultyName());
+                    sessionGameNumber, getGameDurationSeconds(), getDifficultyName(),
+                    result, model.getVariant(), model.getMatch(), getBotDifficulty());
         }
     }
 
@@ -892,6 +1011,25 @@ public class GameActivity extends AppCompatActivity {
         finish();
     }
 
+    // Brief reminder of the variant and running match score when it is not a plain single game
+    private void showVariantBanner(boolean tutorialMode) {
+        MatchState match = model.getMatch();
+        if (tutorialMode || (model.getVariant() == Variant.STANDARD && match.getTargetPoints() <= 1
+                && model.getDiceSeed() == 0)) {
+            return;
+        }
+        String text = getString(VariantPicker.nameRes(model.getVariant()));
+        if (model.getDiceSeed() != 0) {
+            text = getString(R.string.challenge_banner, text);
+        }
+        if (match.getTargetPoints() > 1) {
+            text += " • " + getString(R.string.game_over_match_score, match.getTargetPoints(),
+                    model.getPlayers()[0].getPlayerName(), match.getWhiteScore(),
+                    match.getRedScore(), model.getPlayers()[1].getPlayerName());
+        }
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    }
+
     private void startRematch() {
         sessionGameNumber++;
         String mode = isPassAndPlayMode() ? "pass_and_play" : "vs_bot";
@@ -901,6 +1039,15 @@ public class GameActivity extends AppCompatActivity {
         saveFile.delete();
 
         Intent intent = getIntent();
+        // Continue the running match, or start a fresh one of the same length and variant
+        MatchState match = model.getMatch();
+        boolean matchOngoing = !match.isOver();
+        intent.putExtra(MenuActivity.EXTRA_VARIANT, model.getVariant().name());
+        intent.putExtra(MenuActivity.EXTRA_TAVLI, !match.getRotation().isEmpty());
+        intent.putExtra(MenuActivity.EXTRA_MATCH_TARGET, match.getTargetPoints());
+        intent.putExtra(MenuActivity.EXTRA_MATCH_WHITE_SCORE, matchOngoing ? match.getWhiteScore() : 0);
+        intent.putExtra(MenuActivity.EXTRA_MATCH_RED_SCORE, matchOngoing ? match.getRedScore() : 0);
+        intent.putExtra(MenuActivity.EXTRA_MATCH_GAMES, matchOngoing ? match.getGamesPlayed() : 0);
         intent.putExtra(EXTRA_SESSION_GAME_NUMBER, sessionGameNumber);
         intent.putExtra(EXTRA_IS_REMATCH, true);
         finish();
@@ -936,6 +1083,8 @@ public class GameActivity extends AppCompatActivity {
                 model.setBoardFields(turnSnapshot.copyBoard());
                 model.setDiceThrows(turnSnapshot.copyDice());
                 model.setNextMoves(turnSnapshot.copyMoves());
+                model.setHeadMovesThisTurn(0);
+                model.beginTurnRecord();
                 BoardImage.setChipMatrix(model.getBoardFields());
                 BoardImage.setDices(model.getDiceThrows());
                 BoardImage.setNextMoveArray(null);

@@ -13,7 +13,7 @@
         android:id="@+id/dlgTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-black"
+        android:fontFamily="@font/lalezar_regular"
         android:text="@string/daily_login_title"
         android:textColor="@color/color_gold_primary"
         android:textSize="16sp"

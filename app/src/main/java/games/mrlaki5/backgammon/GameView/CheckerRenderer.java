@@ -286,7 +286,8 @@ public class CheckerRenderer {
             }
 
             // Draw checkers on field
-            if (chipMatrix[i].getNumberOfChips() > 0) {
+            int visibleChips = chipMatrix[i].getVisibleChips();
+            if (visibleChips > 0) {
                 float xChipStart = x - currPadding * 0.35f;
                 float xChipEnd = x + currPadding * 0.35f;
                 float chipSize = Math.abs(xChipStart - xChipEnd);
@@ -296,10 +297,9 @@ public class CheckerRenderer {
                 float yChipEnd;
 
                 if (!drawEndBoard) {
-                    if ((chipSize * chipMatrix[i].getNumberOfChips() > m.TriangleHeight)
-                            && (chipMatrix[i].getNumberOfChips() > 1)) {
-                        heightPadding = (chipSize * chipMatrix[i].getNumberOfChips() - m.TriangleHeight)
-                                / (chipMatrix[i].getNumberOfChips() - 1);
+                    if ((chipSize * visibleChips > m.TriangleHeight) && (visibleChips > 1)) {
+                        heightPadding = (chipSize * visibleChips - m.TriangleHeight)
+                                / (visibleChips - 1);
                     }
                     yChipStart = y;
                     yChipEnd = chipSize + y;
@@ -315,9 +315,12 @@ public class CheckerRenderer {
                 }
 
                 BorderChipPaint.setStrokeWidth(chipSize * 0.09F);
-                Paint localPaint = (chipMatrix[i].getPlayer() == 1) ? WhiteChipPaint : RedChipPaint;
+                int pinnedPlayer = chipMatrix[i].getPinnedPlayer();
 
-                for (int j = 0; j < chipMatrix[i].getNumberOfChips(); j++) {
+                for (int j = 0; j < visibleChips; j++) {
+                    // A pinned checker sits at the base, under the pinning stack
+                    int chipPlayer = (j == 0 && pinnedPlayer != 0) ? pinnedPlayer : chipMatrix[i].getPlayer();
+                    Paint localPaint = (chipPlayer == 1) ? WhiteChipPaint : RedChipPaint;
                     if (i < 12 || i == 24 || i == 26) {
                         ChipRect.set(xChipStart, yChipStart, xChipEnd, yChipEnd);
                     } else {
@@ -325,7 +328,7 @@ public class CheckerRenderer {
                     }
 
                     if (!drawEndBoard) {
-                        activeTheme.drawChip(canvas, ChipRect, chipMatrix[i].getPlayer(),
+                        activeTheme.drawChip(canvas, ChipRect, chipPlayer,
                                 localPaint, ChipRimPaint, MoveChipShadowPaint,
                                 ChipHighlightPaint, chipSpecPaint, chipBevelPaint,
                                 chipAccentPaint, chipDotPaint, chipGlowPaint, chipContactShadowPaint,
@@ -339,7 +342,7 @@ public class CheckerRenderer {
                             yChipEnd = yChipEnd + (chipSize - heightPadding);
                         }
                     } else {
-                        activeTheme.drawEndChip(canvas, ChipRect, chipMatrix[i].getPlayer(),
+                        activeTheme.drawEndChip(canvas, ChipRect, chipPlayer,
                                 localPaint, ChipRimPaint, MoveChipShadowPaint,
                                 ChipHighlightPaint, chipGlowPaint, chipContactShadowPaint,
                                 chipShadowRect);

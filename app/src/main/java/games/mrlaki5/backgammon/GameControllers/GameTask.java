@@ -2,6 +2,10 @@ package games.mrlaki5.backgammon.GameControllers;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.royalbackgammon.core.model.GameResult;
+import com.royalbackgammon.core.variant.OpeningRoll;
+
+import games.mrlaki5.backgammon.Beans.DiceThrow;
 import games.mrlaki5.backgammon.GameModel.Model;
 import games.mrlaki5.backgammon.GameView.OnBoardImage;
 import games.mrlaki5.backgammon.Menus.MenuActivity;
@@ -139,15 +143,7 @@ public class GameTask {
                         model.getCurrentObjectPlayer().actionRoll();
                         if (workFlag.get() == 0 || executor.isCancelled()) break;
 
-                        // Check which player got higher number, that one plays first
-                        if (model.getDiceThrows()[0].getThrowNumber() >=
-                                model.getDiceThrows()[1].getThrowNumber()) {
-                            model.setCurrentPlayer(1);
-                        } else {
-                            model.setCurrentPlayer(2);
-                        }
-
-                        model.setState(2);
+                        resolveOpeningRoll();
 
                         try {
                             Thread.sleep(sleepTime);
@@ -162,14 +158,26 @@ public class GameTask {
                         model.setNextMoves(gameLogic.calculateMoves(model.getBoardFields(),
                                 model.getCurrentPlayer(), model.getDiceThrows()));
 
+                        model.beginTurnRecord();
                         if (!model.getNextMoves().isEmpty()) {
                             writeMessage(gameActivity.getString(R.string.move_checkers));
                             model.getCurrentObjectPlayer().actionMove();
                             if (workFlag.get() == 0 || executor.isCancelled()) break;
                         }
 
+                        // Acey-deucey: after the 1-2 the player names a double and plays it
+                        if (model.isBonusDoublePending()) {
+                            int value = gameActivity.chooseBonusDouble();
+                            if (workFlag.get() == 0 || executor.isCancelled()) break;
+                            model.setDiceThrows(bonusDice(value));
+                            model.setBonusDoublePending(false);
+                            onBoardImage.setDices(model.getDiceThrows());
+                            onBoardImage.postInvalidate();
+                            break;  // replay state 2 with the named double
+                        }
+
                         // Check if current player finished game
-                        if (gameLogic.getCurrPlayerFinished() != 0) {
+                        if (gameLogic.isGameOver()) {
                             if (endRoutineStarted.compareAndSet(0, 1)) {
                                 workFlag.set(0);
                                 int winningPlayer = gameLogic.getCurrPlayerFinished();
@@ -181,12 +189,26 @@ public class GameTask {
                                 } else {
                                     gameMode = MenuActivity.GAME_MODE_VS_BOT;
                                 }
+                                model.flushTurnRecord();
+                                GameResult result = gameLogic.calculateResult();
+                                if (result != null && !gameActivity.isTutorialMode()) {
+                                    model.getMatch().record(result);
+                                }
                                 gameActivity.playGameFinishedEffect();
-                                gameActivity.onGameFinished(winningPlayer, p1Name, p2Name, gameMode);
+                                gameActivity.onGameFinished(winningPlayer, p1Name, p2Name, gameMode, result);
                             }
                             break;
                         }
 
+                        // Acey-deucey: the 1-2 roll earns another roll for the same player
+                        if (model.isExtraTurnPending()) {
+                            model.setExtraTurnPending(false);
+                            model.flushTurnRecord();
+                            model.setState(3);
+                            break;
+                        }
+
+                        model.onTurnEnded();
                         model.changeCurrentPlayer();
                         model.setState(3);
 
@@ -233,6 +255,44 @@ public class GameTask {
             synchronized (this) {
                 this.notifyAll();
             }
+        }
+    }
+
+    private static DiceThrow[] bonusDice(int value) {
+        DiceThrow[] dice = new DiceThrow[4];
+        for (int i = 0; i < dice.length; i++) {
+            dice[i] = new DiceThrow(value);
+        }
+        return dice;
+    }
+
+    // Higher opening die starts; a tie restarts the opening roll
+    private void resolveOpeningRoll() {
+        DiceThrow[] dice = model.getDiceThrows();
+        int whiteRoll = dice[0].getThrowNumber();
+        int redRoll = dice[1].getThrowNumber();
+        if (whiteRoll == redRoll) {
+            dice[2].setAlreadyUsed(1);
+            dice[3].setAlreadyUsed(1);
+            model.setCurrentPlayer(1);
+            model.setState(0);
+            onBoardImage.setMessage(gameActivity.getString(R.string.opening_tie), 1, false);
+            onBoardImage.postInvalidate();
+            return;
+        }
+        int starter = whiteRoll > redRoll ? 1 : 2;
+        boolean handOver = starter != model.getCurrentPlayer();
+        model.setCurrentPlayer(starter);
+        if (handOver && gameActivity.isPassAndPlayMode()) {
+            gameActivity.showTurnSwitchAndWait(model.getCurrentObjectPlayer().getPlayerName(), starter);
+        }
+        if (model.getVariant().getOpeningRoll() == OpeningRoll.STARTER_REROLLS) {
+            for (DiceThrow die : dice) {
+                die.setAlreadyUsed(1);
+            }
+            model.setState(3);
+        } else {
+            model.setState(2);
         }
     }
 

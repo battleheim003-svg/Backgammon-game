@@ -34,6 +34,7 @@ public final class CoinConfig {
 
     public static final int FIRST_GAME_OF_DAY = 5;
     public static final int REWARDED_AD_WATCH = 15;
+    public static final int GAME_REVIEW_REWARD = 20;
     public static final int DAILY_CHALLENGE_BONUS_CHEST = 25;  // on top of base
     public static final int DOUBLE_REWARD_MULTIPLIER = 2;
     public static final int WEEKLY_CHALLENGE_1_REWARD = 100;

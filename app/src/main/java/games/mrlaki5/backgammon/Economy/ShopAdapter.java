@@ -101,19 +101,44 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ShopItem item = displayedItems.get(position);
 
+        // Tapping the card body opens the piece rather than buying it. A card
+        // has room for a name and a price; wanting something takes more than
+        // that, so the detail sheet is where the art, the craft and the way it
+        // is come by actually get shown. The action button still buys.
+        if (holder.itemView.getContext() instanceof android.app.Activity) {
+            final android.app.Activity host = (android.app.Activity) holder.itemView.getContext();
+            View body = holder.itemView.findViewById(R.id.shopCardBody);
+            View target = body != null ? body : holder.itemView;
+            target.setOnClickListener(v -> {
+                Season season = Season.of(item.getId());
+                if (season == null) {
+                    season = new SeasonManager(context).current();
+                }
+                ItemDetailSheet.show(host, item, season, () -> {
+                    notifyDataSetChanged();
+                    if (actionListener != null) {
+                        actionListener.onItemAction();
+                    }
+                });
+            });
+        }
+
         if (holder.ivLock != null) {
             holder.ivLock.setImageResource(R.drawable.ic_lock_theme);
         }
 
-        // Icon & Drawables
-        if (item.getIconRes() != 0) {
-            holder.tvIcon.setText("");
-            holder.tvIcon.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-            holder.tvIcon.setBackgroundResource(item.getIconRes());
-        } else {
-            holder.tvIcon.setBackgroundResource(R.drawable.bg_pause_button);
-            holder.tvIcon.setText(item.getIconEmoji());
-        }
+        // The product is a struck medallion in the metal its rarity earns. The
+        // emoji this used to show rendered differently on every handset and
+        // matched nothing else on the screen.
+        holder.tvIcon.setText("");
+        holder.tvIcon.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        holder.tvIcon.setBackgroundResource(item.getIconRes() != 0
+                ? item.getIconRes()
+                : ShopArt.medallion(item.getCategory(), item.getRarity()));
+
+        // The card is cast in that same metal, so the two are one object.
+        holder.itemView.findViewById(R.id.shopCardBody)
+                .setBackgroundResource(ShopArt.card(item.getRarity()));
 
         holder.tvTitle.setText(item.getTitle());
         holder.tvDesc.setText(item.getDescription());
@@ -131,12 +156,9 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
         holder.tvRarity.setText(item.getRarity().label(context));
         holder.tvRarity.setTextColor(rarityColor);
         if (holder.rarityBar != null) {
-            Drawable bg = holder.rarityBar.getBackground();
-            if (bg instanceof GradientDrawable) {
-                ((GradientDrawable) bg.mutate()).setColor(rarityColor);
-            } else {
-                holder.rarityBar.setBackgroundColor(rarityColor);
-            }
+            // The frame already carries the material, so the bar would only
+            // repeat it; it stays for the older layouts that still use one.
+            holder.rarityBar.setVisibility(View.GONE);
         }
 
         // Badge (NEW, HOT, etc.)
@@ -190,8 +212,11 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
                 }
             });
         } else if (item.getCategory() == ShopItem.Category.BUNDLE) {
-            if (profileManager.hasStarterBundle()) {
-                holder.btnAction.setText(R.string.shop_item_equipped);
+            boolean bundleOwned = item.getId().equals("starter_bundle")
+                    ? profileManager.hasStarterBundle()
+                    : profileManager.isItemPurchased(item.getId());
+            if (bundleOwned) {
+                holder.btnAction.setText(R.string.shop_already_purchased);
                 holder.btnAction.setBackgroundResource(R.drawable.neuro_secondary_button);
                 holder.btnAction.setEnabled(false);
                 holder.btnAction.setAlpha(0.7f);
@@ -201,15 +226,25 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
                 holder.btnAction.setEnabled(true);
                 holder.btnAction.setAlpha(1f);
                 holder.btnAction.setOnClickListener(v -> {
-                    if (profileManager.hasStarterBundle()) {
-                        Toast.makeText(context, R.string.shop_already_purchased, Toast.LENGTH_SHORT).show();
-                    } else {
+                    if (item.getId().equals("starter_bundle")) {
                         boolean ok = profileManager.purchaseStarterBundle(item.getPrice());
                         Toast.makeText(context, ok ? R.string.purchase_successful : R.string.not_enough_coins,
                                 Toast.LENGTH_SHORT).show();
                         if (ok) {
                             notifyItemChanged(holder.getAdapterPosition());
                             if (actionListener != null) actionListener.onItemAction();
+                        }
+                    } else {
+                        if (coinManager.spend(item.getPrice(), "bundle_" + item.getId())) {
+                            profileManager.addPurchasedItem(item.getId());
+                            for (String contentId : item.bundleContents) {
+                                profileManager.addPurchasedItem(contentId);
+                            }
+                            Toast.makeText(context, R.string.purchase_successful, Toast.LENGTH_SHORT).show();
+                            notifyDataSetChanged();
+                            if (actionListener != null) actionListener.onItemAction();
+                        } else {
+                            Toast.makeText(context, R.string.not_enough_coins, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

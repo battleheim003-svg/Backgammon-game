@@ -43,6 +43,12 @@ import games.mrlaki5.backgammon.Monetization.ads.AdCallback;
 import games.mrlaki5.backgammon.Monetization.ads.RewardedAdPlacement;
 import games.mrlaki5.backgammon.Monetization.ads.RewardedAdTracker;
 import games.mrlaki5.backgammon.Monetization.ads.RewardedAdUiHelper;
+import games.mrlaki5.backgammon.Journey.JourneyActivity;
+import games.mrlaki5.backgammon.Challenge.ChallengeCode;
+import games.mrlaki5.backgammon.Challenge.ChallengeHistory;
+import com.royalbackgammon.core.variant.Variant;
+import games.mrlaki5.backgammon.Retention.DailyChallenge;
+import games.mrlaki5.backgammon.Util.DateUtil;
 import games.mrlaki5.backgammon.R;
 
 //Activity class for main menu
@@ -61,6 +67,16 @@ public class MenuActivity extends AppCompatActivity {
     public static String EXTRA_PLAYER1_KIND="p1kind";
     //Player2 kind key intent value
     public static String EXTRA_PLAYER2_KIND="p2kind";
+    public static final String EXTRA_VARIANT="variant";
+    public static final String EXTRA_MATCH_TARGET="matchTarget";
+    public static final String EXTRA_TAVLI="tavliRotation";
+    public static final String EXTRA_BOT_DIFFICULTY="botDifficulty";
+    public static final String EXTRA_JOURNEY_STAGE="journeyStage";
+    public static final String EXTRA_BOARD_THEME="boardTheme";
+    public static final String EXTRA_DICE_SEED="diceSeed";
+    public static final String EXTRA_MATCH_WHITE_SCORE="matchWhiteScore";
+    public static final String EXTRA_MATCH_RED_SCORE="matchRedScore";
+    public static final String EXTRA_MATCH_GAMES="matchGames";
     //Wining player key intent value
     public static String EXTRA_WINING_PLAYER="pWin";
     public static String EXTRA_TUTORIAL_MODE="tutorialMode";
@@ -192,8 +208,19 @@ public class MenuActivity extends AppCompatActivity {
                         games.mrlaki5.backgammon.Monetization.ads.AdConfig.ZONE_INTERSTITIAL,
                         games.mrlaki5.backgammon.Monetization.ads.AdConfig.ZONE_REWARDED));
         adManager.initialize(this);
-        adManager.preloadAds();
         sharedAdManager = adManager;
+        // Preloading talks to the network; do it after the menu is on screen
+        new android.os.Handler(android.os.Looper.getMainLooper())
+                .postDelayed(() -> {
+                    try {
+                        if (!games.mrlaki5.backgammon.Diagnostics.Connectivity.isOnline(this)) {
+                            return;
+                        }
+                        adManager.preloadAds();
+                    } catch (Throwable t) {
+                        android.util.Log.w("MenuActivity", "Ad preload failed", t);
+                    }
+                }, 2500L);
         //Load preferences
         SharedPreferences preferences = getSharedPreferences("Settings", 0);
         //If values in preferences dont exist (on first start), create them
@@ -252,7 +279,9 @@ public class MenuActivity extends AppCompatActivity {
         updateCoinDisplay();
 
         // Start menu background music
-        MenuAudioManager.get().startMenuMusic(this);
+        // Decoding the music track is not worth a stutter on the first frame
+        new android.os.Handler(android.os.Looper.getMainLooper())
+                .postDelayed(() -> MenuAudioManager.get().startMenuMusic(this), 600L);
     }
 
     @Override
@@ -260,6 +289,7 @@ public class MenuActivity extends AppCompatActivity {
         super.onResume();
         freeCoinsTickHandler.removeCallbacks(freeCoinsTick);
         freeCoinsTickHandler.post(freeCoinsTick);
+        bindDailyChallenge();
         if (profileManager != null) {
             profileManager.checkAndExpireRentals();
         } else {
@@ -285,7 +315,7 @@ public class MenuActivity extends AppCompatActivity {
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_daily_login, null);
         TextView tvCoins = view.findViewById(R.id.dlgCoins);
         if (tvCoins != null) {
-            tvCoins.setText("+" + result.coinsEarned + " 🪙");
+            tvCoins.setText(getString(R.string.journey_reward_line, result.coinsEarned));
         }
         LinearLayout dayRow = view.findViewById(R.id.dlgDayRow);
         if (dayRow != null) {
@@ -409,8 +439,10 @@ public class MenuActivity extends AppCompatActivity {
         int[] buttonIds = {
                 R.id.playGame,
                 R.id.passAndPlay,
+                R.id.journey,
                 R.id.tutorial,
                 R.id.scores,
+                R.id.btnShop,
                 R.id.settings,
                 R.id.languageToggle
         };
@@ -430,6 +462,25 @@ public class MenuActivity extends AppCompatActivity {
                     .setInterpolator(new OvershootInterpolator(0.72F))
                     .start();
         }
+        // Gold does not sit still: a highlight crosses the primary action every
+        // few seconds, and it breathes just enough to read as the live one.
+        View glint = findViewById(R.id.playGameGlint);
+        if (glint != null) {
+            RoyalMotion.shimmer(glint);
+        }
+        View hero = findViewById(R.id.playGameFrame);
+        if (hero != null) {
+            RoyalMotion.breathe(hero);
+        }
+        View crest = findViewById(R.id.royalLogo);
+        if (crest != null) {
+            RoyalMotion.settleIn(crest, 120L);
+        }
+        View title = findViewById(R.id.menuTitle);
+        if (title != null) {
+            RoyalMotion.settleIn(title, 60L);
+        }
+
         View panel = findViewById(R.id.menuPanel);
         if (panel != null) {
             panel.setScaleX(0.985F);
@@ -541,6 +592,168 @@ public class MenuActivity extends AppCompatActivity {
         //Create and start settings activity
         Intent intent= new Intent(MenuActivity.this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    //Method called when Journey is chosen from the menu
+    /** Shows today's challenge and its progress under the menu title. */
+    private void bindDailyChallenge() {
+        TextView view = findViewById(R.id.tvDailyChallenge);
+        if (view == null) {
+            return;
+        }
+        DailyChallenge challenge = new DailyChallenge(this);
+        view.setOnClickListener(v -> showChallengeDialog());
+        DailyChallenge.Challenge today = challenge.getTodayChallenge();
+        String description = challengeDescription(today, challenge);
+        if (challenge.isCompleted()) {
+            view.setText(getString(R.string.daily_challenge_line_done, description));
+        } else {
+            view.setText(getString(R.string.daily_challenge_line, description,
+                    challenge.getProgress(), today.targetValue));
+        }
+    }
+
+    private String challengeDescription(DailyChallenge.Challenge challenge, DailyChallenge state) {
+        switch (challenge.type) {
+            case WIN_GAMES:
+                return getString(R.string.challenge_win_games, challenge.targetValue);
+            case COMPLETE_GAMES:
+                return getString(R.string.challenge_complete_games, challenge.targetValue);
+            case BEAT_DIFFICULTY:
+                return getString(R.string.challenge_beat_difficulty,
+                        getString(difficultyName(challenge.targetValue)));
+            case WIN_WITHOUT_HIT:
+                return getString(R.string.challenge_win_without_hit);
+            case WIN_STREAK:
+                return getString(R.string.challenge_win_streak, challenge.targetValue);
+            case WIN_IN_VARIANT:
+            default:
+                return getString(R.string.challenge_win_variant,
+                        getString(VariantPicker.nameRes(state.getTodayVariant())));
+        }
+    }
+
+    /** Challenge games: today's shared game, a code to share, or a friend's code. */
+    private void showChallengeDialog() {
+        playMenuTap();
+        String[] options = {
+                getString(R.string.challenge_play_today),
+                getString(R.string.challenge_share_code),
+                getString(R.string.challenge_enter_code),
+                getString(R.string.challenge_results)
+        };
+        new AlertDialog.Builder(this, R.style.DarkAlertDialogTheme)
+                .setTitle(R.string.challenge_dialog_title)
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        startTodayChallengeGame();
+                    } else if (which == 1) {
+                        shareChallengeCode();
+                    } else if (which == 2) {
+                        askForChallengeCode();
+                    } else {
+                        showChallengeResults();
+                    }
+                })
+                .show();
+    }
+
+    private void startTodayChallengeGame() {
+        DailyChallenge challenge = new DailyChallenge(this);
+        int day = DateUtil.getDayOfYear();
+        startChallengeGame(challenge.getTodayVariant(), day * 7919L, 1);
+    }
+
+    private void shareChallengeCode() {
+        long seed = new java.util.Random().nextInt(Integer.MAX_VALUE);
+        Variant variant = GamePreferences.getVariant(this);
+        int matchTarget = GamePreferences.getMatchLength(this);
+        String code = ChallengeCode.encode(variant, seed, matchTarget);
+
+        new AlertDialog.Builder(this, R.style.DarkAlertDialogTheme)
+                .setTitle(R.string.challenge_your_code)
+                .setMessage(getString(R.string.challenge_code_message, code,
+                        getString(VariantPicker.nameRes(variant))))
+                .setPositiveButton(R.string.challenge_share_code, (d, w) -> {
+                    Intent share = new Intent(Intent.ACTION_SEND);
+                    share.setType("text/plain");
+                    share.putExtra(Intent.EXTRA_TEXT,
+                            getString(R.string.challenge_share_text, code));
+                    startActivity(Intent.createChooser(share, getString(R.string.challenge_share_code)));
+                })
+                .setNeutralButton(R.string.challenge_play_code, (d, w) ->
+                        startChallengeGame(variant, seed, matchTarget))
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void askForChallengeCode() {
+        EditText input = new EditText(this);
+        input.setHint(R.string.challenge_code_hint);
+        input.setTextColor(getResources().getColor(R.color.text_primary));
+        new AlertDialog.Builder(this, R.style.DarkAlertDialogTheme)
+                .setTitle(R.string.challenge_enter_code)
+                .setView(input)
+                .setPositiveButton(R.string.play, (d, w) -> {
+                    ChallengeCode.Challenge parsed =
+                            ChallengeCode.decode(input.getText().toString());
+                    if (parsed == null) {
+                        Toast.makeText(this, R.string.challenge_code_invalid, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    startChallengeGame(parsed.variant, parsed.seed, parsed.matchTarget);
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void showChallengeResults() {
+        java.util.List<ChallengeHistory.Entry> entries = new ChallengeHistory(this).getEntries();
+        if (entries.isEmpty()) {
+            Toast.makeText(this, R.string.challenge_results_empty, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        StringBuilder text = new StringBuilder();
+        for (ChallengeHistory.Entry entry : entries) {
+            text.append(getString(entry.won ? R.string.challenge_result_won
+                                            : R.string.challenge_result_lost,
+                    entry.code, getString(VariantPicker.nameRes(entry.variant)), entry.points))
+                    .append('\n');
+        }
+        new AlertDialog.Builder(this, R.style.DarkAlertDialogTheme)
+                .setTitle(R.string.challenge_results)
+                .setMessage(text.toString().trim())
+                .setPositiveButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void startChallengeGame(Variant variant, long seed, int matchTarget) {
+        File save = new File(getFilesDir().getAbsolutePath(), GAME_CONTINUE_SAVE_FILE_NAME);
+        save.delete();
+
+        Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra(EXTRA_PLAYER1_NAME, new PlayerProfileManager(this).getDisplayName());
+        intent.putExtra(EXTRA_PLAYER2_NAME, getString(R.string.bot_player));
+        intent.putExtra(EXTRA_PLAYER1_KIND, "Player");
+        intent.putExtra(EXTRA_PLAYER2_KIND, "Bot");
+        intent.putExtra(EXTRA_VARIANT, variant.name());
+        intent.putExtra(EXTRA_MATCH_TARGET, Math.max(1, matchTarget));
+        intent.putExtra(EXTRA_DICE_SEED, seed);
+        startActivityForResult(intent, REQUEST_CODE_GAME);
+    }
+
+    private static int difficultyName(int difficulty) {
+        switch (difficulty) {
+            case 0: return R.string.difficulty_easy;
+            case 1: return R.string.difficulty_medium;
+            case 3: return R.string.difficulty_royal;
+            default: return R.string.difficulty_hard;
+        }
+    }
+
+    public void openJourney(View view) {
+        playMenuTap();
+        startActivity(new Intent(MenuActivity.this, JourneyActivity.class));
     }
 
     public void startTutorial(View view) {
