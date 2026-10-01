@@ -22,12 +22,11 @@
         android:background="@drawable/card_common"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingStart="@dimen/space_m"
-        android:paddingTop="@dimen/space_m"
-        android:paddingEnd="@dimen/space_m"
-        android:paddingBottom="@dimen/space_m">
+        android:paddingStart="@dimen/space_s"
+        android:paddingTop="@dimen/space_s"
+        android:paddingEnd="@dimen/space_s"
+        android:paddingBottom="@dimen/space_s">
 
-        <!-- Kept for older layouts that still bind it; hidden by the adapter. -->
         <View
             android:id="@+id/viewRarityBar"
             android:layout_width="match_parent"
@@ -35,13 +34,13 @@
             android:visibility="gone" />
 
         <FrameLayout
-            android:layout_width="@dimen/art_lg"
-            android:layout_height="@dimen/art_lg">
+            android:layout_width="@dimen/art_md"
+            android:layout_height="@dimen/art_md">
 
             <TextView
                 android:id="@+id/tvShopItemIcon"
-                android:layout_width="@dimen/art_lg"
-                android:layout_height="@dimen/art_lg"
+                android:layout_width="@dimen/art_md"
+                android:layout_height="@dimen/art_md"
                 android:background="@drawable/medal_shop_common"
                 android:gravity="center" />
 
@@ -64,7 +63,7 @@
             style="@style/RoyalText.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xs"
+            android:layout_marginTop="2dp"
             android:letterSpacing="0.06"
             android:textSize="@dimen/text_micro" />
 
@@ -73,27 +72,27 @@
             style="@style/RoyalText.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xs"
+            android:layout_marginTop="2dp"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
-            android:textSize="@dimen/text_body" />
+            android:textSize="@dimen/text_caption" />
 
         <TextView
             android:id="@+id/tvShopItemDesc"
             style="@style/RoyalText.Story"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xs"
+            android:layout_marginTop="2dp"
             android:gravity="center"
-            android:maxLines="2"
-            android:textSize="@dimen/text_caption" />
+            android:maxLines="1"
+            android:textSize="@dimen/text_micro" />
 
         <LinearLayout
             android:id="@+id/layoutShopItemUnlock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xs"
+            android:layout_marginTop="2dp"
             android:gravity="center"
             android:orientation="horizontal"
             android:visibility="gone">
@@ -120,8 +119,8 @@
             android:id="@+id/shopItemUnlockProgress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/space_s"
-            android:layout_marginTop="@dimen/space_xs"
+            android:layout_height="@dimen/space_xs"
+            android:layout_marginTop="2dp"
             android:max="100"
             android:progressDrawable="@drawable/bg_progress_track_royal"
             android:visibility="gone" />
@@ -130,11 +129,11 @@
             android:id="@+id/btnShopItemAction"
             style="@style/RoyalButton.Gold"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/control_md"
-            android:layout_marginTop="@dimen/space_s"
+            android:layout_height="@dimen/control_sm"
+            android:layout_marginTop="@dimen/space_xs"
             android:paddingStart="@dimen/space_xs"
             android:paddingEnd="@dimen/space_xs"
-            android:textSize="@dimen/text_body" />
+            android:textSize="@dimen/text_micro" />
 
     </LinearLayout>
 

@@ -28,6 +28,9 @@ import games.mrlaki5.backgammon.R;
  */
 public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
 
+    private static final int TYPE_ITEM   = 0;
+    private static final int TYPE_BUNDLE = 1;
+
     public interface OnItemActionListener {
         void onItemAction();
     }
@@ -81,10 +84,19 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return displayedItems.get(position).getCategory() == ShopItem.Category.BUNDLE
+                ? TYPE_BUNDLE : TYPE_ITEM;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_shop_card, parent, false);
+        int layout = (viewType == TYPE_BUNDLE)
+                ? R.layout.item_bundle_card
+                : R.layout.item_shop_card;
+        View view = LayoutInflater.from(context).inflate(layout, parent, false);
         return new ViewHolder(view);
     }
 
@@ -127,18 +139,45 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
             holder.ivLock.setImageResource(R.drawable.ic_lock_theme);
         }
 
-        // The product is a struck medallion in the metal its rarity earns. The
-        // emoji this used to show rendered differently on every handset and
-        // matched nothing else on the screen.
-        holder.tvIcon.setText("");
-        holder.tvIcon.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-        holder.tvIcon.setBackgroundResource(item.getIconRes() != 0
-                ? item.getIconRes()
-                : ShopArt.medallion(item.getCategory(), item.getRarity()));
+        // Card background (shared by both layout variants)
+        View cardBody = holder.itemView.findViewById(R.id.shopCardBody);
+        if (cardBody != null) cardBody.setBackgroundResource(ShopArt.card(item.getRarity()));
 
-        // The card is cast in that same metal, so the two are one object.
-        holder.itemView.findViewById(R.id.shopCardBody)
-                .setBackgroundResource(ShopArt.card(item.getRarity()));
+        // Bundle card: show artwork via ImageView; regular card: draw medallion on TextView
+        if (item.getCategory() == ShopItem.Category.BUNDLE && holder.ivBundleArt != null) {
+            int artRes = item.getIconRes() != 0
+                    ? item.getIconRes()
+                    : ShopArt.medallion(item.getCategory(), item.getRarity());
+            holder.ivBundleArt.setImageResource(artRes);
+        } else if (holder.tvIcon != null) {
+            holder.tvIcon.setText("");
+            holder.tvIcon.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            holder.tvIcon.setBackgroundResource(item.getIconRes() != 0
+                    ? item.getIconRes()
+                    : ShopArt.medallion(item.getCategory(), item.getRarity()));
+        }
+
+        // Bundle-specific value row
+        if (holder.tvBundleItemCount != null && item.bundleContents != null) {
+            int count = item.bundleContents.length;
+            holder.tvBundleItemCount.setText(count + " آیتم");
+            holder.tvBundleItemCount.setVisibility(View.VISIBLE);
+        }
+        if (holder.tvBundleSavings != null && item.bundleContents != null) {
+            int totalIndividual = 0;
+            for (String cid : item.bundleContents) {
+                for (ShopItem si : allItems) {
+                    if (si.getId().equals(cid)) { totalIndividual += si.getPrice(); break; }
+                }
+            }
+            int savings = totalIndividual - item.getPrice();
+            if (savings > 0) {
+                holder.tvBundleSavings.setText("صرفه‌جویی " + savings + " 🪙");
+                holder.tvBundleSavings.setVisibility(View.VISIBLE);
+            } else {
+                holder.tvBundleSavings.setVisibility(View.GONE);
+            }
+        }
 
         holder.tvTitle.setText(item.getTitle());
         holder.tvDesc.setText(item.getDescription());
@@ -332,6 +371,10 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
         final View rarityBar;
         final ProgressBar unlockProgress;
         final Button btnAction;
+        // Bundle card extras (null in regular item cards)
+        final ImageView ivBundleArt;
+        final TextView tvBundleItemCount;
+        final TextView tvBundleSavings;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -347,6 +390,9 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
             rarityBar = itemView.findViewById(R.id.viewRarityBar);
             unlockProgress = itemView.findViewById(R.id.shopItemUnlockProgress);
             btnAction = itemView.findViewById(R.id.btnShopItemAction);
+            ivBundleArt = itemView.findViewById(R.id.ivBundleArt);
+            tvBundleItemCount = itemView.findViewById(R.id.tvBundleItemCount);
+            tvBundleSavings = itemView.findViewById(R.id.tvBundleSavings);
         }
     }
 }
