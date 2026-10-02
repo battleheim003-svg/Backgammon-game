@@ -284,8 +284,8 @@ public class CoinShopActivity extends AppCompatActivity {
                 continue;
             }
             android.widget.ImageView art = new android.widget.ImageView(this);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(38), dp(38));
-            lp.setMarginEnd(dp(8));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(28), dp(28));
+            lp.setMarginEnd(dp(6));
             art.setLayoutParams(lp);
             art.setImageResource(piece.getIconRes() != 0
                     ? piece.getIconRes()
