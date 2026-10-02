@@ -23,8 +23,8 @@
         android:id="@+id/btnPause"
         android:layout_width="38dp"
         android:layout_height="38dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="@dimen/space_m"
+        android:layout_marginEnd="@dimen/space_l"
         android:background="@drawable/bg_pause_icon_btn"
         android:contentDescription="@string/pause_title"
         android:elevation="16dp"
@@ -39,8 +39,8 @@
         style="@style/RoyalButton.Gold.Small"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/control_md"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="@dimen/space_m"
+        android:layout_marginEnd="@dimen/space_s"
         android:elevation="16dp"
         android:paddingStart="@dimen/space_m"
         android:paddingEnd="@dimen/space_m"
@@ -54,8 +54,8 @@
         style="@style/RoyalButton.Wood"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/control_md"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="@dimen/space_m"
+        android:layout_marginEnd="@dimen/space_s"
         android:elevation="16dp"
         android:paddingStart="@dimen/space_m"
         android:paddingEnd="@dimen/space_m"
@@ -86,47 +86,43 @@
         android:id="@+id/tutorialPanel"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="14dp"
-        android:layout_marginBottom="14dp"
-        android:background="@drawable/royal_panel"
+        android:layout_marginEnd="@dimen/space_m"
+        android:layout_marginBottom="@dimen/space_m"
+        android:background="@drawable/bg_royal_panel"
         android:elevation="14dp"
         android:orientation="vertical"
-        android:padding="14dp"
+        android:padding="@dimen/space_m"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
             android:id="@+id/tutorialTitle"
+            style="@style/RoyalText.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/tutorial_title"
             android:textColor="@color/accent_gold"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textSize="@dimen/text_title" />
 
         <TextView
             android:id="@+id/tutorialBody"
+            style="@style/RoyalText.Story"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp" />
+            android:layout_marginTop="@dimen/space_xs"
+            android:textSize="@dimen/text_body" />
 
         <Button
             android:id="@+id/tutorialNextButton"
-            android:layout_width="112dp"
-            android:layout_height="40dp"
+            style="@style/RoyalButton.Gold.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/control_sm"
             android:layout_gravity="end"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_pause_button"
+            android:layout_marginTop="@dimen/space_s"
             android:minHeight="0dp"
             android:minWidth="0dp"
             android:text="@string/tutorial_next"
-            android:textAllCaps="false"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold"
             android:visibility="gone" />
 
     </LinearLayout>

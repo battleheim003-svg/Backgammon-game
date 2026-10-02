@@ -44,7 +44,7 @@ public class BoardMetrics {
         PaddingXRight = ((Width - XBaseLeft) - RightX) / 6f;
 
         TriangleHeight = (Height - YBaseTop) * 0.39f;
-        EndBoardMidX = Width + (PaddingXRight * 3f / 4f);
+        EndBoardMidX = Width + (RealWidth - XBaseRight - Width) / 2f;
         calculateFieldCenters();
 
         EndChipHeight = TriangleHeight / 15f;

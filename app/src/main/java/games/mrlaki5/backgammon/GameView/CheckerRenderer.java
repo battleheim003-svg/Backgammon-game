@@ -278,6 +278,7 @@ public class CheckerRenderer {
                 drawEndBoard = true;
                 y = m.YBaseTop;
                 currentNextImage = EndBoardImage;
+                currPadding = m.RealWidth - m.XBaseRight - m.Width;
             }
             if (i == 27) {
                 drawEndBoard = true;
