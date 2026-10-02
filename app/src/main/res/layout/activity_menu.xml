@@ -347,13 +347,20 @@
     <Button
         android:id="@+id/languageToggle"
         style="@style/RoyalButton.Wood"
-        android:layout_width="124dp"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/control_md"
         android:layout_gravity="end|bottom"
         android:layout_marginEnd="@dimen/space_xxl"
         android:layout_marginBottom="@dimen/space_l"
         android:elevation="8dp"
+        android:ellipsize="none"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:minWidth="0dp"
         android:onClick="toggleLanguage"
-        android:text="@string/language_toggle" />
+        android:paddingStart="@dimen/space_m"
+        android:paddingEnd="@dimen/space_m"
+        android:text="@string/language_toggle"
+        android:textSize="@dimen/text_caption" />
 
 </FrameLayout>
